@@ -22,6 +22,8 @@ WORKDIR /app
 COPY --from=build /source/brouter-server/build/libs/brouter-*-all.jar /app/brouter.jar
 COPY --from=build --chmod=755 /source/misc/scripts/standalone/server.sh /app/server.sh
 COPY --from=build /source/misc/profiles2/ /profiles2/
+COPY --from=build /source/LICENSE /app/LICENSE.brouter
+COPY NOTICE /app/NOTICE
 COPY --from=segments --chown=1000:1000 /segments4/ /segments4/
 ENV CLASSPATH=/app/brouter.jar SEGMENTSPATH=/segments4 PROFILESPATH=/profiles2 CUSTOMPROFILESPATH=/customprofiles \
     JAVA_OPTS="-Xmx512M -Xms64M -DmaxRunningTime=30 -DmemoryClass=512" MAXTHREADS=2
