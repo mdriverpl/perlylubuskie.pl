@@ -10,3 +10,5 @@ artifacts/
 .tools/
 .pg-data/
 .pg-test/
+*.dump
+.env.*.local

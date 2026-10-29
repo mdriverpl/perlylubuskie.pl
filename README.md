@@ -2,6 +2,8 @@
 
 Projekt aplikacji turystycznej na podstawie dwóch dostarczonych wizualizacji. Vue 3 + Vite, Python / FastAPI, PostgreSQL 17, SQLAlchemy 2, Leaflet / OpenStreetMap. Interfejs po polsku, układ dostosowany do komputera i telefonu.
 
+**Gotowe obrazy Docker i wdrożenie:** [DEPLOYMENT.md](DEPLOYMENT.md). Plik `compose.deploy.yaml` pobiera frontend i API z GitHub Container Registry oraz uruchamia PostgreSQL z trwałym wolumenem. Workflow GitHub Actions testuje, publikuje i uruchamia zestaw z opublikowanych obrazów.
+
 ## Funkcje
 
 - Strona odkrywania regionu: wyszukiwanie, kategorie, katalog miejsc, szczegóły, inspiracje wycieczek.

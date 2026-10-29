@@ -1,4 +1,7 @@
 FROM python:3.12-slim
+LABEL org.opencontainers.image.source="https://github.com/mdriverpl/perlylubuskie.pl"
+LABEL org.opencontainers.image.description="Perły Ziemi Lubuskiej — FastAPI backend"
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
