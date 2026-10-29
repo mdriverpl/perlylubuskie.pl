@@ -13,8 +13,10 @@ globalThis.fetch=async()=>{throw new Error('Offline test')}
 const { createApp, nextTick }=await import('vue')
 const { descriptor }=parse(await readFile('src/App.vue','utf8'))
 const compiled=compileScript(descriptor,{id:'test-app',inlineTemplate:true})
-const source=compiled.content.replace("from './data'","from '../src/data.js'").replace("from './useRouting.js'","from '../src/useRouting.js'").replace("import TravelMap from './components/TravelMap.vue'","const TravelMap = { template: '<div>Map stub</div>' }")
+const source=compiled.content.replace("from './data'","from '../src/data.js'").replace("from './useRouting.js'","from '../src/useRouting.js'").replace("from './components/PlaceCommunity.vue'","from './community-test.mjs'").replace("import TravelMap from './components/TravelMap.vue'","const TravelMap = { template: '<div>Map stub</div>' }")
 await mkdir('artifacts',{recursive:true})
+const community=parse(await readFile('src/components/PlaceCommunity.vue','utf8')).descriptor
+await writeFile('artifacts/community-test.mjs',compileScript(community,{id:'test-community',inlineTemplate:true}).content)
 await writeFile('artifacts/ui-test.mjs',source)
 const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')

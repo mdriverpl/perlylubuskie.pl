@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1 --configLoader native",
     "build": "vite build --configLoader native",
     "preview": "vite preview --host 127.0.0.1 --configLoader native",
-    "test": "node scripts/test-ui.mjs && node scripts/test-routing-ui.mjs"
+    "test": "node scripts/test-ui.mjs && node scripts/test-routing-ui.mjs && node scripts/test-community-ui.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

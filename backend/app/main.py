@@ -7,12 +7,12 @@ from typing import Literal
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 import jwt
-from fastapi import FastAPI, Depends, HTTPException, Response
+from fastapi import FastAPI, Depends, HTTPException, Response, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr, Field
 from pwdlib import PasswordHash
-from sqlalchemy import create_engine, String, Float, ForeignKey, JSON, select
+from sqlalchemy import create_engine, String, Float, ForeignKey, JSON, DateTime, select, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, Session
 from .routing import calculate_route, route_gpx
@@ -25,6 +25,7 @@ engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(engine, expire_on_commit=False)
 password_hash = PasswordHash.recommended()
 security = HTTPBearer()
+optional_security = HTTPBearer(auto_error=False)
 DUMMY_HASH = password_hash.hash('invalid-account-timing-placeholder')
 
 
@@ -69,6 +70,21 @@ class Trip(Base):
     place_ids: Mapped[list[int]] = mapped_column(JSON)
 
 
+class Visit(Base):
+    __tablename__ = 'place_visits'
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey('places.id', ondelete='CASCADE'), primary_key=True, index=True)
+
+
+class Comment(Base):
+    __tablename__ = 'place_comments'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), index=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey('places.id', ondelete='CASCADE'), index=True)
+    body: Mapped[str] = mapped_column(String(2000))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+
 def get_db():
     with SessionLocal() as db:
         yield db
@@ -84,6 +100,10 @@ def current_user(credentials: HTTPAuthorizationCredentials = Depends(security), 
     if not user:
         raise HTTPException(401, 'Nieprawidłowe konto.')
     return user
+
+
+def optional_user(credentials: HTTPAuthorizationCredentials | None = Depends(optional_security), db: Session = Depends(get_db)):
+    return current_user(credentials, db) if credentials else None
 
 
 @asynccontextmanager
@@ -197,6 +217,78 @@ def places(q: str = '', category: str = '', db: Session = Depends(get_db)):
     if category:
         query = query.where(Place.category == category)
     return db.scalars(query).all()
+
+
+class CommentInput(BaseModel):
+    body: str = Field(min_length=1, max_length=2000)
+
+
+def require_place(place_id, db):
+    if not db.get(Place, place_id):
+        raise HTTPException(404, 'Nie znaleziono miejsca.')
+
+
+def public_comment(comment, author_name, viewer):
+    return {'id': comment.id, 'body': comment.body, 'author': author_name, 'created_at': comment.created_at, 'can_delete': bool(viewer and viewer.id == comment.user_id)}
+
+
+@app.get('/api/places/{place_id}/community')
+def place_community(place_id: int, offset: int = Query(0, ge=0), limit: int = Query(20, ge=1, le=50), user: User | None = Depends(optional_user), db: Session = Depends(get_db)):
+    require_place(place_id, db)
+    comments = db.execute(select(Comment, User.name).join(User, User.id == Comment.user_id).where(Comment.place_id == place_id).order_by(Comment.created_at.desc(), Comment.id.desc()).offset(offset).limit(limit)).all()
+    return {
+        'visit_count': db.scalar(select(func.count()).select_from(Visit).where(Visit.place_id == place_id)),
+        'visited': bool(user and db.get(Visit, (user.id, place_id))),
+        'comment_count': db.scalar(select(func.count()).select_from(Comment).where(Comment.place_id == place_id)),
+        'comments': [public_comment(comment, name, user) for comment, name in comments],
+    }
+
+
+@app.put('/api/places/{place_id}/visit', status_code=204)
+def mark_visit(place_id: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    require_place(place_id, db)
+    if not db.get(Visit, (user.id, place_id)):
+        db.add(Visit(user_id=user.id, place_id=place_id))
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()  # Concurrent idempotent marks count one person once.
+    return Response(status_code=204)
+
+
+@app.delete('/api/places/{place_id}/visit', status_code=204)
+def unmark_visit(place_id: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    require_place(place_id, db)
+    visit = db.get(Visit, (user.id, place_id))
+    if visit:
+        db.delete(visit)
+        db.commit()
+    return Response(status_code=204)
+
+
+@app.post('/api/places/{place_id}/comments', status_code=201)
+def add_comment(place_id: int, data: CommentInput, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    require_place(place_id, db)
+    body = data.body.strip()
+    if not body:
+        raise HTTPException(422, 'Napisz treść komentarza.')
+    recent = db.scalar(select(func.count()).select_from(Comment).where(Comment.user_id == user.id, Comment.created_at >= datetime.now(timezone.utc) - timedelta(minutes=1)))
+    if recent >= 5:
+        raise HTTPException(429, 'Możesz dodać do 5 komentarzy na minutę. Spróbuj ponownie za chwilę.')
+    comment = Comment(user_id=user.id, place_id=place_id, body=body)
+    db.add(comment)
+    db.commit()
+    return public_comment(comment, user.name, user)
+
+
+@app.delete('/api/places/{place_id}/comments/{comment_id}', status_code=204)
+def delete_comment(place_id: int, comment_id: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    comment = db.get(Comment, comment_id)
+    if not comment or comment.place_id != place_id or comment.user_id != user.id:
+        raise HTTPException(404, 'Nie znaleziono Twojego komentarza.')
+    db.delete(comment)
+    db.commit()
+    return Response(status_code=204)
 
 
 @app.get('/api/favorites', response_model=list[int])

@@ -73,6 +73,8 @@ docker compose -f compose.deploy.yaml up -d --wait --wait-timeout 180
 
 Dane bazy pozostają w wolumenie. Powrót do obrazu: zmień `IMAGE_TAG` na SHA wcześniej działającego commita i ponów `pull` oraz `up`. Zmiany schematu bazy wymagają oddzielnych migracji i planu wycofania — ten starter inicjalizuje aktualny schemat przez SQLAlchemy `create_all`.
 
+Komentarze i oznaczenia „Byłem tu” są przechowywane w nowych tabelach `place_comments` i `place_visits`. Aktualizacja automatycznie dodaje te tabele bez usuwania istniejących kont, tras i katalogu. Licznik odwiedzin to liczba różnych kont przypisanych do miejsca, a nie liczba kliknięć. Publiczne odpowiedzi zawierają nazwę autora komentarza, ale nie adres e-mail. Właściciel może usunąć swój komentarz i cofnąć oznaczenie wizyty.
+
 ## Kopia zapasowa i logi
 
 Na serwerze Linux:

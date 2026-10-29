@@ -32,9 +32,20 @@ credentials = {'name': 'Deployment test', 'email': f'deploy-{uuid4().hex}@exampl
 account = request('/api/auth/register', 'POST', credentials)
 token = request('/api/auth/login', 'POST', credentials)['access_token']
 place_id = places[0]['id']
+community_path = f'/api/places/{place_id}/community'
+before_visits = request(community_path)['visit_count']
+request(f'/api/places/{place_id}/visit', 'PUT', token=token)
+request(f'/api/places/{place_id}/visit', 'PUT', token=token)
+community = request(community_path, token=token)
+assert community['visit_count'] == before_visits + 1 and community['visited']
+comment = request(f'/api/places/{place_id}/comments', 'POST', {'body': 'Deployment test comment'}, token)
+assert request(community_path)['comments'][0]['body'] == 'Deployment test comment'
+request(f"/api/places/{place_id}/comments/{comment['id']}", 'DELETE', token=token)
+request(f'/api/places/{place_id}/visit', 'DELETE', token=token)
+assert request(community_path)['visit_count'] == before_visits
 request(f'/api/favorites/{place_id}', 'PUT', token=token)
 assert place_id in request('/api/favorites', token=token)
 trip = request('/api/routes', 'POST', {'name': 'Deployment test', 'transport': 'walk', 'place_ids': [1, 5]}, token)
 assert request('/api/routes', token=token)[0]['id'] == trip['id']
 assert b'<trkpt' in request(f"/api/routes/{trip['id']}/gpx", token=token)
-print('PASS: web, PostgreSQL, cycling/walking routing, registration, login, favorites and GPX track through Nginx')
+print('PASS: web, PostgreSQL, routing, auth, favorites, comments, unique visits and GPX through Nginx')

@@ -11,6 +11,8 @@ Projekt aplikacji turystycznej na podstawie dwóch dostarczonych wizualizacji. V
 - Dystans po trasie, orientacyjny czas bez postojów i GPX ze śladem oraz punktami. Tryb samochodowy pozostaje planem punktów.
 - Lokalne ulubione i plany bez zakładania konta.
 - Rejestracja i logowanie: Argon2, JWT z terminem ważności; ulubione oraz zapisane plany przypisane do użytkownika w PostgreSQL.
+- Podgląd miejsca: link do Google Maps według współrzędnych, publiczne komentarze z autorem i datą oraz licznik kont, które oznaczyły „Byłem tu”.
+- Po zalogowaniu: dodawanie i usuwanie własnych komentarzy, oznaczanie i cofanie wizyty. Jedno konto jest liczone przy miejscu tylko raz, także przy równoczesnych żądaniach. Komentarze mają do 2000 znaków i są stronicowane; limit dodawania to 5 na minutę na konto.
 - Backend niedostępny: jawnie oznaczony tryb demonstracyjny z katalogiem i zapisem w przeglądarce. Logowanie pozostaje wyłączone.
 
 ## Uruchomienie całego projektu
@@ -110,6 +112,10 @@ compose.yaml                  PostgreSQL + FastAPI + Nginx/Vue
 | --- | --- | --- |
 | GET | `/api/health` | połączenie z bazą |
 | GET | `/api/places?q=&category=` | publiczny katalog |
+| GET | `/api/places/{id}/community?offset=0&limit=20` | publiczne komentarze i licznik; po zalogowaniu również własne oznaczenie i uprawnienie usunięcia komentarza |
+| PUT / DELETE | `/api/places/{id}/visit` | oznaczenie / cofnięcie „Byłem tu”, wymagane konto |
+| POST | `/api/places/{id}/comments` | dodanie komentarza `{ "body": "treść" }`, wymagane konto |
+| DELETE | `/api/places/{id}/comments/{comment_id}` | usunięcie wyłącznie własnego komentarza |
 | POST | `/api/auth/register` | konto i token |
 | POST | `/api/auth/login` | logowanie |
 | GET | `/api/favorites` | własne ulubione |

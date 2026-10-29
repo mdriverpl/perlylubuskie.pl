@@ -104,3 +104,88 @@ def test_routing_endpoint_order_and_validation(client, monkeypatch):
     assert client.post('/api/routing', json={'place_ids': [999, 1], 'transport': 'bike'}).status_code == 422
     assert client.post('/api/routing', json={'place_ids': [1], 'transport': 'bike'}).status_code == 422
     assert client.post('/api/routing', json={'place_ids': [5, 1], 'transport': 'car'}).status_code == 422
+
+
+def test_visits_count_unique_accounts_and_allow_undo(client):
+    alice, _ = account(client)
+    bob, _ = account(client)
+    url = '/api/places/1'
+    before = client.get(url + '/community').json()['visit_count']
+    assert client.put(url + '/visit').status_code in (401, 403)
+    assert client.put('/api/places/999/visit', headers=alice).status_code == 404
+    assert client.put(url + '/visit', headers=alice).status_code == 204
+    assert client.put(url + '/visit', headers=alice).status_code == 204
+    own = client.get(url + '/community', headers=alice).json()
+    assert own['visited'] is True
+    assert own['visit_count'] == before + 1
+    assert client.get(url + '/community', headers=bob).json()['visited'] is False
+    assert client.put(url + '/visit', headers=bob).status_code == 204
+    assert client.get(url + '/community').json()['visit_count'] == before + 2
+    assert client.delete(url + '/visit', headers=alice).status_code == 204
+    assert client.delete(url + '/visit', headers=alice).status_code == 204
+    assert client.get(url + '/community').json()['visit_count'] == before + 1
+    client.delete(url + '/visit', headers=bob)
+    assert client.get(url + '/community').json()['visit_count'] == before
+
+
+def test_simultaneous_visit_marks_count_once(client):
+    from concurrent.futures import ThreadPoolExecutor
+    headers, _ = account(client)
+    before = client.get('/api/places/5/community').json()['visit_count']
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        responses = list(pool.map(lambda _: client.put('/api/places/5/visit', headers=headers).status_code, range(8)))
+    assert responses == [204] * 8
+    assert client.get('/api/places/5/community').json()['visit_count'] == before + 1
+    client.delete('/api/places/5/visit', headers=headers)
+
+
+def test_comments_public_read_private_ownership_and_validation(client):
+    alice, email = account(client)
+    bob, _ = account(client)
+    url = '/api/places/1/comments'
+    text = '<img src=x onerror=alert(1)> Ładne miejsce & widok.'
+    assert client.post(url, json={'body': text}).status_code in (401, 403)
+    for body in ('', '   ', 'x' * 2001):
+        assert client.post(url, headers=alice, json={'body': body}).status_code == 422
+    response = client.post(url, headers=alice, json={'body': '  ' + text + '  '})
+    assert response.status_code == 201, response.text
+    comment = response.json()
+    assert comment['body'] == text
+    assert comment['can_delete'] is True
+    from datetime import datetime
+    assert datetime.fromisoformat(comment['created_at']).tzinfo is not None
+    public = client.get('/api/places/1/community').json()
+    item = next(c for c in public['comments'] if c['id'] == comment['id'])
+    assert item['can_delete'] is False
+    assert item['author'] == 'Odkrywca'
+    assert 'email' not in item and 'user_id' not in item and email not in str(item)
+    path = f"{url}/{comment['id']}"
+    assert client.delete(path, headers=bob).status_code == 404
+    assert client.delete(f"/api/places/2/comments/{comment['id']}", headers=alice).status_code == 404
+    assert client.delete(path, headers=alice).status_code == 204
+    assert comment['id'] not in [c['id'] for c in client.get('/api/places/1/community').json()['comments']]
+    assert client.get('/api/places/999/community').status_code == 404
+    assert client.get('/api/places/1/community?limit=51').status_code == 422
+    assert client.get('/api/places/1/community?offset=-1').status_code == 422
+    assert client.get('/api/places/1/community', headers={'Authorization': 'Bearer invalid'}).status_code == 401
+
+
+def test_comment_pagination_and_rate_limit(client):
+    from app.main import Comment
+    headers, email = account(client)
+    with SessionLocal() as db:
+        user = db.scalar(select(User).where(User.email == email))
+        rows = [Comment(user_id=user.id, place_id=2, body=f'Comment {i}') for i in range(21)]
+        db.add_all(rows)
+        db.commit()
+        ids = {row.id for row in rows}
+    first = client.get('/api/places/2/community?limit=2').json()
+    second = client.get('/api/places/2/community?limit=2&offset=2').json()
+    assert first['comment_count'] >= 21
+    assert len(first['comments']) == len(second['comments']) == 2
+    assert not ({c['id'] for c in first['comments']} & {c['id'] for c in second['comments']})
+    assert client.post('/api/places/2/comments', headers=headers, json={'body': 'Too fast'}).status_code == 429
+    with SessionLocal() as db:
+        for row in db.scalars(select(Comment).where(Comment.id.in_(ids))).all():
+            db.delete(row)
+        db.commit()
