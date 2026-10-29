@@ -2,7 +2,7 @@
 
 Projekt aplikacji turystycznej na podstawie dwóch dostarczonych wizualizacji. Vue 3 + Vite, Python / FastAPI, PostgreSQL 17, SQLAlchemy 2, Leaflet / OpenStreetMap. Interfejs po polsku, układ dostosowany do komputera i telefonu.
 
-**Gotowe obrazy Docker i wdrożenie:** [DEPLOYMENT.md](DEPLOYMENT.md). Plik `compose.deploy.yaml` pobiera frontend i API z GitHub Container Registry oraz uruchamia PostgreSQL z trwałym wolumenem. Workflow GitHub Actions testuje, publikuje i uruchamia zestaw z opublikowanych obrazów.
+**Gotowe obrazy Docker i wdrożenie:** [DEPLOYMENT.md](DEPLOYMENT.md). Domyślny `compose.yaml` oraz `compose.deploy.yaml` pobierają frontend i API z GitHub Container Registry i uruchamiają PostgreSQL z trwałym wolumenem. Hostava używa `compose.hostava.yaml` i portu publicznego usługi `web`: **80**. Lokalny build ze źródeł jest w `compose.build.yaml`.
 
 ## Funkcje
 
@@ -25,7 +25,8 @@ Ustaw własne `POSTGRES_PASSWORD` i `SECRET_KEY` w `.env`. Hasło bazy powinno s
 
 ```powershell
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
-docker compose up --build -d
+docker compose pull
+docker compose up -d --wait
 ```
 
 - Aplikacja: **http://localhost:8080**
@@ -36,6 +37,12 @@ PostgreSQL przechowuje dane w wolumenie `postgres_data`. API tworzy tabele i dod
 
 ```powershell
 docker compose down
+```
+
+Domyślne wdrożenie wystawia frontend na porcie 8080. Ustaw `APP_BIND=127.0.0.1` w `.env`, aby ograniczyć dostęp do komputera lokalnego. Budowanie ze źródeł wymaga całego repozytorium, w tym katalogu `backend`:
+
+```powershell
+docker compose -f compose.build.yaml up --build -d
 ```
 
 ## Praca nad frontendem

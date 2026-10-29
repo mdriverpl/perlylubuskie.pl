@@ -12,6 +12,8 @@ Obrazy aplikacji są budowane dla **Linux amd64**. Serwer wymaga Dockera z Compo
 
 ## Pierwsze uruchomienie na serwerze
 
+Domyślny `compose.yaml` pobiera gotowe obrazy, więc zwykłe `docker compose up -d --wait` nie wymaga katalogu `backend` ani budowania na serwerze. `compose.build.yaml` służy wyłącznie do budowania lokalnego z pełnego checkoutu. `compose.deploy.yaml` zachowano dla wcześniejszych instrukcji.
+
 ```sh
 git clone https://github.com/mdriverpl/perlylubuskie.pl.git
 cd perlylubuskie.pl
@@ -36,6 +38,17 @@ curl --fail http://localhost:8080/api/health
 ```
 
 Aplikacja jest dostępna pod `http://ADRES_SERWERA:8080`. Do publicznego ruchu HTTPS skieruj własną domenę przez reverse proxy na port aplikacji; przy proxy na tym samym serwerze ustaw `APP_BIND=127.0.0.1`. Baza i API nie wystawiają osobnych portów na serwerze.
+
+## Hostava
+
+Wklej zawartość **`compose.hostava.yaml`** jako definicję aplikacji. Ten plik używa obrazów GHCR, bez `build`, ścieżek do źródeł i mapowania portu hosta. W panelu ustaw:
+
+- usługa publiczna: `web`;
+- port publiczny kontenera: **80**;
+- ścieżka zdrowia: `/api/health`;
+- zmienne: własne `POSTGRES_PASSWORD`, `SECRET_KEY` i `PUBLIC_URL=https://TWOJA_DOMENA`.
+
+Zachowaj dotychczasowe hasło i wolumen PostgreSQL przy aktualizacji istniejącej aplikacji. Nie zmieniaj hasła tylko w `.env`, jeżeli baza jest już zainicjalizowana. Nie wklejaj `compose.build.yaml` do panelu — Hostava nie ma lokalnego katalogu źródeł `backend`.
 
 ## Automatyczna publikacja i weryfikacja
 
