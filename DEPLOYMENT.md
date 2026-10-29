@@ -1,12 +1,13 @@
 # Wdrożenie obrazów Docker
 
-Gotowy zestaw składa się z trzech kontenerów:
+Gotowy zestaw składa się z czterech kontenerów:
 
 | Usługa | Obraz | Dane |
 | --- | --- | --- |
 | Vue + Nginx | `ghcr.io/mdriverpl/perlylubuskie-web:latest` | frontend i proxy `/api` |
 | FastAPI | `ghcr.io/mdriverpl/perlylubuskie-api:latest` | API, schemat i katalog początkowy |
 | PostgreSQL | `postgres:17-alpine` | dane w trwałym wolumenie `postgres_data` |
+| BRouter | `ghcr.io/mdriverpl/perlylubuskie-router:latest` | silnik pieszy i rowerowy, snapshot danych OSM zachodniej Polski |
 
 Obrazy aplikacji są budowane dla **Linux amd64**. Serwer wymaga Dockera z Compose v2. Schemat bazy i sześć miejsc początkowych są tworzone automatycznie przy pierwszym starcie API. Hasła, konta użytkowników i zawartość lokalnej bazy nie są publikowane w obrazach.
 
@@ -55,9 +56,9 @@ Zachowaj dotychczasowe hasło i wolumen PostgreSQL przy aktualizacji istniejące
 Workflow [Docker images](https://github.com/mdriverpl/perlylubuskie.pl/actions/workflows/docker-publish.yml) po każdym pushu na `main`:
 
 1. Uruchamia testy Vue i API z rzeczywistym PostgreSQL.
-2. Buduje oba obrazy i publikuje je do GHCR z tagami `latest` oraz pełnym SHA commita.
+2. Buduje trzy obrazy aplikacji i publikuje je do GHCR z tagami `latest` oraz pełnym SHA commita.
 3. Pobiera opublikowane obrazy i uruchamia `compose.deploy.yaml` na pustej bazie.
-4. Sprawdza przez Nginx stronę, stan bazy, rejestrację, logowanie, ulubione, zapis planu i pobranie GPX.
+4. Sprawdza przez Nginx stronę, stan bazy, oba profile trasowania, rejestrację, logowanie, ulubione, zapis planu i GPX ze śladem.
 5. Usuwa wyłącznie jednorazowy zestaw testowy na runnerze GitHub Actions.
 
 Przed wdrożeniem wybieraj wersję z zielonym wynikiem wszystkich trzech etapów. Do powtarzalnych wdrożeń ustaw w `.env` `IMAGE_TAG=PELNY_SHA_COMMITA`; `latest` jest aktualizowany na `main`.
@@ -83,4 +84,8 @@ docker compose -f compose.deploy.yaml logs --tail=100 api web
 
 Plik kopii zawiera dane użytkowników: przechowuj go poza repozytorium, w bezpiecznym miejscu. `docker compose -f compose.deploy.yaml down` zatrzymuje aplikację z zachowaniem danych; nie używaj `down -v`, jeśli chcesz zachować bazę.
 
-Obrazy obejmują bieżące funkcje i dane demonstracyjne opisane w README. Eksport GPX nadal zawiera punkty do odwiedzenia, bez routingu po drogach.
+Obrazy obejmują bieżące funkcje i dane demonstracyjne opisane w README. Dla tras pieszych i rowerowych GPX zawiera przebieg wyznaczony przez BRouter po drogach i ścieżkach. Czas jest szacowany i nie uwzględnia postojów. Sprawdź dostępność ścieżek oraz warunki w terenie.
+
+Router nie wystawia portu do internetu. Ma limit pamięci 768 MB i obejmuje zachodnią Polskę. Pierwsze pobranie jego obrazu wymaga około 215 MB samych danych mapowych, oprócz środowiska Java. Przy budowaniu obrazu dane są pobierane z `brouter.de`; zmiana `MAP_DATA_VERSION` w `routing/Dockerfile` odświeża snapshot. Nie usuwaj wolumenu PostgreSQL przy dodawaniu usługi `router` do istniejącego wdrożenia.
+
+Dane trasowania: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL. Silnik [BRouter](https://github.com/abrensch/brouter) ma licencję MIT. Snapshot danych w obrazie pochodzi z [segmentów BRouter](https://brouter.de/brouter/segments4/), przetworzonych z OSM; obowiązuje atrybucja i warunki ODbL.

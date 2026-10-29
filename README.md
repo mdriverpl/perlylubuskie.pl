@@ -7,8 +7,8 @@ Projekt aplikacji turystycznej na podstawie dwóch dostarczonych wizualizacji. V
 ## Funkcje
 
 - Strona odkrywania regionu: wyszukiwanie, kategorie, katalog miejsc, szczegóły, inspiracje wycieczek.
-- Planer: interaktywna mapa, wybór i usuwanie punktów, zmiana kolejności, transport pieszy / rower / samochód.
-- Pobranie GPX z punktami w wybranej kolejności; poprawne kodowanie znaków XML.
+- Planer: interaktywna mapa, wybór punktów, zmiana kolejności oraz rzeczywiste trasy piesze i rowerowe po danych OpenStreetMap, wyznaczane przez własny BRouter.
+- Dystans po trasie, orientacyjny czas bez postojów i GPX ze śladem oraz punktami. Tryb samochodowy pozostaje planem punktów.
 - Lokalne ulubione i plany bez zakładania konta.
 - Rejestracja i logowanie: Argon2, JWT z terminem ważności; ulubione oraz zapisane plany przypisane do użytkownika w PostgreSQL.
 - Backend niedostępny: jawnie oznaczony tryb demonstracyjny z katalogiem i zapisem w przeglądarce. Logowanie pozostaje wyłączone.
@@ -126,7 +126,9 @@ Fotografie zostały wyodrębnione z dostarczonej wizualizacji strony głównej. 
 
 Opisy i parametry popularnych tras to dane demonstracyjne. „Smaki nad jeziorem” jest inspiracją kulinarną, nie prawdziwą ofertą restauracji. Noclegi mają uczciwy pusty stan — projekt nie zawiera fikcyjnych rezerwacji.
 
-Planer **nie ma silnika routingu drogowego**. Pokazuje proste połączenia punktów, odległość geograficzną i poglądowy czas bez postojów. GPX jest listą punktów, nie gotowym śladem nawigacji. Przed rozszerzeniem można podłączyć OSRM, GraphHopper lub innego dostawcę tras.
+Planer pieszy i rowerowy korzysta z własnego kontenera BRouter (`trekking` dla roweru, `hiking-mountain` dla pieszych), bez płatnych kluczy i publicznego serwera demonstracyjnego. Wybierz co najmniej dwa miejsca. Zmiana kolejności lub profilu przelicza trasę; mapa pokazuje przebieg, a eksport GPX zawiera `trk` / `trkpt`. Bez połączenia z silnikiem aplikacja pokazuje błąd i umożliwia wyraźnie oznaczony eksport samych punktów. Tryb samochodowy nie wyznacza przebiegu.
+
+Obraz `perlylubuskie-router` zawiera segmenty BRouter `E10_N50` i `E15_N50` z danymi zachodniej Polski. API ogranicza punkty do obszaru 14–17°E, 50,5–53,5°N, do 20 punktów i dwóch równoczesnych obliczeń. Trasy są buforowane w pamięci przez godzinę. Dane są snapshotem z budowania obrazu, a nie mapą aktualizowaną w czasie rzeczywistym. BRouter używa do 512 MB sterty JVM; kontener ma limit 768 MB. Sam backend developerski wymaga dodatkowo silnika pod adresem `ROUTER_URL` (domyślnie `http://router:17777/brouter` w Compose).
 
 Przed produkcją należy dodać migracje Alembic zamiast samego `create_all`, limity prób logowania, odzyskiwanie hasła, weryfikację e-maili, HTTPS, kopie zapasowe i docelową politykę sesji. Docker Compose przygotowano do uruchomienia, ale nie został wykonany w tej sesji z powodu braku Dockera. Zweryfikowano kompilację Vue oraz testy komponentu i API; automatyczna kontrola wizualna przeglądarki była niedostępna.
 

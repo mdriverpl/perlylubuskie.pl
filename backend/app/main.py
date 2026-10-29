@@ -15,6 +15,7 @@ from pwdlib import PasswordHash
 from sqlalchemy import create_engine, String, Float, ForeignKey, JSON, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, Session
+from .routing import calculate_route, route_gpx
 
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql+psycopg://perly:perly@localhost:5432/perly')
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
@@ -135,6 +136,24 @@ class TripOut(TripInput):
     id: int
 
 
+class RoutingInput(BaseModel):
+    transport: Literal['bike', 'walk']
+    place_ids: list[int] = Field(min_length=2, max_length=20)
+
+
+def route_places(ids, db):
+    found = db.scalars(select(Place).where(Place.id.in_(ids))).all()
+    lookup = {p.id: p for p in found}
+    if any(place_id not in lookup for place_id in ids):
+        raise HTTPException(422, 'Plan zawiera nieistniejące miejsca.')
+    return [{'name': lookup[i].name, 'lat': lookup[i].lat, 'lng': lookup[i].lng} for i in ids]
+
+
+@app.post('/api/routing')
+def routing(data: RoutingInput, db: Session = Depends(get_db)):
+    return calculate_route(route_places(data.place_ids, db), data.transport)
+
+
 def auth_response(user):
     now = datetime.now(timezone.utc)
     token = jwt.encode({'sub': str(user.id), 'iat': now, 'exp': now + timedelta(hours=12), 'iss': 'perly'}, SECRET_KEY, algorithm='HS256')
@@ -242,6 +261,10 @@ def delete_trip(trip_id: int, user: User = Depends(current_user), db: Session = 
 @app.get('/api/routes/{trip_id}/gpx')
 def trip_gpx(trip_id: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
     trip = owned_trip(trip_id, user, db)
+    if trip.transport in ('bike', 'walk') and len(trip.place_ids) >= 2:
+        points = route_places(trip.place_ids, db)
+        result = calculate_route(points, trip.transport)
+        return Response(route_gpx(trip.name, points, result), media_type='application/gpx+xml', headers={'Content-Disposition': 'attachment; filename="perly-lubuskie.gpx"'})
     root = Element('gpx', version='1.1', creator='Perły Ziemi Lubuskiej', xmlns='http://www.topografix.com/GPX/1/1')
     metadata = SubElement(root, 'metadata')
     SubElement(metadata, 'desc').text = 'Plan punktów do odwiedzenia. Bez nawigacji po drogach.'

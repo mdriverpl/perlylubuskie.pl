@@ -61,7 +61,8 @@ def test_favorites_are_private_and_idempotent(client):
     assert client.get('/api/favorites', headers=alice).json() == []
 
 
-def test_route_ownership_gpx_and_order(client):
+def test_route_ownership_gpx_and_order(client, monkeypatch):
+    monkeypatch.setattr('app.main.calculate_route', lambda points, transport: {'geometry': {'type': 'LineString', 'coordinates': [[p['lng'], p['lat']] for p in points]}, 'distance_m': 10000, 'duration_s': 3600})
     alice, _ = account(client)
     bob, _ = account(client)
     payload = {'name': 'Jeziora & <zamki>', 'transport': 'bike', 'place_ids': [5, 1, 3]}
@@ -76,8 +77,9 @@ def test_route_ownership_gpx_and_order(client):
     assert gpx.status_code == 200
     xml = ElementTree.fromstring(gpx.content)
     ns = {'g': 'http://www.topografix.com/GPX/1/1'}
-    assert xml.find('g:rte/g:name', ns).text == payload['name']
-    assert [p.find('g:name', ns).text for p in xml.findall('g:rte/g:rtept', ns)] == ['Jezioro Trześniowskie', 'Łagów', 'Międzyrzecki Rejon Umocniony']
+    assert xml.find('g:trk/g:name', ns).text == payload['name']
+    assert [p.find('g:name', ns).text for p in xml.findall('g:wpt', ns)] == ['Jezioro Trześniowskie', 'Łagów', 'Międzyrzecki Rejon Umocniony']
+    assert len(xml.findall('g:trk/g:trkseg/g:trkpt', ns)) == 3
     assert client.delete(f'/api/routes/{trip_id}', headers=alice).status_code == 204
     assert client.get('/api/routes', headers=alice).json() == []
 
@@ -87,3 +89,18 @@ def test_invalid_routes(client, patch):
     headers, _ = account(client)
     data = {'name': 'Wycieczka', 'transport': 'walk', 'place_ids': [1]}
     assert client.post('/api/routes', headers=headers, json={**data, **patch}).status_code == 422
+
+
+def test_routing_endpoint_order_and_validation(client, monkeypatch):
+    calls = []
+    def fake_route(points, transport):
+        calls.append((points, transport))
+        return {'geometry': {'type': 'LineString', 'coordinates': [[p['lng'], p['lat']] for p in points]}, 'distance_m': 3000, 'duration_s': 900}
+    monkeypatch.setattr('app.main.calculate_route', fake_route)
+    result = client.post('/api/routing', json={'place_ids': [5, 1], 'transport': 'walk'})
+    assert result.status_code == 200
+    assert calls[0][1] == 'walk'
+    assert calls[0][0][0]['name'] == 'Jezioro Trześniowskie'
+    assert client.post('/api/routing', json={'place_ids': [999, 1], 'transport': 'bike'}).status_code == 422
+    assert client.post('/api/routing', json={'place_ids': [1], 'transport': 'bike'}).status_code == 422
+    assert client.post('/api/routing', json={'place_ids': [5, 1], 'transport': 'car'}).status_code == 422

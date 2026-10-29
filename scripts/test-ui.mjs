@@ -13,7 +13,7 @@ globalThis.fetch=async()=>{throw new Error('Offline test')}
 const { createApp, nextTick }=await import('vue')
 const { descriptor }=parse(await readFile('src/App.vue','utf8'))
 const compiled=compileScript(descriptor,{id:'test-app',inlineTemplate:true})
-const source=compiled.content.replace("from './data'","from '../src/data.js'").replace("import TravelMap from './components/TravelMap.vue'","const TravelMap = { template: '<div>Map stub</div>' }")
+const source=compiled.content.replace("from './data'","from '../src/data.js'").replace("from './useRouting.js'","from '../src/useRouting.js'").replace("import TravelMap from './components/TravelMap.vue'","const TravelMap = { template: '<div>Map stub</div>' }")
 await mkdir('artifacts',{recursive:true})
 await writeFile('artifacts/ui-test.mjs',source)
 const App=(await import('../artifacts/ui-test.mjs')).default
@@ -41,7 +41,7 @@ await click(document.querySelector('.modal .full-width'))
 assert.equal(JSON.parse(localStorage.getItem('perly-saved')).length,1)
 await click(button('Resetuj'))
 assert.equal(document.querySelectorAll('.route-stop').length,0)
-assert.equal(button('Pobierz plan').disabled,true)
+assert.equal(button('Pobierz punkty').disabled,true)
 await click(button('Zapisane plany'))
 await click(button('Moja lubuska przygoda'))
 assert.equal(document.querySelectorAll('.route-stop').length,3)
@@ -49,7 +49,7 @@ let exportedBlob
 URL.createObjectURL=blob=>{exportedBlob=blob;return 'blob:test'}
 URL.revokeObjectURL=()=>{}
 dom.window.HTMLAnchorElement.prototype.click=()=>{}
-await click(button('Pobierz plan'))
+await click(button('Pobierz punkty'))
 const gpx=new dom.window.DOMParser().parseFromString(await exportedBlob.text(),'text/xml')
 assert.equal(gpx.querySelector('parsererror'),null)
 assert.equal(gpx.querySelectorAll('rtept').length,3)
