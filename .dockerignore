@@ -1,0 +1,11 @@
+node_modules
+dist
+.git
+.env
+.npm-cache
+backend
+scripts
+artifacts
+.tools
+.pg-data
+.pg-test
