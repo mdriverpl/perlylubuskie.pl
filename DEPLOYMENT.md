@@ -44,7 +44,7 @@ Aplikacja jest dostępna pod `http://ADRES_SERWERA:8080`. Do publicznego ruchu H
 Wklej zawartość **`compose.hostava.yaml`** jako definicję aplikacji. Ten plik używa obrazów GHCR, bez `build`, ścieżek do źródeł i mapowania portu hosta. W panelu ustaw:
 
 - usługa publiczna: `web`;
-- port HTTP dla proxy Hostavy: **8080** (port hosta; Nginx w kontenerze s?ucha na 80);
+- port HTTP dla proxy Hostavy: **8080** (port hosta; Nginx w kontenerze słucha na 80);
 - ścieżka zdrowia: `/api/health`;
 - zmienne: własne `POSTGRES_PASSWORD`, `SECRET_KEY` i `PUBLIC_URL=https://TWOJA_DOMENA`.
 

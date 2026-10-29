@@ -2,7 +2,7 @@
 
 Projekt aplikacji turystycznej na podstawie dwóch dostarczonych wizualizacji. Vue 3 + Vite, Python / FastAPI, PostgreSQL 17, SQLAlchemy 2, Leaflet / OpenStreetMap. Interfejs po polsku, układ dostosowany do komputera i telefonu.
 
-**Gotowe obrazy Docker i wdrożenie:** [DEPLOYMENT.md](DEPLOYMENT.md). Domyślny `compose.yaml` oraz `compose.deploy.yaml` pobierają frontend i API z GitHub Container Registry i uruchamiają PostgreSQL z trwałym wolumenem. Hostava używa `compose.hostava.yaml` i portu publicznego usługi `web`: **80**. Lokalny build ze źródeł jest w `compose.build.yaml`.
+**Gotowe obrazy Docker i wdrożenie:** [DEPLOYMENT.md](DEPLOYMENT.md). Domyślny `compose.yaml` oraz `compose.deploy.yaml` pobierają frontend i API z GitHub Container Registry i uruchamiają PostgreSQL z trwałym wolumenem. Hostava używa `compose.hostava.yaml` i portu hosta dla proxy: **8080**, mapowanego na port 80 Nginxa w kontenerze. Lokalny build ze źródeł jest w `compose.build.yaml`.
 
 ## Funkcje
 
