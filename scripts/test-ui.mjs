@@ -13,10 +13,15 @@ globalThis.fetch=async()=>{throw new Error('Offline test')}
 const { createApp, nextTick }=await import('vue')
 const { descriptor }=parse(await readFile('src/App.vue','utf8'))
 const compiled=compileScript(descriptor,{id:'test-app',inlineTemplate:true})
-const source=compiled.content.replace("from './data'","from '../src/data.js'").replace("from './useRouting.js'","from '../src/useRouting.js'").replace("from './components/PlaceCommunity.vue'","from './community-test.mjs'").replace("import TravelMap from './components/TravelMap.vue'","const TravelMap = { template: '<div>Map stub</div>' }")
+const source=compiled.content.replace("from './data'","from '../src/data.js'").replace("from './useRouting.js'","from '../src/useRouting.js'").replace("from './components/PlaceCommunity.vue'","from './community-test.mjs'").replace("from './components/ExploreHome.vue'","from './explore-test.mjs'").replace("import TravelMap from './components/TravelMap.vue'","const TravelMap = { template: '<div>Map stub</div>' }")
 await mkdir('artifacts',{recursive:true})
 const community=parse(await readFile('src/components/PlaceCommunity.vue','utf8')).descriptor
 await writeFile('artifacts/community-test.mjs',compileScript(community,{id:'test-community',inlineTemplate:true}).content)
+const explore=parse(await readFile('src/components/ExploreHome.vue','utf8')).descriptor
+const mapStubTemplate=`<div class="test-explore-map" :data-ids="places.map(p=>p.id).join(',')" :data-user-lat="userLocation?.lat"><button v-for="place in places" :key="place.id" @click="$emit('select',place.id)">Map: {{place.name}}</button></div>`
+const mapStub=`const TravelMap = {props:['places','userLocation'],emits:['select'],template:${JSON.stringify(mapStubTemplate)}}`
+const exploreSource=compileScript(explore,{id:'test-explore',inlineTemplate:true}).content.replace("from '../explore.js'","from '../src/explore.js'").replace("from '../useGeolocation.js'","from '../src/useGeolocation.js'").replace("import TravelMap from './TravelMap.vue'",mapStub)
+await writeFile('artifacts/explore-test.mjs',exploreSource)
 await writeFile('artifacts/ui-test.mjs',source)
 const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
@@ -24,6 +29,7 @@ const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));aw
 const button=(text)=>[...document.querySelectorAll('button')].find(b=>b.textContent.includes(text))
 const click=async(el)=>{assert.ok(el,'Element exists');el.click();await settle()}
 await settle()
+await click(button('Odkrywaj'))
 assert.equal(document.querySelectorAll('.place-card').length,4)
 await click(document.querySelector('[aria-label="Dodaj do ulubionych: Łagów"]'))
 assert.deepEqual(JSON.parse(localStorage.getItem('perly-favorites')),[1])

@@ -26,6 +26,6 @@ console.log(`PASS: ${modules.size} Vite-served modules link without missing impo
 try {
  await entry.evaluate()
  assert.match(dom.window.document.querySelector('h1')?.textContent || '',/Odkrywaj/)
- assert.equal(dom.window.document.querySelectorAll('.place-card').length,4)
- console.log('PASS: actual Vite entry mounts the homepage and four place cards in jsdom')
+ assert.equal(dom.window.document.querySelectorAll('.explore-place').length,6)
+ console.log('PASS: actual Vite entry mounts the new filtered homepage and six place cards in jsdom')
 } finally { dom.window.close() }

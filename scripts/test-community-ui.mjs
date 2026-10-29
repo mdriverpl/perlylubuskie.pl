@@ -27,7 +27,7 @@ const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent.includes(text))
 const click=async el=>{assert.ok(el);el.click();await settle()}
-await settle();await click(document.querySelector('.place-title'))
+await settle();await click(button('Odkrywaj'));await click(document.querySelector('.place-title'))
 const link=document.querySelector('.google-maps-link')
 assert.equal(new URL(link.href).searchParams.get('query'),'52.3347,15.2922')
 assert.equal(link.target,'_blank');assert.ok(link.rel.includes('noopener'))

@@ -33,10 +33,11 @@ import Mail from "lucide-vue-next/dist/esm/icons/mail.js"
 import { places as initialPlaces, categories, trails } from './data'
 import TravelMap from './components/TravelMap.vue'
 import PlaceCommunity from './components/PlaceCommunity.vue'
+import ExploreHome from './components/ExploreHome.vue'
 import { useRouting, buildGpx } from './useRouting.js'
 const icons = { trees: Trees, castle: Castle, bike: Bike, footprints: Footprints, utensils: Utensils, bed: Bed }
 function read(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback } catch { return fallback } }
-const places=ref(initialPlaces), view=ref('discover'), category=ref('all'), query=ref(''), selected=ref(read('perly-route',[1,5,3])), favorites=ref(read('perly-favorites',[])), saved=ref(read('perly-saved',[])), modal=ref(null), detail=ref(null), toast=ref(''), menu=ref(false), onlyFavorites=ref(false), transport=ref('bike'), apiOnline=ref(false), user=ref(read('perly-user',null)), token=ref(localStorage.getItem('perly-token') || ''), authMode=ref('login'), authEmail=ref(''), authPassword=ref(''), authName=ref(''), authError=ref(''), busy=ref(false), routeName=ref('Moja lubuska przygoda')
+const places=ref(initialPlaces), view=ref('explore'), category=ref('all'), query=ref(''), selected=ref(read('perly-route',[1,5,3])), favorites=ref(read('perly-favorites',[])), saved=ref(read('perly-saved',[])), modal=ref(null), detail=ref(null), toast=ref(''), menu=ref(false), onlyFavorites=ref(false), transport=ref('bike'), apiOnline=ref(false), user=ref(read('perly-user',null)), token=ref(localStorage.getItem('perly-token') || ''), authMode=ref('login'), authEmail=ref(''), authPassword=ref(''), authName=ref(''), authError=ref(''), busy=ref(false), routeName=ref('Moja lubuska przygoda')
 let toastTimer
 onBeforeUnmount(()=>clearTimeout(toastTimer))
 const serverSaved=ref([]), trailFilter=ref('all')
@@ -59,6 +60,7 @@ watch(saved,v=>localStorage.setItem('perly-saved',JSON.stringify(v)),{deep:true}
 async function api(path,options={}) {const response=await fetch(`/api${path}`,{signal:AbortSignal.timeout(8000),...options, headers:{'Content-Type':'application/json',...(token.value?{Authorization:`Bearer ${token.value}`} :{}),...options.headers}}); if(!response.ok){let msg='Nie udało się wykonać operacji.'; try{const data=await response.json(); if(typeof data.detail==='string')msg=data.detail}catch{}throw new Error(msg)}return response.status===204?null:response.json()}
 function notify(message){toast.value=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.value='',4000)}
 function navigate(target){view.value=target;menu.value=false;onlyFavorites.value=false;category.value='all';query.value='';window.scrollTo({top:0,behavior:'smooth'})}
+function focusSearch(){navigate('explore');nextTick(()=>document.getElementById('explore-query')?.focus())}
 function chooseCategory(id){if(id==='bike'||id==='walk'){transport.value=id;trailFilter.value=trailFilter.value===id?'all':id;document.querySelector('#trails')?.scrollIntoView({behavior:'smooth'});return}category.value=category.value===id?'all':id;document.querySelector('#places')?.scrollIntoView({behavior:'smooth',block:'start'})}
 async function toggleFavorite(id){const exists=favorites.value.includes(id);favorites.value=exists?favorites.value.filter(x=>x!==id):[...favorites.value,id];if(user.value&&apiOnline.value){try{await api(`/favorites/${id}`,{method:exists?'DELETE':'PUT'})}catch(e){favorites.value=exists?[...favorites.value,id]:favorites.value.filter(x=>x!==id);notify(e.message)}}}
 function togglePlace(id){selected.value=selected.value.includes(id)?selected.value.filter(x=>x!==id):[...selected.value,id]}
@@ -81,20 +83,22 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 
 <template>
  <header class="site-header">
-  <a href="#" class="brand" @click.prevent="navigate('discover')" aria-label="Perły Ziemi Lubuskiej — strona główna">
+  <a href="#" class="brand" @click.prevent="navigate('explore')" aria-label="Perły Ziemi Lubuskiej — strona główna">
    <svg class="brand-mark" viewBox="0 0 76 70" aria-hidden="true"><circle cx="53" cy="21" r="13" fill="#f5b82f"/><path d="M22 5 5 27h10L2 43h40L30 27h9Z" fill="#19754f"/><path d="m39 20-11 15h6l-8 12h27l-9-12h6Z" fill="#268459"/><path d="M7 52q18-12 37-3t28-1l-8 9q-19-8-35 1T7 52" fill="#087eac"/><path d="M15 63q16-8 31-3t16 1q-21 13-47 2" fill="#0b95bd"/><path d="M21 38v12" stroke="#fff" stroke-width="3"/></svg>
    <span>Perły<br>Ziemi Lubuskiej</span>
   </a>
   <nav :class="{open:menu}" aria-label="Nawigacja główna">
+   <button :class="{active:view==='explore'}" @click="navigate('explore')">Szukaj miejsc</button>
    <button :class="{active:view==='discover'&&!onlyFavorites}" @click="navigate('discover')">Odkrywaj</button>
    <button :class="{active:view==='planner'}" @click="navigate('planner')">Mapa i trasy</button>
    <button @click="navigate('discover');category='food';search()">Jedzenie</button>
    <button :class="{active:view==='about'}" @click="navigate('about')">O regionie</button>
   </nav>
-  <div class="header-actions"><button class="icon-btn search-nav" aria-label="Szukaj miejsc" @click="navigate('discover');$nextTick(()=>$refs.searchInput?.focus())"><Search :size="22"/></button><button class="icon-btn favorites-nav" aria-label="Ulubione miejsca" @click="showFavorites"><Heart :size="23"/><span v-if="favorites.length" class="count-dot">{{favorites.length}}</span></button><button v-if="!user" class="button login-btn" @click="modal='auth'">Zaloguj się <ArrowUpRight :size="15"/></button><button v-else class="button login-btn" @click="logout">{{user.name || 'Wyloguj'}} <LogOut :size="16"/></button><button class="icon-btn mobile-menu" @click="menu=!menu" aria-label="Otwórz menu"><Menu/></button></div>
+  <div class="header-actions"><button class="icon-btn search-nav" aria-label="Szukaj miejsc" @click="focusSearch"><Search :size="22"/></button><button class="icon-btn favorites-nav" aria-label="Ulubione miejsca" @click="showFavorites"><Heart :size="23"/><span v-if="favorites.length" class="count-dot">{{favorites.length}}</span></button><button v-if="!user" class="button login-btn" @click="modal='auth'">Zaloguj się <ArrowUpRight :size="15"/></button><button v-else class="button login-btn" @click="logout">{{user.name || 'Wyloguj'}} <LogOut :size="16"/></button><button class="icon-btn mobile-menu" @click="menu=!menu" aria-label="Otwórz menu"><Menu/></button></div>
  </header>
 
- <main v-if="view==='discover'">
+ <ExploreHome v-if="view==='explore'" :places="places" :favorites="favorites" @open="openDetail" @favorite="toggleFavorite" @planner="navigate('planner')"/>
+ <main v-else-if="view==='discover'">
   <section class="hero">
    <div class="hero-shade"></div><div class="hero-inner content-width"><div class="eyebrow"><span></span> MAŁE PODRÓŻE. WIELKIE ODKRYCIA.</div><h1>Odkrywaj<br><em>Ziemię Lubuską.</em></h1><p>Jeziora, lasy, zamki i niezwykłe historie.<br>Miejsca, do których chce się wracać.</p><form class="hero-search" @submit.prevent="search"><Search :size="23"/><input ref="searchInput" v-model="query" placeholder="Dokąd zabierze Cię ciekawość?" aria-label="Szukaj miejsc i atrakcji"><button aria-label="Wyszukaj"><ArrowRight :size="25"/></button></form><div class="hero-hint"><MapPin :size="14"/> Łagów — mała perła, wielki zachwyt</div></div>
    <div class="hero-note">Najlepsze historie<br>zaczynają się <i>blisko.</i><svg viewBox="0 0 180 20"><path d="M4 15Q90-3 175 6M26 19Q94 7 154 10" fill="none" stroke="currentColor" stroke-width="4"/></svg></div><div class="photo-credit">Wizualizacje na podstawie materiałów referencyjnych</div>
@@ -121,7 +125,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 
  <main v-else class="about-page content-width"><div class="section-kicker">DOBRZE BYĆ BLISKO</div><h1>Ziemia Lubuska.<br><em>Naturalnie niezwykła.</em></h1><img src="/images/hero.webp" alt="Jezioro i zamek otoczone lasem"><div class="about-copy"><h2>Przestrzeń na małe odkrycia</h2><p>Między jeziorami, lasami i historycznymi miasteczkami czeka region, który najlepiej poznaje się bez pośpiechu. Od Łagowa po Park Mużakowski, od podziemnych historii po rozlewiska Warty — znajdź własny powód, żeby tu wrócić.</p><p>Perły Ziemi Lubuskiej to projekt pomagający zbierać pomysły na wycieczki. Opisy i zdjęcia mają charakter inspiracyjny. Przed wyjazdem sprawdź godziny otwarcia i dostępność wybranych atrakcji.</p><button class="button" @click="navigate('discover')">Znajdź swoją perłę <ArrowRight :size="18"/></button></div></main>
 
- <footer class="content-width"><a class="footer-brand" href="#" @click.prevent="navigate('discover')"><Trees :size="25"/>Perły Ziemi Lubuskiej</a><span>Blisko natury. Bliżej siebie.</span><div><span :class="['connection-status',{online:apiOnline}]"></span>{{apiOnline?'Połączono z serwerem':'Tryb demonstracyjny · dane lokalne'}}</div><small>© {{new Date().getFullYear()}} Perły Ziemi Lubuskiej</small></footer>
+ <footer class="content-width"><a class="footer-brand" href="#" @click.prevent="navigate('explore')"><Trees :size="25"/>Perły Ziemi Lubuskiej</a><span>Blisko natury. Bliżej siebie.</span><div><span :class="['connection-status',{online:apiOnline}]"></span>{{apiOnline?'Połączono z serwerem':'Tryb demonstracyjny · dane lokalne'}}</div><small>© {{new Date().getFullYear()}} Perły Ziemi Lubuskiej</small></footer>
 
  <Transition name="toast"><div v-if="toast" class="toast-message" role="status"><Check :size="18"/>{{toast}}<button @click="toast=''" aria-label="Zamknij komunikat"><X :size="16"/></button></div></Transition>
  <div v-if="modal" class="modal-overlay" @click.self="modal=null" @keydown.esc="modal=null" @keydown="trapFocus"><section class="modal" role="dialog" aria-modal="true" :aria-label="modal==='detail'?detail.name:modal==='auth'?'Konto użytkownika':'Zapisane plany'" tabindex="-1"><button class="modal-close icon-btn" @click="modal=null" aria-label="Zamknij okno"><X :size="22"/></button>

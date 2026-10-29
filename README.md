@@ -7,6 +7,9 @@ Projekt aplikacji turystycznej na podstawie dwóch dostarczonych wizualizacji. V
 ## Funkcje
 
 - Strona odkrywania regionu: wyszukiwanie, kategorie, katalog miejsc, szczegóły, inspiracje wycieczek.
+- Drugi widok główny „Szukaj miejsc” (domyślny): panel po lewej z regionem i checkboxami, po prawej dwie zakładki „Miejsca” i „Mapa”. Wybór kilku kategorii łączy wyniki; lista i mapa korzystają z tych samych filtrów. Dotychczasowa strona pozostaje pod „Odkrywaj”.
+- Region domyślny: Lubuskie. Obecny katalog nie zawiera innych województw. Kliknięcie znacznika na mapie otwiera pełny podgląd miejsca.
+- „Pokaż, gdzie jestem” korzysta z geolokalizacji przeglądarki dopiero po kliknięciu i zgodzie użytkownika. Pozycja jest pokazywana na mapie z przybliżoną dokładnością i pozostaje tylko w pamięci bieżącego widoku; aplikacja nie zapisuje jej w bazie. Odmowa lub brak obsługi lokalizacji nie blokuje mapy i filtrów.
 - Planer: interaktywna mapa, wybór punktów, zmiana kolejności oraz rzeczywiste trasy piesze i rowerowe po danych OpenStreetMap, wyznaczane przez własny BRouter.
 - Dystans po trasie, orientacyjny czas bez postojów i GPX ze śladem oraz punktami. Tryb samochodowy pozostaje planem punktów.
 - Lokalne ulubione i plany bez zakładania konta.
