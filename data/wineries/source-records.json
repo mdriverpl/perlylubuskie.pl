@@ -1,0 +1,860 @@
+[
+  {
+    "id": 900001,
+    "key": "winnica-ingrid",
+    "name": "Winnica Ingrid",
+    "location": "Łaz · gmina Zabór",
+    "address": "66-003 Zabór, Łaz 54",
+    "lat": 51.953222,
+    "lng": 15.690917,
+    "description": "Winnica na południowych zboczach Łazu i Zaboru, z lawendą i różami między rzędami winorośli. Gospodarze oferują zwiedzanie winiarni, piwnicy oraz degustacje po uzgodnieniu wizyty.",
+    "kind": "vineyard",
+    "website": "http://winnicaingrid.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Ingrid",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-ingrid"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900002,
+    "key": "winnica-milosz",
+    "name": "Winnica Miłosz",
+    "location": "Łaz · gmina Zabór",
+    "address": "66-003 Zabór, Łaz 65",
+    "lat": 51.953194,
+    "lng": 15.693472,
+    "description": "Winnica na Wale Zielonogórskim, pielęgnująca tradycję miejscowych odmian winorośli. Producent zajmuje się także winami musującymi; punkt wskazuje siedzibę w Łazie, a nie piwnicę przy ul. Wodnej w Zielonej Górze.",
+    "kind": "vineyard",
+    "website": "http://winnicamilosz.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Winnica Miłosz — oficjalny adres Łaz 65",
+        "url": "https://winnicamilosz.pl/kontakt/"
+      },
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Miłosz",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-milosz"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900003,
+    "key": "winnica-zelazny",
+    "name": "Winnica Żelazny",
+    "location": "Łaz · gmina Zabór",
+    "address": "66-003 Zabór, Łaz ul. Winna 8",
+    "lat": 51.950889,
+    "lng": 15.693639,
+    "description": "Rodzinna winnica na wzgórzach między Łazem a Zaborem. W ofercie są spotkania z winiarzami i degustacje z regionalnymi produktami; termin odwiedzin należy ustalić z gospodarzem.",
+    "kind": "vineyard",
+    "website": "http://winnicazelazny.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Żelazny",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-zelazny"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900004,
+    "key": "bachusowe-pole",
+    "name": "Winnica Bachusowe Pole",
+    "location": "Łaz · Zabór",
+    "address": "66-003 Łaz",
+    "lat": 51.951056,
+    "lng": 15.6975,
+    "description": "Rodzinna winnica będąca częścią Winnicy Samorządowej między Łazem a Zaborem. Uprawia m.in. odmiany Solaris, Pinot Blanc i Zweigeltrebe.",
+    "kind": "vineyard",
+    "website": "http://winnicabachusowepole.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Bachusowe Pole",
+        "url": "https://centrumwiniarstwa.pl/winnica/bachusowe-pole"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900005,
+    "key": "winnica-trojan",
+    "name": "Winnica Trojan",
+    "location": "Zabór · Winiarska",
+    "address": "66-003 Zabór, ul. Winiarska 1",
+    "lat": 51.952639,
+    "lng": 15.698667,
+    "description": "Parcela na południowym zboczu w obrębie Winnicy Samorządowej. Punkt pokazuje uprawę w Zaborze; winiarnia producenta znajduje się oddzielnie, przy ul. Batorego w Zielonej Górze.",
+    "kind": "vineyard",
+    "website": null,
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Trojan",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-trojan"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900006,
+    "key": "winnica-vae-soli",
+    "name": "Winnica Vae Soli",
+    "location": "Zabór",
+    "address": "66-003 Zabór, ul. Chłapowskiego 10",
+    "lat": 51.951833,
+    "lng": 15.702,
+    "description": "Winnica związana z nasadzeniami na wzgórzu między Łazem a Zaborem. Adres przy ul. Chłapowskiego wskazuje zaplecze producenta; dostępność zwiedzania należy potwierdzić przed przyjazdem.",
+    "kind": "vineyard",
+    "website": null,
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Vae Soli",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-vae-soli"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900007,
+    "key": "winnica-miedzypole",
+    "name": "Winnica Międzypole",
+    "location": "Zabór",
+    "address": "66-003 Zabór, ul. Polna 15",
+    "lat": 51.947417,
+    "lng": 15.705639,
+    "description": "Kameralna winnica założona w ramach projektu odtwarzania lokalnych tradycji winiarskich. W otoczeniu lasów i jezior można poznać uprawę winorośli i produkcję wina po uzgodnieniu spotkania.",
+    "kind": "vineyard",
+    "website": null,
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Międzypole",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-miedzypole"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900008,
+    "key": "winnica-na-lesnej-polanie",
+    "name": "Winnica Na Leśnej Polanie",
+    "location": "Proczki · gmina Zabór",
+    "address": "66-003 Zabór, Proczki 3",
+    "lat": 51.931222,
+    "lng": 15.746278,
+    "description": "Winnica w leśnej osadzie Proczki, łącząca uprawę winorośli z agroturystyką i szkółką sadzonek. Organizowane są degustacje, szkolenia oraz spotkania poświęcone winiarstwu.",
+    "kind": "vineyard",
+    "website": "http://winnicanalesnejpolanie.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Na Leśnej Polanie",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-na-lesnej-polanie"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900009,
+    "key": "winnica-milsko",
+    "name": "Winnica Milsko",
+    "location": "Milsko · gmina Zabór",
+    "address": "66-003 Zabór, Milsko 21",
+    "lat": 51.951528,
+    "lng": 15.761611,
+    "description": "Winnica w Milsko, w sąsiedztwie nadodrzańskich krajobrazów i lasów. Zajmuje się produkcją wina oraz degustacjami uzgadnianymi z gospodarzem.",
+    "kind": "vineyard",
+    "website": "https://winnicamilsko.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Milsko",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-milsko"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900010,
+    "key": "winnica-julia",
+    "name": "Winnica Julia",
+    "location": "Zielona Góra · Stary Kisielin",
+    "address": "66-002 Zielona Góra, ul. Stary Kisielin — Pionierów Lubuskich 15",
+    "lat": 51.934111,
+    "lng": 15.577694,
+    "description": "Winnica w Starym Kisielinie z parkiem miniatur historycznej architektury winiarskiej. Po uzgodnieniu terminu można odwiedzić uprawę, poznać historię regionu i skorzystać z degustacji.",
+    "kind": "vineyard",
+    "website": "http://winnicajulia.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Julia",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-julia"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900011,
+    "key": "winnica-winne-tarasy",
+    "name": "Winnica Winne Tarasy",
+    "location": "Górzykowo · okolice Cigacic",
+    "address": "66-131 Cigacice, Górzykowo 13",
+    "lat": 52.038917,
+    "lng": 15.637556,
+    "description": "Tarasowa winnica na południowej skarpie nad doliną Odry i Obrzycy. Jest częścią posiadłości z odrestaurowaną rezydencją i historycznymi piwnicami.",
+    "kind": "vineyard",
+    "website": null,
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Winne Tarasy",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-winne-tarasy"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900012,
+    "key": "winnogora-winnica-w-ogrodzie",
+    "name": "Winnogóra – Winnica w Ogrodzie",
+    "location": "Górzykowo · okolice Cigacic",
+    "address": "66-131 Cigacice, Górzykowo 7",
+    "lat": 52.038417,
+    "lng": 15.633056,
+    "description": "Winnica w ogrodzie z kolekcją hortensji i rzadkich drzew. Oferta obejmuje spacery z komentarzem, spotkania z enologiem i degustacje po wcześniejszym kontakcie.",
+    "kind": "vineyard",
+    "website": "http://winnogora.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnogóra – Winnica w Ogrodzie",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnogora-winnica-w-ogrodzie"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900013,
+    "key": "winnica-stara-winna-gora",
+    "name": "Winnica Stara Winna Góra",
+    "location": "Górzykowo · okolice Cigacic",
+    "address": "66-131 Cigacice, Górzykowo 22",
+    "lat": 52.03875,
+    "lng": 15.647583,
+    "description": "Winnica rodziny Krojcigów w Górzykowie, związana z odradzaniem tradycji uprawy winorośli w dolinie Odry. Przy winnicy działa Winny Dworek; wizytę warto uzgodnić bezpośrednio.",
+    "kind": "vineyard",
+    "website": "http://winna-gora.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Stara Winna Góra",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-stara-winna-gora"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900014,
+    "key": "winnica-pod-lipa",
+    "name": "Winnica Pod Lipą",
+    "location": "Górzykowo · okolice Cigacic",
+    "address": "66-131 Górzykowo 44 A",
+    "lat": 52.036306,
+    "lng": 15.635722,
+    "description": "Winnica na skarpie w zakolu Odry, z winiarnią i piwnicą do przechowywania wina. Gospodarze proponują spacery po uprawie i poznawanie procesu produkcji podczas umówionych wizyt.",
+    "kind": "vineyard",
+    "website": "http://winnicapodlipa.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Pod Lipą",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-pod-lipa"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900015,
+    "key": "winnica-pod-winna-gora",
+    "name": "Winnica Pod Winną Górą",
+    "location": "Cigacice",
+    "address": "66-131 Cigacice, ul. Portowa 44",
+    "lat": 52.035194,
+    "lng": 15.603972,
+    "description": "Winnica przy ul. Portowej, nawiązująca do dawnych nadodrzańskich tradycji winiarskich. W pobliżu znajduje się przystań turystyczna; na miejscu przygotowano zaplecze do spotkań plenerowych.",
+    "kind": "vineyard",
+    "website": null,
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Pod Winną Górą",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-pod-winna-gora"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900016,
+    "key": "winnica-mozow",
+    "name": "Winnica Mozów",
+    "location": "Mozów · gmina Sulechów",
+    "address": "66-100 Sulechów, Mozów 63",
+    "lat": 52.077806,
+    "lng": 15.585528,
+    "description": "Winnica z zapleczem agroturystycznym w Mozowie. Winiarskie spotkania i degustacje można połączyć z poznaniem piwnicy oraz procesu powstawania lokalnych win.",
+    "kind": "vineyard",
+    "website": "http://winnica-mozow.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Mozów",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-mozow"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900017,
+    "key": "winnica-cantina",
+    "name": "Winnica Cantina",
+    "location": "Mozów · gmina Sulechów",
+    "address": "66-100 Sulechów, Mozów 13",
+    "lat": 52.077222,
+    "lng": 15.571944,
+    "description": "Winnica w Mozowie organizująca degustacje, szkolenia i spotkania o tradycjach regionu. Charakterystycznymi elementami są kapliczka patrona winiarzy oraz zabytkowa dębowa beczka.",
+    "kind": "vineyard",
+    "website": "http://winnicacantina.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Cantina",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-cantina"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900018,
+    "key": "winnica-senator",
+    "name": "Winnica Senator",
+    "location": "Niedoradz",
+    "address": "67-106 Niedoradz, ul. Markiewiczowej 40",
+    "lat": 51.874861,
+    "lng": 15.671194,
+    "description": "Rodzinny projekt winiarski w Niedoradzu, z kolekcją odmian winorośli i autorską ceramiką. Producent ma również nasadzenia w Zaborze; punkt na mapie oznacza zaplecze w Niedoradzu.",
+    "kind": "vineyard",
+    "website": "http://manufakturasenator.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Senator",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-senator"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900019,
+    "key": "winnica-kinga",
+    "name": "Winnica Kinga",
+    "location": "Stara Wieś · okolice Nowej Soli",
+    "address": "67-100 Nowa Sól, Stara Wieś 28",
+    "lat": 51.791306,
+    "lng": 15.746278,
+    "description": "Rodzinna winnica w Starej Wsi, z tradycją uprawy winorośli sięgającą lat osiemdziesiątych XX wieku. Wytwarzane są tu także octy i przetwory z winogron; spotkania odbywają się po uzgodnieniu.",
+    "kind": "vineyard",
+    "website": "http://winnicakinga.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Kinga",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-kinga"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900020,
+    "key": "sloneczne-tarasy",
+    "name": "Winnica Słoneczne Tarasy",
+    "location": "Świdnica",
+    "address": "66-008 Świdnica ul. Obwodowa 23",
+    "lat": 51.901556,
+    "lng": 15.403417,
+    "description": "Winnica na południowych tarasach Wału Zielonogórskiego. Ukształtowanie zbocza wykorzystano do uprawy winorośli; możliwość odwiedzin i degustacji należy potwierdzić u gospodarzy.",
+    "kind": "vineyard",
+    "website": "http://www.winnica-sloneczne-tarasy.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Słoneczne Tarasy",
+        "url": "https://centrumwiniarstwa.pl/winnica/sloneczne-tarasy"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900021,
+    "key": "winnica-krucza",
+    "name": "Winnica Krucza",
+    "location": "Buchałów · gmina Świdnica",
+    "address": "66-014 Buchałów",
+    "lat": 51.909167,
+    "lng": 15.350833,
+    "description": "Winnica w śródleśnym krajobrazie Buchałowa, nawiązująca do dawnych odmian winorośli. Punkt wskazuje uprawę; winiarnia producenta znajduje się przy ul. Długiej w Świdnicy.",
+    "kind": "vineyard",
+    "website": "http://winnicakrucza.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Krucza",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-krucza"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900022,
+    "key": "na-kawalku-ziemi",
+    "name": "Winnica na Kawałku Ziemi",
+    "location": "Trzebiechów",
+    "address": "66-132 Trzebiechów, Ptasia 7",
+    "lat": 52.017583,
+    "lng": 15.7425,
+    "description": "Niewielka, niekomercyjna winnica łącząca uprawę winorośli ze sztuką. Przy gospodarstwie działają Muzeum Hebelka i galeria, a wydarzenia artystyczne odbywają się w otoczeniu nasadzeń.",
+    "kind": "vineyard",
+    "website": null,
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica na Kawałku Ziemi",
+        "url": "https://centrumwiniarstwa.pl/winnica/na-kawalku-ziemi"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900023,
+    "key": "u-michala",
+    "name": "Winnica U Michała",
+    "location": "Zielona Góra",
+    "address": "65-140 Zielona Góra, ul. L. Wyczółkowskiego 35",
+    "lat": 51.938806,
+    "lng": 15.467083,
+    "description": "Kameralna winnica na terenie dawnych zielonogórskich upraw. Na działce znajduje się domek winiarza i miejsce do spotkań z gośćmi; wizytę należy wcześniej uzgodnić.",
+    "kind": "vineyard",
+    "website": "http://www.winnicaumichala.jimdofree.com/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — U Michała",
+        "url": "https://centrumwiniarstwa.pl/winnica/u-michala"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900024,
+    "key": "winnica-winne-wzgorze",
+    "name": "Winnica Winne Wzgórze",
+    "location": "Zielona Góra · Park Winny",
+    "address": "65-427 Zielona Góra ul. Wrocławska 12 a",
+    "lat": 51.938222,
+    "lng": 15.513417,
+    "description": "Historyczne wzgórze winiarskie w centrum Zielonej Góry, przy Palmiarni i Domu Winiarza. To miejsce prezentacji tradycji miasta i zachowanych nasadzeń, a nie typowa prywatna winiarnia.",
+    "kind": "wine-heritage",
+    "website": "http://www.palmiarnia.net.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnica Winne Wzgórze",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-winne-wzgorze"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900025,
+    "key": "winnice-w-skansenie",
+    "name": "Winnice w skansenie",
+    "location": "Zielona Góra · Ochla",
+    "address": "66-006 Zielona Góra ul. Ochla – Muzealna 5",
+    "lat": 51.891833,
+    "lng": 15.471,
+    "description": "Uprawy pokazowe przy Muzeum Etnograficznym w Ochli: tradycyjna winnica palikowa i współczesna szpalerowa. W otoczeniu znajdują się wieża winiarska, prasa oraz odtworzona piwnica.",
+    "kind": "wine-heritage",
+    "website": "https://muzeumochla.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Winnice w skansenie",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnice-w-skansenie"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900026,
+    "key": "lubuskie-centrum-winiarstwa",
+    "name": "Lubuskie Centrum Winiarstwa",
+    "location": "Zabór",
+    "address": "66-003 Zabór ul. Winiarska 1",
+    "lat": 51.950667,
+    "lng": 15.709639,
+    "description": "Centrum edukacyjne i wystawowe u podnóża Winnicy Samorządowej. Można tu poznać historię regionalnego winiarstwa oraz zaplecze produkcyjne; terminy zwiedzania i wydarzeń podaje centrum.",
+    "kind": "wine-center",
+    "website": "https://centrumwiniarstwa.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "Lubuskie Centrum Winiarstwa — Lubuskie Centrum Winiarstwa",
+        "url": "https://centrumwiniarstwa.pl/winnica/lubuskie-centrum-winiarstwa"
+      },
+      {
+        "title": "Katalog LCW — adres i GPS",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": {
+      "author": "Fry72",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Lubuskie_Centrum_Winiarstwa,_Zab%C3%B3r,_gmina_Zab%C3%B3r,_Nowe_Miasto,_Zielona_G%C3%B3ra,_Lubu%C5%A1sk%C3%A9_vojvodstv%C3%AD,_Polsko.jpg",
+      "transformation": "Zmniejszenie do 1000 px i zapis WebP, bez kadrowania.",
+      "local_path": "/images/wineries/lcw.webp"
+    },
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900027,
+    "key": "winnica-jany",
+    "name": "Winnica Jany",
+    "location": "Zielona Góra · Jany; uprawa w Łazie",
+    "address": "Jany 14, Zielona Góra",
+    "lat": 51.9739891,
+    "lng": 15.6028918,
+    "description": "Winnica z parcelą w Łazie koło Zaboru oraz winiarnią w Janach. Punkt oznacza siedzibę i miejsce degustacji w Janach, nie położenie uprawy; odwiedziny należy umówić z gospodarzami.",
+    "kind": "vineyard",
+    "coordinate_source": "https://www.openstreetmap.org/way/777163227",
+    "coordinate_accuracy": "address-building",
+    "coordinate_license": "© OpenStreetMap contributors, ODbL 1.0",
+    "sources": [
+      {
+        "title": "Visit Zielona Góra — Winnica Jany",
+        "url": "https://visitzielonagora.pl/sekcja/winnica-jany/"
+      },
+      {
+        "title": "OpenStreetMap — budynek adresowy Jany 14",
+        "url": "https://www.openstreetmap.org/way/777163227"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900028,
+    "key": "winnica-slone",
+    "name": "Winnica Słone",
+    "location": "Słone · gmina Świdnica",
+    "address": "ul. Słoneczna 69, 66-014 Słone",
+    "lat": 51.9263502,
+    "lng": 15.3943677,
+    "description": "Rodzinna winnica w Słonem koło Zielonej Góry, działająca od 2017 roku. Oficjalny adres to ul. Słoneczna 69. Znacznik jest orientacyjny — wskazuje ulicę, a nie potwierdzone wejście do winnicy.",
+    "kind": "vineyard",
+    "website": "https://winnicaslone.pl/",
+    "coordinate_source": "https://www.openstreetmap.org/way/199450127",
+    "coordinate_accuracy": "street",
+    "coordinate_license": "© OpenStreetMap contributors, ODbL 1.0",
+    "location_note": "Lokalizacja orientacyjna na ulicy Słonecznej. Dokładny dojazd do numeru 69 potwierdź z winnicą.",
+    "sources": [
+      {
+        "title": "Oficjalny kontakt Winnicy Słone",
+        "url": "https://winnicaslone.pl/kontakt/"
+      },
+      {
+        "title": "OpenStreetMap — ul. Słoneczna",
+        "url": "https://www.openstreetmap.org/way/199450127"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900029,
+    "key": "winnica-samorzadowa",
+    "name": "Winnica Samorządowa w Zaborze",
+    "location": "Łaz · Zabór",
+    "address": "ul. Winiarska 1, 66-003 Zabór",
+    "lat": 51.95227777777778,
+    "lng": 15.703194444444444,
+    "description": "Rozległy zespół nasadzeń na wzgórzach między Łazem a Zaborem, użytkowany przez wielu lokalnych winiarzy. To wspólny obszar upraw, odrębny od budynku Lubuskiego Centrum Winiarstwa i od poszczególnych producentów.",
+    "kind": "vineyard-complex",
+    "website": "https://centrumwiniarstwa.pl/",
+    "coordinate_source": "https://centrumwiniarstwa.pl/storage/app/media/Do%20Pobrania/Przewodnik_Kraina_wina_i_miodu.pdf",
+    "coordinate_accuracy": "published-point",
+    "sources": [
+      {
+        "title": "LCW — informacje o Winnicy Samorządowej",
+        "url": "https://centrumwiniarstwa.pl/winnica/lubuskie-centrum-winiarstwa"
+      },
+      {
+        "title": "Przewodnik LCW — punkt GPS Winnicy Samorządowej",
+        "url": "https://centrumwiniarstwa.pl/storage/app/media/Do%20Pobrania/Przewodnik_Kraina_wina_i_miodu.pdf"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed przyjazdem uzgodnij termin i dostępność zwiedzania bezpośrednio z gospodarzem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  },
+  {
+    "id": 900030,
+    "key": "winnica-equus-zabor",
+    "name": "Winnica Equus – parcela w Zaborze",
+    "location": "Łaz · Zabór",
+    "address": "Punkt orientacyjny: Lubuskie Centrum Winiarstwa, ul. Winiarska 1, Zabór",
+    "lat": 51.950667,
+    "lng": 15.709639,
+    "kind": "vineyard",
+    "website": "https://www.winnicaequus.pl/",
+    "description": "Główna parcela Winnicy Equus leży w obrębie Winnicy Samorządowej w Zaborze. Winiarnia i regularne degustacje znajdują się w Mierzęcinie. Znacznik pokazuje orientacyjny punkt przy LCW, gdzie można uzgodnić odwiedziny uprawy w Zaborze.",
+    "coordinate_source": "https://centrumwiniarstwa.pl/winnice",
+    "coordinate_accuracy": "complex-reference",
+    "location_note": "Punkt orientacyjny przy Lubuskim Centrum Winiarstwa, nie dokładna lokalizacja parceli Equus. Termin i miejsce spotkania potwierdź z producentem; winiarnia w Mierzęcinie leży poza tym obszarem.",
+    "sources": [
+      {
+        "title": "Equus — parcele, w tym Zabór",
+        "url": "https://www.winnicaequus.pl/filozofia"
+      },
+      {
+        "title": "LCW — Equus i możliwość spotkań grup w centrum",
+        "url": "https://centrumwiniarstwa.pl/winnica/winnica-equus"
+      },
+      {
+        "title": "LCW — adres i GPS punktu orientacyjnego",
+        "url": "https://centrumwiniarstwa.pl/winnice"
+      }
+    ],
+    "photo": null,
+    "checked_at": "2026-10-30",
+    "visit_note": "Przed wizytą skontaktuj się z producentem.",
+    "description_license": "Opracowanie własne na podstawie informacji źródłowych."
+  }
+]

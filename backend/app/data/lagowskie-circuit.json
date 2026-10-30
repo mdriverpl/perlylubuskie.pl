@@ -1,0 +1,87 @@
+{
+  "name": "Pętla wokół Jeziora Łagowskiego",
+  "license": "ODbL 1.0",
+  "points": [
+    {
+      "name": "Jezioro Łagowskie",
+      "lat": 52.334829,
+      "lng": 15.288687
+    },
+    {
+      "name": "Łagowskie · punkt 2",
+      "lat": 52.330898,
+      "lng": 15.295613
+    },
+    {
+      "name": "Łagowskie · punkt 3",
+      "lat": 52.326858,
+      "lng": 15.291887
+    },
+    {
+      "name": "Łagowskie · punkt 4",
+      "lat": 52.319758,
+      "lng": 15.287663
+    },
+    {
+      "name": "Łagowskie · punkt 5",
+      "lat": 52.314805,
+      "lng": 15.275311
+    },
+    {
+      "name": "Łagowskie · punkt 6",
+      "lat": 52.313406,
+      "lng": 15.272109
+    },
+    {
+      "name": "Łagowskie · punkt 7",
+      "lat": 52.31985,
+      "lng": 15.280362
+    },
+    {
+      "name": "Łagowskie · punkt 8",
+      "lat": 52.326281,
+      "lng": 15.28736
+    },
+    {
+      "name": "Powrót nad Jezioro Łagowskie",
+      "lat": 52.334829,
+      "lng": 15.288687
+    }
+  ],
+  "sources": [
+    {
+      "title": "Jezioro Łagowskie · OpenStreetMap",
+      "url": "https://www.openstreetmap.org/way/240361582"
+    },
+    {
+      "title": "Ścieżki i drogi · OpenStreetMap",
+      "url": "https://www.openstreetmap.org/way/1219841445"
+    }
+  ],
+  "retrieved_on": "2026-10-30",
+  "validation": {
+    "bounds": [
+      52.310884,
+      15.2719797,
+      52.3348178,
+      15.2954469
+    ],
+    "water_checks": [
+      [
+        52.3144741,
+        15.2733803
+      ],
+      [
+        52.3228509,
+        15.2887735
+      ],
+      [
+        52.3312277,
+        15.2915128
+      ]
+    ],
+    "max_distance_m": 18000
+  },
+  "description": "Pętla wokół Jeziora Łagowskiego, wyznaczona po ścieżkach i drogach wokół akwenu.",
+  "warnings": []
+}

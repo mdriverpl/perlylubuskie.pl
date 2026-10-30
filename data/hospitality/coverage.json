@@ -1,0 +1,464 @@
+{
+  "checked_at": "2026-10-30",
+  "scope": "Miejscowość Łagów w województwie lubuskim; nie cała gmina.",
+  "registry_url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe",
+  "registry_rows": 108,
+  "registry_mapping": [
+    {
+      "row": 1,
+      "place_id": 920001
+    },
+    {
+      "row": 2,
+      "place_id": 920002
+    },
+    {
+      "row": 3,
+      "place_id": 920003
+    },
+    {
+      "row": 4,
+      "place_id": 920004
+    },
+    {
+      "row": 5,
+      "place_id": 920005
+    },
+    {
+      "row": 6,
+      "place_id": 920006
+    },
+    {
+      "row": 7,
+      "place_id": 920007
+    },
+    {
+      "row": 8,
+      "place_id": 920008
+    },
+    {
+      "row": 9,
+      "place_id": 920009
+    },
+    {
+      "row": 10,
+      "place_id": 920010
+    },
+    {
+      "row": 11,
+      "place_id": 920011
+    },
+    {
+      "row": 12,
+      "place_id": 920012
+    },
+    {
+      "row": 13,
+      "place_id": 920013
+    },
+    {
+      "row": 14,
+      "place_id": 920014
+    },
+    {
+      "row": 15,
+      "place_id": 920015
+    },
+    {
+      "row": 16,
+      "place_id": 920016
+    },
+    {
+      "row": 17,
+      "place_id": 920017
+    },
+    {
+      "row": 18,
+      "place_id": 920018
+    },
+    {
+      "row": 19,
+      "place_id": 920019
+    },
+    {
+      "row": 20,
+      "place_id": 920020
+    },
+    {
+      "row": 21,
+      "place_id": 920021
+    },
+    {
+      "row": 22,
+      "place_id": 920022
+    },
+    {
+      "row": 23,
+      "place_id": 920023
+    },
+    {
+      "row": 24,
+      "place_id": 920024
+    },
+    {
+      "row": 25,
+      "place_id": 920025
+    },
+    {
+      "row": 26,
+      "place_id": 920026
+    },
+    {
+      "row": 27,
+      "place_id": 920027
+    },
+    {
+      "row": 28,
+      "place_id": 920028
+    },
+    {
+      "row": 29,
+      "place_id": 920029
+    },
+    {
+      "row": 30,
+      "place_id": 920030
+    },
+    {
+      "row": 31,
+      "place_id": 920031
+    },
+    {
+      "row": 32,
+      "place_id": 920032
+    },
+    {
+      "row": 33,
+      "place_id": 920033
+    },
+    {
+      "row": 34,
+      "place_id": 920034
+    },
+    {
+      "row": 35,
+      "place_id": 920035
+    },
+    {
+      "row": 36,
+      "place_id": 920036
+    },
+    {
+      "row": 37,
+      "place_id": 920037
+    },
+    {
+      "row": 38,
+      "place_id": 920038
+    },
+    {
+      "row": 39,
+      "place_id": 920039
+    },
+    {
+      "row": 40,
+      "place_id": 920040
+    },
+    {
+      "row": 41,
+      "place_id": 920041
+    },
+    {
+      "row": 42,
+      "place_id": 920042
+    },
+    {
+      "row": 43,
+      "place_id": 920043
+    },
+    {
+      "row": 44,
+      "place_id": 920044
+    },
+    {
+      "row": 45,
+      "place_id": 920045
+    },
+    {
+      "row": 46,
+      "place_id": 920046
+    },
+    {
+      "row": 47,
+      "place_id": 920047
+    },
+    {
+      "row": 48,
+      "place_id": 920048
+    },
+    {
+      "row": 49,
+      "place_id": 920049
+    },
+    {
+      "row": 50,
+      "place_id": 920050
+    },
+    {
+      "row": 51,
+      "place_id": 920008
+    },
+    {
+      "row": 52,
+      "place_id": 920051
+    },
+    {
+      "row": 53,
+      "place_id": 920052
+    },
+    {
+      "row": 54,
+      "place_id": 920053
+    },
+    {
+      "row": 55,
+      "place_id": 920054
+    },
+    {
+      "row": 56,
+      "place_id": 920055
+    },
+    {
+      "row": 57,
+      "place_id": 920056
+    },
+    {
+      "row": 58,
+      "place_id": 920057
+    },
+    {
+      "row": 59,
+      "place_id": 920058
+    },
+    {
+      "row": 60,
+      "place_id": 920059
+    },
+    {
+      "row": 61,
+      "place_id": 920060
+    },
+    {
+      "row": 62,
+      "place_id": 920061
+    },
+    {
+      "row": 63,
+      "place_id": 920062
+    },
+    {
+      "row": 64,
+      "place_id": 920063
+    },
+    {
+      "row": 65,
+      "place_id": 920064
+    },
+    {
+      "row": 66,
+      "place_id": 920065
+    },
+    {
+      "row": 67,
+      "place_id": 920066
+    },
+    {
+      "row": 68,
+      "place_id": 920067
+    },
+    {
+      "row": 69,
+      "place_id": 920068
+    },
+    {
+      "row": 70,
+      "place_id": 920069
+    },
+    {
+      "row": 71,
+      "place_id": 920070
+    },
+    {
+      "row": 72,
+      "place_id": 920071
+    },
+    {
+      "row": 73,
+      "place_id": 920072
+    },
+    {
+      "row": 74,
+      "place_id": 920073
+    },
+    {
+      "row": 75,
+      "place_id": 920074
+    },
+    {
+      "row": 76,
+      "place_id": 920075
+    },
+    {
+      "row": 77,
+      "place_id": 920076
+    },
+    {
+      "row": 78,
+      "place_id": 920077
+    },
+    {
+      "row": 79,
+      "place_id": 920078
+    },
+    {
+      "row": 80,
+      "place_id": 920079
+    },
+    {
+      "row": 81,
+      "place_id": 920080
+    },
+    {
+      "row": 82,
+      "place_id": 920081
+    },
+    {
+      "row": 83,
+      "place_id": 920082
+    },
+    {
+      "row": 84,
+      "place_id": 920083
+    },
+    {
+      "row": 85,
+      "place_id": 920084
+    },
+    {
+      "row": 86,
+      "place_id": 920085
+    },
+    {
+      "row": 87,
+      "place_id": 920086
+    },
+    {
+      "row": 88,
+      "place_id": 920087
+    },
+    {
+      "row": 89,
+      "place_id": 920088
+    },
+    {
+      "row": 90,
+      "place_id": 920089
+    },
+    {
+      "row": 91,
+      "place_id": 920090
+    },
+    {
+      "row": 92,
+      "place_id": 920091
+    },
+    {
+      "row": 93,
+      "place_id": 920092
+    },
+    {
+      "row": 94,
+      "place_id": 920093
+    },
+    {
+      "row": 95,
+      "place_id": 920094
+    },
+    {
+      "row": 96,
+      "place_id": 920095
+    },
+    {
+      "row": 97,
+      "place_id": 920095
+    },
+    {
+      "row": 98,
+      "place_id": 920096
+    },
+    {
+      "row": 99,
+      "place_id": 920097
+    },
+    {
+      "row": 100,
+      "place_id": 920098
+    },
+    {
+      "row": 101,
+      "place_id": 920099
+    },
+    {
+      "row": 102,
+      "place_id": 920100
+    },
+    {
+      "row": 103,
+      "place_id": 920101
+    },
+    {
+      "row": 104,
+      "place_id": 920102
+    },
+    {
+      "row": 105,
+      "place_id": 920103
+    },
+    {
+      "row": 106,
+      "place_id": 920104
+    },
+    {
+      "row": 107,
+      "place_id": 920105
+    },
+    {
+      "row": 108,
+      "place_id": 920106
+    }
+  ],
+  "merged_registry_duplicates": 2,
+  "new_places": 133,
+  "updated_place_ids": [
+    1
+  ],
+  "lodging_places": 115,
+  "dining_places": 24,
+  "street_approximate": 21,
+  "excluded": [
+    {
+      "name": "Noclegi",
+      "source": "https://www.openstreetmap.org/node/7788555969",
+      "reason": "Brak nazwy wyróżniającej obiekt; ryzyko duplikatu."
+    },
+    {
+      "name": "Baza",
+      "reason": "Niepotwierdzona dokładna lokalizacja."
+    },
+    {
+      "name": "Hotel Bajka",
+      "reason": "Starszy wpis katalogowy; brak potwierdzenia aktualności."
+    }
+  ],
+  "completeness": "Ujęto wszystkie 108 wierszy sekcji Łagów oficjalnego wykazu noclegów (po usunięciu dwóch duplikatów), hotel i pensjonat z rejestru oraz nazwane obiekty OSM. Nie jest to gwarancja kompletności ani aktualnej działalności wszystkich firm."
+}

@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict'
+import {JSDOM} from 'jsdom'
+const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/planer',pretendToBeVisual:true})
+for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event','localStorage'])globalThis[key]=dom.window[key]
+Object.defineProperty(globalThis,'navigator',{value:window.navigator,configurable:true})
+globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window);globalThis.getComputedStyle=window.getComputedStyle.bind(window)
+window.scrollTo=()=>{};Element.prototype.scrollIntoView=()=>{}
+let calls=0,denied=false,deliver
+Object.defineProperty(navigator,'geolocation',{value:{getCurrentPosition(success,failure){calls++;deliver=()=>denied?failure({code:1}):success({coords:{latitude:50,longitude:20,accuracy:12}})}}})
+const points=[{id:101,name:'Tuż obok',lat:52,lng:15,location:'Zabór'},{id:102,name:'Zamek',lat:52.334,lng:15.292,location:'Łagów'},{id:103,name:'Noclegi',lat:52.336,lng:15.296,location:'Łagów'}].map(p=>({...p,category:'nature',image:'/images/lake.webp',description:'Opis',subtitle:'Przyroda'}))
+globalThis.fetch=async path=>({ok:true,json:async()=>path==='/api/places'?points:[]})
+const {createApp,nextTick}=await import('vue')
+const App=(await import('../artifacts/ui-test.mjs')).default
+let app=createApp(App);app.mount('#app')
+const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
+const click=async el=>{assert.ok(el);el.click();await settle()}
+const nav=name=>[...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()===name)
+const inputQuery=async value=>{const input=document.querySelector('#explore-query');input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));await settle()}
+await settle();await click(nav('Miejsca'))
+assert.equal(calls,0,'Catalog never requests GPS automatically')
+assert.equal(document.querySelector('.nearby-gps-toolbar'),null)
+assert.equal(document.querySelectorAll('.explore-place').length,3)
+await click(document.querySelector('[aria-label="Widok mapy"]'))
+await click(document.querySelector('[aria-label="Pokaż, gdzie jestem"]'))
+assert.equal(calls,1)
+await inputQuery('łagów')
+const map=()=>document.querySelector('.test-explore-map')
+assert.equal(map().dataset.ids,'102,103')
+assert.ok(Math.abs(Number(map().dataset.focusLat)-52.335)<.00001,'Typing town automatically centers map')
+assert.ok(Math.abs(Number(map().dataset.focusLng)-15.294)<.00001)
+deliver();await settle()
+assert.equal(map().dataset.userLat,'50')
+assert.equal(map().dataset.ids,'102,103','Late GPS response does not change results')
+assert.ok(Math.abs(Number(map().dataset.focusLat)-52.335)<.00001,'GPS does not replace town focus')
+assert.equal(document.querySelector('[aria-label="Filtr odległości"]').disabled,true)
+assert.equal(document.querySelector('[aria-label="Filtr odległości"]').value,'')
+assert.equal(localStorage.getItem('perly:places-query'),'łagów')
+await click(nav('Start'));await click(nav('Miejsca'))
+assert.equal(document.querySelector('#explore-query').value,'łagów')
+assert.equal(document.querySelectorAll('.explore-place').length,2)
+assert.equal(calls,1)
+app.unmount();app=createApp(App);app.mount('#app');await settle();await click(nav('Miejsca'))
+assert.equal(document.querySelector('#explore-query').value,'łagów')
+await click(document.querySelector('[aria-label="Widok mapy"]'))
+assert.ok(Math.abs(Number(map().dataset.focusLat)-52.335)<.00001,'Reload restores town map focus')
+await click(document.querySelector('.compact-clear-filters'))
+assert.equal(localStorage.getItem('perly:places-query'),null)
+assert.equal(map().dataset.ids.split(',').length,3)
+denied=true;await click(document.querySelector('[aria-label="Pokaż, gdzie jestem"]'));deliver();await settle()
+assert.match(document.querySelector('.location-error').textContent,/Brak zgody/)
+assert.equal(map().dataset.ids.split(',').length,3)
+app.unmount();dom.window.close()
+console.log('PASS: no GPS filtering or automatic permission, town zoom on typing/reload, late GPS preserves focus/results, remembered search and reset')

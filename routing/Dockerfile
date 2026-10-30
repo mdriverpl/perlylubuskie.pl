@@ -1,6 +1,6 @@
 FROM alpine:3.22 AS segments
 RUN apk add --no-cache curl
-ARG BROUTER_COMMIT=0b3506c31eb81f67c88affa0460291ccadcb1ec9
+ARG BROUTER_COMMIT=4d2639af77ea5ed9c30d3e400764eb6f9e8522da
 RUN mkdir /source && curl --fail --location --retry 3 https://codeload.github.com/abrensch/brouter/tar.gz/$BROUTER_COMMIT -o /tmp/source.tar.gz \
     && tar -xzf /tmp/source.tar.gz -C /source --strip-components=1
 ARG MAP_DATA_VERSION=2026-10

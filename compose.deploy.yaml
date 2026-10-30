@@ -36,6 +36,7 @@ services:
       SECRET_KEY: ${SECRET_KEY:?Ustaw losowy SECRET_KEY o długości minimum 32 znaków}
       CORS_ORIGINS: ${PUBLIC_URL:-http://localhost:8080}
       ROUTER_URL: http://router:17777/brouter
+      HERE_API_KEY: ${HERE_API_KEY:-}
     depends_on:
       db:
         condition: service_healthy

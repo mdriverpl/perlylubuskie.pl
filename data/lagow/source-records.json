@@ -1,0 +1,304 @@
+[
+  {
+    "id": 910001,
+    "name": "Jezioro Łagowskie",
+    "subtitle": "Jezioro · Łagów",
+    "category": "nature",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.334829,
+    "lng": 15.288687,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Akwen po południowej stronie zamku, z nadbrzeżnymi miejscami wypoczynku.",
+    "details": {
+      "kind": "lake",
+      "official_name": "Jezioro Łagowskie",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/way/240361582"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/240361582",
+      "coordinate_accuracy": "poi",
+      "visit_note": "Punkt przy północnym brzegu jeziora.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 910002,
+    "name": "Brama Polska w Łagowie",
+    "subtitle": "Brama miejska · Łagów",
+    "category": "heritage",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.333775,
+    "lng": 15.293174,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Ceglana brama obronna zachowana przy wschodnim wjeździe do dawnego centrum.",
+    "details": {
+      "kind": "gate",
+      "official_name": "Brama Polska w Łagowie",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/way/234765219"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/234765219",
+      "coordinate_accuracy": "poi",
+      "visit_note": "",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 910003,
+    "name": "Brama Marchijska w Łagowie",
+    "subtitle": "Brama miejska · Łagów",
+    "category": "heritage",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.334303,
+    "lng": 15.29202,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Historyczna brama z charakterystyczną szachulcową kondygnacją, na zachód od zamku.",
+    "details": {
+      "kind": "gate",
+      "official_name": "Brama Marchijska w Łagowie",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/way/234765224"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/234765224",
+      "coordinate_accuracy": "poi",
+      "visit_note": "",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 910004,
+    "name": "Łagowsko-Sulęciński Park Krajobrazowy",
+    "subtitle": "Przyroda · punkt informacyjny",
+    "category": "nature",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.347853,
+    "lng": 15.296604,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Chroniony krajobraz jezior i lasów, z trasami pieszymi oraz rowerowymi.",
+    "details": {
+      "kind": "park",
+      "official_name": "Łagowsko-Sulęciński Park Krajobrazowy",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/node/12196522931"
+        },
+        {
+          "title": "Zespół Parków Krajobrazowych Województwa Lubuskiego",
+          "url": "https://www.zpkwl.gorzow.pl/index.php/o-nas/parki-krajobrazowe/lagowsko-sulecinski-park-krajobrazowy?showall=1"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/12196522931",
+      "coordinate_accuracy": "poi",
+      "visit_note": "Punkt oznacza tablicę informacyjną w parku, nie środek całego obszaru. Północna część parku ma ograniczenia dostępu związane z poligonem.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 910005,
+    "name": "Majaland Kownaty",
+    "subtitle": "Park rozrywki · Kownaty",
+    "category": "leisure",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.349763,
+    "lng": 15.082608,
+    "rating": 0,
+    "location": "Kownaty",
+    "description": "Rodzinny park tematyczny z atrakcjami pod dachem i na zewnątrz.",
+    "details": {
+      "kind": "theme_park",
+      "official_name": "Majaland Kownaty",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/way/513122473"
+        },
+        {
+          "title": "Strona operatora",
+          "url": "https://majaland.pl/kownaty"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/513122473",
+      "coordinate_accuracy": "area",
+      "visit_note": "Atrakcja w okolicy Łagowa. Punkt wskazuje obszar parku. Aktualne bilety i dostępność atrakcji sprawdź u operatora.",
+      "website": "https://majaland.pl/kownaty",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 910006,
+    "name": "Wiadukt kolejowy w Łagowie",
+    "subtitle": "Zabytek techniki · Łagów",
+    "category": "heritage",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.332312,
+    "lng": 15.296667,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Historyczna konstrukcja kolejowa nad ulicą Mostową, związana z linią Toporów–Międzyrzecz.",
+    "details": {
+      "kind": "bridge",
+      "official_name": "Wiadukt kolejowy w Łagowie",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/node/14127279384"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/14127279384",
+      "coordinate_accuracy": "poi",
+      "visit_note": "Punkt wskazuje tablicę informacyjną przy wiadukcie, a nie wejście na tory.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 910007,
+    "name": "Kościół św. Jana Chrzciciela w Łagowie",
+    "subtitle": "Świątynia · Łagów",
+    "category": "heritage",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.334639,
+    "lng": 15.293555,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Świątynia przy zamku, należąca do zabytkowej zabudowy centrum Łagowa.",
+    "details": {
+      "kind": "church",
+      "official_name": "Kościół św. Jana Chrzciciela w Łagowie",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/way/159744627"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/159744627",
+      "coordinate_accuracy": "poi",
+      "visit_note": "",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 910008,
+    "name": "Mini Zoo Port 2000 w Mostkach",
+    "subtitle": "Atrakcja rodzinna · Mostki",
+    "category": "leisure",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.271064,
+    "lng": 15.377184,
+    "rating": 0,
+    "location": "Mostki",
+    "description": "Ogród ze zwierzętami przy kompleksie usługowym, odpowiedni na rodzinny przystanek.",
+    "details": {
+      "kind": "zoo",
+      "official_name": "Mini Zoo Port 2000 w Mostkach",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/way/242036937"
+        },
+        {
+          "title": "Strona operatora",
+          "url": "https://port2000.pl/mini-zoo/"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/242036937",
+      "coordinate_accuracy": "area",
+      "visit_note": "Atrakcja poza Łagowem, w Mostkach przy DK92. Punkt wskazuje obszar mini zoo.",
+      "website": "https://port2000.pl/mini-zoo/",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 5,
+    "name": "Jezioro Trześniowskie",
+    "subtitle": "Ciecz · jezioro w Łagowie",
+    "category": "nature",
+    "image": "/images/lake.webp",
+    "lat": 52.3511,
+    "lng": 15.2973,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Jezioro na północ od centrum, znane również pod nazwą Ciecz.",
+    "details": {
+      "kind": "lake",
+      "official_name": "Jezioro Trześniowskie (Ciecz)",
+      "aliases": [
+        "Ciecz",
+        "Jezioro Ciecz"
+      ],
+      "sources": [
+        {
+          "title": "Łagów: atrakcje · PolskieSzlaki.pl",
+          "url": "https://www.polskieszlaki.pl/lagow-atrakcje/"
+        },
+        {
+          "title": "OpenStreetMap · położenie",
+          "url": "https://www.openstreetmap.org/relation/12256921"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/relation/12256921",
+      "coordinate_accuracy": "area",
+      "description_license": "Opis autorski na podstawie wskazanych faktów.",
+      "checked_at": "2026-10-30"
+    }
+  }
+]

@@ -1,0 +1,612 @@
+{
+  "checked_at": "2026-10-30",
+  "region": "województwo lubuskie",
+  "scope": "Zamki i pałace rozpoznane w Wikidata oraz regionalnych kategoriach Wikimedia Commons; także ruiny i udokumentowane miejsca historyczne.",
+  "is_complete_official_register": false,
+  "discovered_entities": 292,
+  "catalog_objects": 175,
+  "castles": 24,
+  "palaces": 151,
+  "photo_candidates": 123,
+  "unresolved": [
+    {
+      "wikidata": "Q2968699",
+      "name": "zamek w Buchałowie",
+      "reason": "Niepotwierdzone współrzędne — nie dodano zgadywanego punktu na mapie."
+    }
+  ],
+  "unlocated_ensembles": [
+    {
+      "wikidata": "Q30135479",
+      "name": "Zespół pałacowy, kon. XVI",
+      "location": "Szczaniec",
+      "represented_by": [
+        "Q30135489",
+        "Q30135484"
+      ]
+    },
+    {
+      "wikidata": "Q30104407",
+      "name": "Zespół pałacowy",
+      "location": "Gryżyna",
+      "represented_by": [
+        "Q30104409"
+      ]
+    },
+    {
+      "wikidata": "Q30104432",
+      "name": "Zespół pałacowy",
+      "location": "Kosierz",
+      "represented_by": [
+        "Q30104433"
+      ]
+    },
+    {
+      "wikidata": "Q30107615",
+      "name": "Zespół pałacowy",
+      "location": "Chełmek",
+      "represented_by": [
+        "Q30107617"
+      ]
+    },
+    {
+      "wikidata": "Q30107632",
+      "name": "Zespół pałacowy",
+      "location": "Borów Wielki",
+      "represented_by": [
+        "Q30107633"
+      ]
+    },
+    {
+      "wikidata": "Q30107895",
+      "name": "Zespół pałacowy",
+      "location": "Drzeniów",
+      "represented_by": [
+        "Q16587024"
+      ]
+    },
+    {
+      "wikidata": "Q30108039",
+      "name": "Zespół pałacowy",
+      "location": "Mierzęcin",
+      "represented_by": [
+        "Q30108041"
+      ]
+    },
+    {
+      "wikidata": "Q30135907",
+      "name": "Zespół pałacowy",
+      "location": "Dąbrówka Wielkopolska",
+      "represented_by": [
+        "Q30135909"
+      ]
+    },
+    {
+      "wikidata": "Q30137117",
+      "name": "Zespół pałacowy",
+      "location": "Drzonów",
+      "represented_by": [
+        "Q30137118"
+      ]
+    },
+    {
+      "wikidata": "Q30142433",
+      "name": "Zespół pałacowy",
+      "location": "Borowina",
+      "represented_by": [
+        "Q30142434"
+      ]
+    },
+    {
+      "wikidata": "Q30143144",
+      "name": "Zespół pałacowy",
+      "location": "Brzostowa",
+      "represented_by": [
+        "Q30143145"
+      ]
+    },
+    {
+      "wikidata": "Q30106840",
+      "name": "Zespół pałacowy w Wiejcach",
+      "location": "Wiejce",
+      "represented_by": [
+        "Q30106841"
+      ]
+    },
+    {
+      "wikidata": "Q30142489",
+      "name": "Zespół pałacowy w Henrykowie",
+      "location": "Henryków",
+      "represented_by": [
+        "Q30142491"
+      ]
+    },
+    {
+      "wikidata": "Q30104837",
+      "name": "Zespół pałacowy, XVIII/XIX",
+      "location": "Luboszyce",
+      "represented_by": [
+        "Q30104838"
+      ]
+    },
+    {
+      "wikidata": "Q30104351",
+      "name": "Zespół pałacowy",
+      "location": "Sosny",
+      "represented_by": [
+        "Q30104352"
+      ]
+    },
+    {
+      "wikidata": "Q30108221",
+      "name": "Zespół pałacowy",
+      "location": "Ogardy",
+      "represented_by": [
+        "Q30108223"
+      ]
+    },
+    {
+      "wikidata": "Q30108308",
+      "name": "Zespół pałacowy",
+      "location": "Tuczno",
+      "represented_by": [
+        "Q30108309"
+      ]
+    },
+    {
+      "wikidata": "Q30108443",
+      "name": "Zespół pałacowy",
+      "location": "Żubrów",
+      "represented_by": [
+        "Q30135185"
+      ]
+    },
+    {
+      "wikidata": "Q30136782",
+      "name": "Zespół pałacowy",
+      "location": "Niwiska",
+      "represented_by": [
+        "Q30136783"
+      ]
+    },
+    {
+      "wikidata": "Q30142412",
+      "name": "Zespół pałacowy",
+      "location": "Sucha Dolna",
+      "represented_by": [
+        "Q30142413"
+      ]
+    },
+    {
+      "wikidata": "Q30142421",
+      "name": "Zespół pałacowy",
+      "location": "Zimna Brzeźnica",
+      "represented_by": [
+        "Q30142423"
+      ]
+    },
+    {
+      "wikidata": "Q30142519",
+      "name": "Zespół pałacowy",
+      "location": "Pasterzowice",
+      "represented_by": [
+        "Q30142521"
+      ]
+    },
+    {
+      "wikidata": "Q30143359",
+      "name": "Zespół pałacowy",
+      "location": "Tuchola Żarska",
+      "represented_by": [
+        "Q30143361"
+      ]
+    },
+    {
+      "wikidata": "Q30142373",
+      "name": "Pozostałości zespołu pałacowego",
+      "location": "Mycielin",
+      "represented_by": []
+    },
+    {
+      "wikidata": "Q30105644",
+      "name": "Zespół pałacowy, 2 poł. XVIII",
+      "location": "Bobowicko",
+      "represented_by": [
+        "Q30105645"
+      ]
+    },
+    {
+      "wikidata": "Q30135435",
+      "name": "Zespół pałacowy, XVIII/XIX",
+      "location": "Myszęcin",
+      "represented_by": [
+        "Q30135436"
+      ]
+    },
+    {
+      "wikidata": "Q30135555",
+      "name": "Zespół pałacowy, XVIII/XIX",
+      "location": "Lubinicko",
+      "represented_by": [
+        "Q30135556"
+      ]
+    },
+    {
+      "wikidata": "Q30104334",
+      "name": "Zespół pałacowy",
+      "location": "Kamień Wielki",
+      "represented_by": [
+        "Q30104335"
+      ]
+    },
+    {
+      "wikidata": "Q30136684",
+      "name": "Zespół pałacowy",
+      "location": "Kargowa",
+      "represented_by": [
+        "Q30136686"
+      ]
+    },
+    {
+      "wikidata": "Q30143394",
+      "name": "Zespół pałacowy",
+      "location": "Sobolice",
+      "represented_by": [
+        "Q30143395"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "id": "Q30107038",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30107035",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30108187",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30135400",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30107041",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30107886",
+      "name": "Zespół parku pałacowego w Cybince",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q2243696",
+      "name": "Tamsel",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30107626",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30135493",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30135956",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30105037",
+      "name": "Instytut bp. Wilhelma Pluty, Willa I",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30106913",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30104290",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30143029",
+      "name": "Koszary pałacowe północne",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30143010",
+      "name": "Brama pałacowa",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30143016",
+      "name": "Zespół zabudowy mieszkalno-gospodarczej przy zespole pałacowym, poł. XVIII",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30136669",
+      "name": "Park pałacowy (dec. dworski)",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30143092",
+      "name": "Bażanciarnia pałacowa",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30143031",
+      "name": "Koszary pałacowe południowe",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30142709",
+      "name": "Park pałacowy",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30136667",
+      "name": "Oranżeria pałacowa",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30136690",
+      "name": "Oficyna, poł. XVIII",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30108384",
+      "name": "Park",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30107657",
+      "name": "zespół zamkowy w Miłakowie",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q108411016",
+      "name": "",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30108185",
+      "name": "Zespół parku pałacowego",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30136650",
+      "name": "Zespół parku pałacowego",
+      "reason": "Element otoczenia lub obiekt poza zakresem zamków i pałaców"
+    },
+    {
+      "id": "Q30136199",
+      "name": "Zespół pałacowy",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30104321",
+      "name": "Zespół pałacowy w Dąbroszyniu",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30105657",
+      "name": "Zespół pałacowy w Gorzycy",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30105626",
+      "name": "Zespół pałacowy w Nowej Wsi",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30135321",
+      "name": "Zespół pałacowy w Mostkach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30135981",
+      "name": "Zespół pałacowy, XVII/XVIII",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30135444",
+      "name": "Zespół pałacowo-folwarczny w Ojerzycach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30108044",
+      "name": "Zespół pałacowy w Osiku",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30104470",
+      "name": "Zespół pałacowy w Trzebulu",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30104870",
+      "name": "Zespół pałacowo-folwarczny w Kamieniu",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30136118",
+      "name": "Zespół pałacowy (nr 8) w Jędrzychowicach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30135340",
+      "name": "Zespół pałacowy w Przełazach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30135512",
+      "name": "Zespół pałacowy w Chociulu",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30108368",
+      "name": "Zespół pałacowy w Jarnatowie",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q19401722",
+      "name": "Zespół pałacowy w Lubniewicach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30104255",
+      "name": "Zespół pałacowy w Stanowicach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30104412",
+      "name": "Zespół pałacowy w Brzeźnicy",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30106808",
+      "name": "Zespół pałacowy",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30136931",
+      "name": "Zespół pałacowy, Bolesława Chrobrego 51 w Pomorsku",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142464",
+      "name": "Zespół pałacowy w Długiu",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142021",
+      "name": "Zespół pałacowy, Parkowa 4 w Trzebiechowie",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142211",
+      "name": "Zespół pałacowy w Zielonej Górze",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30136625",
+      "name": "Zespół pałacowy w Klenicy",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142153",
+      "name": "Zespół pałacowo- folwarczny w Zielonej Górze",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30136729",
+      "name": "Zespół pałacowo-folwarczny w Wojnowie",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30136610",
+      "name": "Zespół pałacowy",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142236",
+      "name": "Zespół pałacowy w Chotkowie",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142441",
+      "name": "Zespół pałacowo-folwarczny",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30143421",
+      "name": "Zespół pałacowo-folwarczny w Dębince",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142081",
+      "name": "Zespół pałacowy w Przytoku",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30143001",
+      "name": "Zespół pałacowy w Brodach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30136837",
+      "name": "Zespół pałacowo-folwarczny w Bukowie",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30136266",
+      "name": "Zespół pałacowy",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142292",
+      "name": "Zespół pałacowy w Iłowej",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30143369",
+      "name": "Zespół pałacowo-folwarczny",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30136886",
+      "name": "Zespół pałacowy i folwarczny w Łęgowie",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142194",
+      "name": "Zespół pałacowy w Zielonej Górze",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142534",
+      "name": "Zespół pałacowy w Siecieborzycach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q30142985",
+      "name": "Zespół pałacowy w Bieczu",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q11742016",
+      "name": "Kompleks zamkowo-pałacowy w Żarach",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    },
+    {
+      "id": "Q109138844",
+      "name": "Zespół pałacowy w Dłużku",
+      "reason": "Zespół zawiera pałac ujęty osobno"
+    }
+  ],
+  "osm_crosscheck": "Dwa publiczne endpointy Overpass były niedostępne; dane OSM nie zostały użyte do uzupełniania współrzędnych.",
+  "query": "SELECT DISTINCT ?item ?kind WHERE { VALUES ?kind { wd:Q23413 wd:Q16560 } ?item wdt:P31/wdt:P279* ?kind; wdt:P131* wd:Q54157. }",
+  "sources": [
+    "https://www.wikidata.org/",
+    "https://commons.wikimedia.org/wiki/Category:Palaces_in_Lubusz_Voivodeship",
+    "https://commons.wikimedia.org/wiki/Category:Castles_in_Lubusz_Voivodeship",
+    "https://lubuskie.pl/cms/57/zamki_palace_i_dwory"
+  ],
+  "local_photos": 123,
+  "external_photos": 0,
+  "without_verified_photo": 52
+}

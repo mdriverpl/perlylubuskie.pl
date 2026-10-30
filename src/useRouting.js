@@ -1,6 +1,6 @@
 import { ref, watch, onBeforeUnmount } from 'vue'
 
-export function useRouting({ ids, transport, enabled, online }) {
+export function useRouting({ ids, transport, enabled, online, customPoints, pointPositions }) {
  const route=ref(null), loading=ref(false), error=ref('')
  let timer, controller, generation=0
  function refresh() {
@@ -9,6 +9,8 @@ export function useRouting({ ids, transport, enabled, online }) {
   if(!enabled.value || !online.value || transport.value==='car' || ids.value.length<2) return
   loading.value=true
   const payload={place_ids:[...ids.value],transport:transport.value}
+  if(pointPositions?.value.length)payload.point_positions=pointPositions.value.filter(p=>ids.value.includes(p.id)).map(p=>({...p}))
+  if(customPoints){const selected=customPoints.value.filter(p=>ids.value.includes(p.id));if(selected.length)payload.custom_points=selected.map(({id,name,lat,lng})=>({id,name,lat,lng}))}
   timer=setTimeout(async()=>{
    const activeController=new AbortController();controller=activeController
    const timeout=setTimeout(()=>activeController.abort(),45000)
@@ -23,7 +25,7 @@ export function useRouting({ ids, transport, enabled, online }) {
    } finally { clearTimeout(timeout); if(current===generation)loading.value=false }
   },350)
  }
- watch(()=>[enabled.value,online.value,transport.value,JSON.stringify(ids.value)],refresh,{immediate:true})
+ watch(()=>[enabled.value,online.value,transport.value,JSON.stringify(ids.value),JSON.stringify(pointPositions?.value)],refresh,{immediate:true})
  onBeforeUnmount(()=>{generation++;clearTimeout(timer);controller?.abort()})
  return {route,loading,error,refresh}
 }

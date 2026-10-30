@@ -1,0 +1,4970 @@
+[
+  {
+    "id": 920001,
+    "name": "Bukowy Raj",
+    "subtitle": "Noclegi · ul. Bukowa 4",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3280035,
+    "lng": 15.284917,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Bukowa 4, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Bukowy Raj",
+      "address": "ul. Bukowa 4, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632640"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632640",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920002,
+    "name": "Domki Letniskowe – Cimała Monika",
+    "subtitle": "Domki / noclegi · ul. M. Konopnickiej",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3473843,
+    "lng": 15.3007513,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. M. Konopnickiej, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Domki Letniskowe – Cimała Monika",
+      "address": "ul. M. Konopnickiej, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/219969347"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/219969347",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920003,
+    "name": "Klimatyczny apartament nad jeziorem",
+    "subtitle": "Apartamenty · ul. Paderewskiego 4/6",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.331228,
+    "lng": 15.2867395,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Paderewskiego 4/6, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Klimatyczny apartament nad jeziorem",
+      "address": "ul. Paderewskiego 4/6, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235634381"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235634381",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920004,
+    "name": "LuLu Apartamento Centro",
+    "subtitle": "Apartamenty · ul. Łazienkowa 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3330495,
+    "lng": 15.2958843,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Łazienkowa 1, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "LuLu Apartamento Centro",
+      "address": "ul. Łazienkowa 1, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235823324"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235823324",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920005,
+    "name": "Na Zamkowej Apartament",
+    "subtitle": "Apartamenty · ul. Zamkowa 1A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3330179,
+    "lng": 15.2953975,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Zamkowa 1A, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Na Zamkowej Apartament",
+      "address": "ul. Zamkowa 1A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/960183765"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/960183765",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920006,
+    "name": "Pokoje gościnne – Adam Iwona",
+    "subtitle": "Noclegi · ul. Kolonia 6B",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3458901,
+    "lng": 15.3016044,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kolonia 6B, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje gościnne – Adam Iwona",
+      "address": "ul. Kolonia 6B, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807361"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807361",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920007,
+    "name": "Agroturystyka u Róży",
+    "subtitle": "Noclegi · ul. Ogrodowa 6",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.340594,
+    "lng": 15.300098,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Ogrodowa 6, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Agroturystyka u Róży",
+      "address": "ul. Ogrodowa 6, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807359"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807359",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920008,
+    "name": "Apartament Forte Studio",
+    "subtitle": "Apartamenty · ul. Chopina 20N/3",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Chopina 20N/3, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Apartament Forte Studio",
+      "address": "ul. Chopina 20N/3, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "Forte Studio"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920009,
+    "name": "Apartament Londyn",
+    "subtitle": "Apartamenty · ul. Chrobrego 3A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.33422,
+    "lng": 15.29127,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Chrobrego 3A, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Apartament Londyn",
+      "address": "ul. Chrobrego 3A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/5490722813"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/5490722813",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920010,
+    "name": "Apartament na Górce",
+    "subtitle": "Apartamenty · ul. Mostowa 9E/26",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.332651,
+    "lng": 15.3020181,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Mostowa 9E/26, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Apartament na Górce",
+      "address": "ul. Mostowa 9E/26, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/267933182"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/267933182",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920011,
+    "name": "Baja",
+    "subtitle": "Noclegi · ul. Słoneczna 4",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3425157,
+    "lng": 15.2995612,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Słoneczna 4, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Baja",
+      "address": "ul. Słoneczna 4, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235136881"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235136881",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920012,
+    "name": "Casablanca",
+    "subtitle": "Noclegi · ul. Chrobrego 26",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3349565,
+    "lng": 15.2880351,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chrobrego 26, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Casablanca",
+      "address": "ul. Chrobrego 26, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235678076"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235678076",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920013,
+    "name": "Kalina",
+    "subtitle": "Noclegi · ul. Słoneczna 9",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3424191,
+    "lng": 15.2990247,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Słoneczna 9, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Kalina",
+      "address": "ul. Słoneczna 9, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807373"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807373",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920014,
+    "name": "Kemping Pod Brzozami",
+    "subtitle": "Camping / noclegi · ul. Spacerowa 2C",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3267059,
+    "lng": 15.2944397,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Camping / noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 2C, 66-220 Łagów.",
+    "details": {
+      "kind": "camp_site",
+      "official_name": "Kemping Pod Brzozami",
+      "address": "ul. Spacerowa 2C, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/232387487"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/232387487",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920015,
+    "name": "Kwatery u Ani",
+    "subtitle": "Noclegi · ul. Kolonia 10",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3463812,
+    "lng": 15.3002636,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kolonia 10, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Kwatery u Ani",
+      "address": "ul. Kolonia 10, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235709312"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235709312",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920016,
+    "name": "Maja",
+    "subtitle": "Noclegi · ul. Zamkowa 4",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3330762,
+    "lng": 15.2949858,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Zamkowa 4, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Maja",
+      "address": "ul. Zamkowa 4, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "Pokoje Gościnne MAJA"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235823362"
+        },
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/235823362"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235823362",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920017,
+    "name": "Miło Tu",
+    "subtitle": "Noclegi · ul. Podgórna 11",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3286622,
+    "lng": 15.2849597,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Podgórna 11, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Miło Tu",
+      "address": "ul. Podgórna 11, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "Miło.tu"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632569"
+        },
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/235632569"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632569",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920018,
+    "name": "Nad Stawem",
+    "subtitle": "Noclegi · ul. Kolonia 3",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3453139,
+    "lng": 15.3043435,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kolonia 3, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Nad Stawem",
+      "address": "ul. Kolonia 3, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "Nad Stawem"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/7788555848"
+        },
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788555848"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788555848",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "https://www.nad-stawem.com/",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920019,
+    "name": "Pensjonat Danuta",
+    "subtitle": "Noclegi · ul. Lipowa 8",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3299491,
+    "lng": 15.283386,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Lipowa 8, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pensjonat Danuta",
+      "address": "ul. Lipowa 8, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632711"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632711",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920020,
+    "name": "Pod Jabłonią",
+    "subtitle": "Noclegi · ul. Słoneczna 7",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3422421,
+    "lng": 15.2995261,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Słoneczna 7, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pod Jabłonią",
+      "address": "ul. Słoneczna 7, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807363"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807363",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920021,
+    "name": "Pod Złotym Rogalem",
+    "subtitle": "Noclegi · ul. Zamkowa 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3330129,
+    "lng": 15.295506,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Zamkowa 1, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pod Złotym Rogalem",
+      "address": "ul. Zamkowa 1, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235823323"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235823323",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920022,
+    "name": "U Marcina",
+    "subtitle": "Noclegi · ul. Wczasowa 10",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3234417,
+    "lng": 15.2915618,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Wczasowa 10, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "U Marcina",
+      "address": "ul. Wczasowa 10, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/633021821"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/633021821",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920023,
+    "name": "Pokoje Gościnne Alla Trofimenkowa",
+    "subtitle": "Noclegi · ul. Lipowa 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3291329,
+    "lng": 15.2847187,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Lipowa 1, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Alla Trofimenkowa",
+      "address": "ul. Lipowa 1, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632552"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632552",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920024,
+    "name": "Nova Kamienica",
+    "subtitle": "Noclegi · ul. Prosta 2",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3330048,
+    "lng": 15.2960627,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Prosta 2, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Nova Kamienica",
+      "address": "ul. Prosta 2, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235823345"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235823345",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920025,
+    "name": "Forest",
+    "subtitle": "Noclegi · ul. Chopina 20D/5",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3438732,
+    "lng": 15.3053951,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 20D/5, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Forest",
+      "address": "ul. Chopina 20D/5, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/834354923"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/834354923",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920026,
+    "name": "Karole",
+    "subtitle": "Noclegi · ul. Chopina 20M/2",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 20M/2, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Karole",
+      "address": "ul. Chopina 20M/2, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920027,
+    "name": "Nicole",
+    "subtitle": "Noclegi · ul. Chopina 20M/12",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 20M/12, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Nicole",
+      "address": "ul. Chopina 20M/12, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920028,
+    "name": "Apartament Lamel",
+    "subtitle": "Apartamenty · ul. Chopina 20N/11",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Chopina 20N/11, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Apartament Lamel",
+      "address": "ul. Chopina 20N/11, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920029,
+    "name": "Babie Lato",
+    "subtitle": "Noclegi · ul. Chopina 20F",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3432374,
+    "lng": 15.3053466,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 20F, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Babie Lato",
+      "address": "ul. Chopina 20F, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/10292211715"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/10292211715",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920030,
+    "name": "Przystanek Łagów",
+    "subtitle": "Noclegi · ul. Paderewskiego 6A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3319695,
+    "lng": 15.28657,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Paderewskiego 6A, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Przystanek Łagów",
+      "address": "ul. Paderewskiego 6A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/108038138"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/108038138",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920031,
+    "name": "Domki letniskowe KMB-TECH",
+    "subtitle": "Domki / noclegi · ul. Chopina 18",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3418977,
+    "lng": 15.3028308,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Chopina 18, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Domki letniskowe KMB-TECH",
+      "address": "ul. Chopina 18, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235814713"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235814713",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920032,
+    "name": "Szafirowe Domki",
+    "subtitle": "Domki / noclegi · ul. Modrzewiowa 12A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3288497,
+    "lng": 15.2880483,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Modrzewiowa 12A, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Szafirowe Domki",
+      "address": "ul. Modrzewiowa 12A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/10292211603"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/10292211603",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920033,
+    "name": "Pokoje gościnne – Borkowska Lucyna",
+    "subtitle": "Noclegi · ul. Chopina 22",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 22, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje gościnne – Borkowska Lucyna",
+      "address": "ul. Chopina 22, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920034,
+    "name": "U M&M",
+    "subtitle": "Noclegi · ul. Chopina 24",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 24, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "U M&M",
+      "address": "ul. Chopina 24, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920035,
+    "name": "Brola Mielnik Bronisław",
+    "subtitle": "Noclegi · ul. Spacerowa 10",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3334179,
+    "lng": 15.2972238,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 10, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Brola Mielnik Bronisław",
+      "address": "ul. Spacerowa 10, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235824362"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235824362",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920036,
+    "name": "Chata pod Lasem",
+    "subtitle": "Domki / noclegi · ul. Wrzosowa 3",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3287114,
+    "lng": 15.283759,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Wrzosowa 3, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Chata pod Lasem",
+      "address": "ul. Wrzosowa 3, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632636"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632636",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920037,
+    "name": "Bosco",
+    "subtitle": "Noclegi · Osiedle Lecha 25",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3389783,
+    "lng": 15.2816876,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: Osiedle Lecha 25, Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Bosco",
+      "address": "Osiedle Lecha 25, Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/108038121"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/108038121",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920038,
+    "name": "Kalinówka",
+    "subtitle": "Noclegi · ul. Sulęcińska 8",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3351337,
+    "lng": 15.2859464,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Sulęcińska 8, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Kalinówka",
+      "address": "ul. Sulęcińska 8, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235678086"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235678086",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920039,
+    "name": "Czarne Domki",
+    "subtitle": "Domki / noclegi · ul. Wczasowa 7",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3207472,
+    "lng": 15.2928099,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Wczasowa 7, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Czarne Domki",
+      "address": "ul. Wczasowa 7, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/108038124"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/108038124",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920040,
+    "name": "Dom Rekolekcyjny Łagów",
+    "subtitle": "Noclegi · ul. Sulęcińska 10",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.335259,
+    "lng": 15.2854268,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Sulęcińska 10, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Dom Rekolekcyjny Łagów",
+      "address": "ul. Sulęcińska 10, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/7788606594"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788606594",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920041,
+    "name": "Dom w Zieleni",
+    "subtitle": "Noclegi · ul. Mickiewicza 12",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3446235,
+    "lng": 15.3018535,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Mickiewicza 12, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Dom w Zieleni",
+      "address": "ul. Mickiewicza 12, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "W Zagajniku"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/10292211773"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/10292211773",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920042,
+    "name": "Domek z Kominkiem",
+    "subtitle": "Domki / noclegi · Kolonia 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.344906,
+    "lng": 15.305603,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: Kolonia 1, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Domek z Kominkiem",
+      "address": "Kolonia 1, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235818905"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235818905",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920043,
+    "name": "Pokoje Gościnne Domagała Emil",
+    "subtitle": "Noclegi · ul. Ogrodowa 9",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3408816,
+    "lng": 15.3004428,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Ogrodowa 9, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Domagała Emil",
+      "address": "ul. Ogrodowa 9, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807372"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807372",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920044,
+    "name": "Domek 34",
+    "subtitle": "Domki / noclegi · ul. Spacerowa 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.326198,
+    "lng": 15.2936999,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 1, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Domek 34",
+      "address": "ul. Spacerowa 1, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235123515"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235123515",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920045,
+    "name": "Domek Lipowa 6",
+    "subtitle": "Domki / noclegi · ul. Lipowa 6",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3298873,
+    "lng": 15.283655,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Lipowa 6, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Domek Lipowa 6",
+      "address": "ul. Lipowa 6, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632683"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632683",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920046,
+    "name": "Wiktoria",
+    "subtitle": "Noclegi · ul. Spacerowa 1G",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3298977,
+    "lng": 15.2920912,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 1G, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Wiktoria",
+      "address": "ul. Spacerowa 1G, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/10292211601"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/10292211601",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920047,
+    "name": "Leśny Zaułek",
+    "subtitle": "Noclegi · ul. Marii Konopnickiej 6J",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3484232,
+    "lng": 15.3011077,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Marii Konopnickiej 6J, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Leśny Zaułek",
+      "address": "ul. Marii Konopnickiej 6J, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/834354899"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/834354899",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920048,
+    "name": "Domki Letniskowe – Dzierla Regina",
+    "subtitle": "Domki / noclegi · ul. Chopina 10",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3399662,
+    "lng": 15.300837,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Chopina 10, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Domki Letniskowe – Dzierla Regina",
+      "address": "ul. Chopina 10, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807298"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807298",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920049,
+    "name": "Energetyk",
+    "subtitle": "Noclegi · ul. Widokowa",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3318624,
+    "lng": 15.2963718,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Widokowa, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Energetyk",
+      "address": "ul. Widokowa, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/108038133"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/108038133",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920050,
+    "name": "Pokoje pod Sosną",
+    "subtitle": "Noclegi · ul. Kolonia 12",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3471876,
+    "lng": 15.2979247,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kolonia 12, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje pod Sosną",
+      "address": "ul. Kolonia 12, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235709317"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235709317",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920051,
+    "name": "Romeo i Julia",
+    "subtitle": "Noclegi · ul. Kwiatowa 3",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3306911,
+    "lng": 15.2848818,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kwiatowa 3, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Romeo i Julia",
+      "address": "ul. Kwiatowa 3, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632620"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632620",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920052,
+    "name": "Gościniec Beata",
+    "subtitle": "Noclegi · ul. Kwiatowa 11",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3308592,
+    "lng": 15.2837832,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kwiatowa 11, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Gościniec Beata",
+      "address": "ul. Kwiatowa 11, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632567"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632567",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920053,
+    "name": "Green Arches Apartment",
+    "subtitle": "Apartamenty · ul. Chopina 20N/6",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Chopina 20N/6, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Green Arches Apartment",
+      "address": "ul. Chopina 20N/6, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920054,
+    "name": "Jadar",
+    "subtitle": "Noclegi · ul. Pensjonatowa 4",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3305206,
+    "lng": 15.2842092,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Pensjonatowa 4, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Jadar",
+      "address": "ul. Pensjonatowa 4, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632655"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632655",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920055,
+    "name": "Pokoje Gościnne Rafaello",
+    "subtitle": "Noclegi · ul. Spacerowa 4",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3318131,
+    "lng": 15.29595,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 4, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Rafaello",
+      "address": "ul. Spacerowa 4, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235824365"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235824365",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920056,
+    "name": "Łagowska Ostoja",
+    "subtitle": "Noclegi · ul. Sulęcińska 21",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3358241,
+    "lng": 15.2862095,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Sulęcińska 21, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Łagowska Ostoja",
+      "address": "ul. Sulęcińska 21, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235695352"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235695352",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920057,
+    "name": "Apartament Fryderyk",
+    "subtitle": "Apartamenty · ul. Chopina 20N/12",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Chopina 20N/12, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Apartament Fryderyk",
+      "address": "ul. Chopina 20N/12, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920058,
+    "name": "Zielona Okiennica",
+    "subtitle": "Noclegi · Osiedle Lecha 7C",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3396901,
+    "lng": 15.2834928,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: Osiedle Lecha 7C, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Zielona Okiennica",
+      "address": "Osiedle Lecha 7C, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/10292211728"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/10292211728",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920059,
+    "name": "Domki Letniskowe – Krey Marcin, Janina",
+    "subtitle": "Domki / noclegi · ul. Marii Konopnickiej",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3473843,
+    "lng": 15.3007513,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Marii Konopnickiej, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Domki Letniskowe – Krey Marcin, Janina",
+      "address": "ul. Marii Konopnickiej, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/219969347"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/219969347",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920060,
+    "name": "Tanie Noclegi u Marii",
+    "subtitle": "Noclegi · ul. Ogrodowa 12",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3411726,
+    "lng": 15.3011491,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Ogrodowa 12, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Tanie Noclegi u Marii",
+      "address": "ul. Ogrodowa 12, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807306"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807306",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920061,
+    "name": "U Ali",
+    "subtitle": "Noclegi · ul. Chopina 18B",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3423393,
+    "lng": 15.3030253,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 18B, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "U Ali",
+      "address": "ul. Chopina 18B, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/5490722790"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/5490722790",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920062,
+    "name": "Pokoje Gościnne Kudyba-Lindell Mirosława",
+    "subtitle": "Noclegi · Osiedle Lecha 6",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3386329,
+    "lng": 15.2846188,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: Osiedle Lecha 6, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Kudyba-Lindell Mirosława",
+      "address": "Osiedle Lecha 6, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235701659"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235701659",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920063,
+    "name": "Lake Park",
+    "subtitle": "Noclegi · ul. Spacerowa 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.326198,
+    "lng": 15.2936999,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 1, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Lake Park",
+      "address": "ul. Spacerowa 1, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235123515"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235123515",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920064,
+    "name": "Laura Spa",
+    "subtitle": "Noclegi i gastronomia · ul. Spacerowa 16A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3341823,
+    "lng": 15.2972918,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 16A, 66-220 Łagów. Obiekt oferuje także gastronomię.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Laura Spa",
+      "address": "ul. Spacerowa 16A, 66-220 Łagów",
+      "categories": [
+        "stay",
+        "food"
+      ],
+      "aliases": [
+        "Restauracja Laura"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/7788555803"
+        },
+        {
+          "title": "Restauracja Laura · kontakt",
+          "url": "https://www.restauracjalaura.pl/kontakt"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788555803",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "https://www.restauracjalaura.pl/kontakt",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920065,
+    "name": "Leśne Tarasy",
+    "subtitle": "Noclegi · ul. Leśna 3",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.32912,
+    "lng": 15.28329,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Leśna 3, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Leśne Tarasy",
+      "address": "ul. Leśna 3, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/5490722807"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/5490722807",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920066,
+    "name": "Luisa Park",
+    "subtitle": "Noclegi · ul. Spacerowa 2A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3249431,
+    "lng": 15.29409,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 2A, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Luisa Park",
+      "address": "ul. Spacerowa 2A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/269490981"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/269490981",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920067,
+    "name": "Luna Apartament",
+    "subtitle": "Apartamenty · ul. Chopina 20N/5",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3384015,
+    "lng": 15.2999786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Chopina 20N/5, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Luna Apartament",
+      "address": "ul. Chopina 20N/5, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/119234285"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/119234285",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920068,
+    "name": "Malta",
+    "subtitle": "Noclegi · ul. Kościuszki 2",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.334068,
+    "lng": 15.293021,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kościuszki 2, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Malta",
+      "address": "ul. Kościuszki 2, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235826253"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235826253",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920069,
+    "name": "Marchewkowe Pole",
+    "subtitle": "Noclegi · ul. Chopina 25",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3456573,
+    "lng": 15.3068749,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 25, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Marchewkowe Pole",
+      "address": "ul. Chopina 25, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/7788555870"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788555870",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920070,
+    "name": "MCS Zameczek (ZSMP)",
+    "subtitle": "Noclegi · ul. Sulęcińska 9",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3397533,
+    "lng": 15.2814071,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Sulęcińska 9, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "MCS Zameczek (ZSMP)",
+      "address": "ul. Sulęcińska 9, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235695373"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235695373",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920071,
+    "name": "U Michała",
+    "subtitle": "Noclegi · ul. Zamkowa 5",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3332072,
+    "lng": 15.2945519,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Zamkowa 5, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "U Michała",
+      "address": "ul. Zamkowa 5, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235826257"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235826257",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920072,
+    "name": "Pokoje u Anny",
+    "subtitle": "Noclegi · ul. Mostowa 2",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3314514,
+    "lng": 15.3007282,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Mostowa 2, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje u Anny",
+      "address": "ul. Mostowa 2, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/267933156"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/267933156",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920073,
+    "name": "Nad Chmurami",
+    "subtitle": "Noclegi · ul. Toporowska 8",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3338397,
+    "lng": 15.286267,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Toporowska 8, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Nad Chmurami",
+      "address": "ul. Toporowska 8, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "Nad chmurami"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235678087"
+        },
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788498276"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235678087",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920074,
+    "name": "Pokoje Gościnne u Oksany",
+    "subtitle": "Noclegi · ul. Wiśniowa 8",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3295374,
+    "lng": 15.2866387,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Wiśniowa 8, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne u Oksany",
+      "address": "ul. Wiśniowa 8, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632718"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632718",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920075,
+    "name": "Pole namiotowe – Oleszkiewicz Krystyna",
+    "subtitle": "Camping / noclegi · ul. Ogrodowa 2",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3401073,
+    "lng": 15.2997125,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Camping / noclegi w Łagowie. Adres podany w źródle: ul. Ogrodowa 2, 66-220 Łagów.",
+    "details": {
+      "kind": "camp_site",
+      "official_name": "Pole namiotowe – Oleszkiewicz Krystyna",
+      "address": "ul. Ogrodowa 2, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807337"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807337",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920076,
+    "name": "Jordan",
+    "subtitle": "Noclegi · ul. Chopina 2D",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3394429,
+    "lng": 15.2980256,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 2D, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Jordan",
+      "address": "ul. Chopina 2D, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/7788555825"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788555825",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920077,
+    "name": "Leśnik",
+    "subtitle": "Noclegi i gastronomia · ul. B. Chrobrego 10",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.33332,
+    "lng": 15.2899425,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. B. Chrobrego 10, 66-220 Łagów. Obiekt oferuje także gastronomię.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Leśnik",
+      "address": "ul. B. Chrobrego 10, 66-220 Łagów",
+      "categories": [
+        "stay",
+        "food"
+      ],
+      "aliases": [
+        "Ośrodek Wypoczynkowy Leśnik"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/538207500"
+        },
+        {
+          "title": "Leśnik · noclegi i gastronomia",
+          "url": "https://lagowlesnik.zielonagora.lasy.gov.pl/en/witamy"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/538207500",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "https://lagowlesnik.zielonagora.lasy.gov.pl/en/witamy",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920078,
+    "name": "Zacisze",
+    "subtitle": "Noclegi · ul. Wczasowa 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3207472,
+    "lng": 15.2928099,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Wczasowa 1, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Zacisze",
+      "address": "ul. Wczasowa 1, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/108038124"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/108038124",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920079,
+    "name": "Zielona Dolina",
+    "subtitle": "Noclegi · ul. Chopina 2E",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3391211,
+    "lng": 15.2986005,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 2E, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Zielona Dolina",
+      "address": "ul. Chopina 2E, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/10292211594"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/10292211594",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920080,
+    "name": "Pensjonat Viola",
+    "subtitle": "Noclegi · ul. Pensjonatowa 3",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.330288,
+    "lng": 15.2838709,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Pensjonatowa 3, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pensjonat Viola",
+      "address": "ul. Pensjonatowa 3, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632626"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632626",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920081,
+    "name": "Pod Rybą",
+    "subtitle": "Noclegi · ul. Ogrodowa 2A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.339561,
+    "lng": 15.2997567,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Ogrodowa 2A, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pod Rybą",
+      "address": "ul. Ogrodowa 2A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807339"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807339",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920082,
+    "name": "Pokoje Gościnne / pole namiotowe",
+    "subtitle": "Camping / noclegi · ul. Zamkowa 8",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3331204,
+    "lng": 15.2938647,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Camping / noclegi w Łagowie. Adres podany w źródle: ul. Zamkowa 8, 66-220 Łagów.",
+    "details": {
+      "kind": "camp_site",
+      "official_name": "Pokoje Gościnne / pole namiotowe",
+      "address": "ul. Zamkowa 8, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235826263"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235826263",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920083,
+    "name": "Na Skarpie",
+    "subtitle": "Noclegi i gastronomia · ul. Sosnowa 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3304226,
+    "lng": 15.2856222,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Sosnowa 1, 66-220 Łagów. Obiekt oferuje także gastronomię.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Na Skarpie",
+      "address": "ul. Sosnowa 1, 66-220 Łagów",
+      "categories": [
+        "stay",
+        "food"
+      ],
+      "aliases": [
+        "Pizzeria Na Skarpie"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632554"
+        },
+        {
+          "title": "Na Skarpie · strona obiektu",
+          "url": "https://naskarpie.org"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632554",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "https://naskarpie.org",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920084,
+    "name": "Pokoje Gościnne Agro-Kolonia",
+    "subtitle": "Noclegi · ul. Czesława Miłosza 2",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3459217,
+    "lng": 15.3026748,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Czesława Miłosza 2, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Agro-Kolonia",
+      "address": "ul. Czesława Miłosza 2, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/10292211772"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/10292211772",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920085,
+    "name": "Pokoje Gościnne Chata",
+    "subtitle": "Domki / noclegi · ul. Pensjonatowa 5A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3304033,
+    "lng": 15.2832276,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Domki / noclegi w Łagowie. Adres podany w źródle: ul. Pensjonatowa 5A, 66-220 Łagów.",
+    "details": {
+      "kind": "chalet",
+      "official_name": "Pokoje Gościnne Chata",
+      "address": "ul. Pensjonatowa 5A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632680"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632680",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920086,
+    "name": "Pokoje Gościnne Dąbrowska Maria",
+    "subtitle": "Noclegi · ul. Chopina 5",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3391925,
+    "lng": 15.3012151,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 5, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Dąbrowska Maria",
+      "address": "ul. Chopina 5, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235810080"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235810080",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920087,
+    "name": "Pokoje Gościnne Ola",
+    "subtitle": "Noclegi · ul. Pensjonatowa 5",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3303451,
+    "lng": 15.2835565,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Pensjonatowa 5, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Ola",
+      "address": "ul. Pensjonatowa 5, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632672"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632672",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920088,
+    "name": "Pokoje Gościnne Tyliszczak Mirosław",
+    "subtitle": "Noclegi · ul. Kolonia 8G",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3448822,
+    "lng": 15.2996532,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kolonia 8G, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Tyliszczak Mirosław",
+      "address": "ul. Kolonia 8G, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235807369"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235807369",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920089,
+    "name": "Pokoje Gościnne — ul. Chopina 20C/6",
+    "subtitle": "Noclegi · ul. Chopina 20C/6",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3435956,
+    "lng": 15.3051251,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 20C/6, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne — ul. Chopina 20C/6",
+      "address": "ul. Chopina 20C/6, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235814752"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235814752",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920090,
+    "name": "Pokoje Gościnne Willa Krystyna",
+    "subtitle": "Noclegi · ul. Podgórna 10",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3296803,
+    "lng": 15.2847314,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Podgórna 10, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Willa Krystyna",
+      "address": "ul. Podgórna 10, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632561"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632561",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920091,
+    "name": "Słoneczne Wzgórze",
+    "subtitle": "Noclegi · ul. Słoneczna 16A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3416136,
+    "lng": 15.3014733,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Słoneczna 16A, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Słoneczne Wzgórze",
+      "address": "ul. Słoneczna 16A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/108037674"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/108037674",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920092,
+    "name": "Pensjonat w Łagowie – Letnisko Łagów",
+    "subtitle": "Noclegi · ul. Spacerowa 5",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3333019,
+    "lng": 15.2966456,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 5, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pensjonat w Łagowie – Letnisko Łagów",
+      "address": "ul. Spacerowa 5, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235823372"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235823372",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920093,
+    "name": "Stanica Wędkarska",
+    "subtitle": "Noclegi · ul. Paderewskiego 8",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3319695,
+    "lng": 15.28657,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Paderewskiego 8, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Stanica Wędkarska",
+      "address": "ul. Paderewskiego 8, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/108038138"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/108038138",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920094,
+    "name": "Summrtime Suites",
+    "subtitle": "Apartamenty · ul. Spacerowa 10",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3334179,
+    "lng": 15.2972238,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Spacerowa 10, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Summrtime Suites",
+      "address": "ul. Spacerowa 10, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235824362"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235824362",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920095,
+    "name": "Pokoje w Lawendach",
+    "subtitle": "Noclegi · ul. Mikołaja Reja 8",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3443722,
+    "lng": 15.3039835,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Mikołaja Reja 8, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje w Lawendach",
+      "address": "ul. Mikołaja Reja 8, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "Pokoje gościnne W Lawendach"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/10292211771"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/10292211771",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920096,
+    "name": "Pokoje Gościnne — ul. Chopina 20B/2",
+    "subtitle": "Noclegi · ul. Chopina 20B/2",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3433123,
+    "lng": 15.3048682,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 20B/2, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne — ul. Chopina 20B/2",
+      "address": "ul. Chopina 20B/2, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235814728"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235814728",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920097,
+    "name": "Pokoje Gościnne — ul. Chopina 20C/8",
+    "subtitle": "Noclegi · ul. Chopina 20C/8",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3435956,
+    "lng": 15.3051251,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Chopina 20C/8, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne — ul. Chopina 20C/8",
+      "address": "ul. Chopina 20C/8, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235814752"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235814752",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920098,
+    "name": "Willa Vanilla",
+    "subtitle": "Noclegi · ul. Dworcowa 3",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3368394,
+    "lng": 15.3000401,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Dworcowa 3, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Willa Vanilla",
+      "address": "ul. Dworcowa 3, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "Villa Vanilla"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235823415"
+        },
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/235823415"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235823415",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "https://vanillavilla.pl/",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920099,
+    "name": "Pokoje Gościnne Spacerowa 6A",
+    "subtitle": "Noclegi · ul. Spacerowa 6A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3321584,
+    "lng": 15.2962316,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 6A, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Spacerowa 6A",
+      "address": "ul. Spacerowa 6A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235824368"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235824368",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920100,
+    "name": "Uniwersytet Zielonogórski",
+    "subtitle": "Noclegi · ul. Szkolna 1",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.338441,
+    "lng": 15.2974389,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Szkolna 1, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Uniwersytet Zielonogórski",
+      "address": "ul. Szkolna 1, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/node/7788606595"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788606595",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920101,
+    "name": "Villa Rada",
+    "subtitle": "Noclegi · ul. Spacerowa 24",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3350729,
+    "lng": 15.2977274,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Spacerowa 24, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Villa Rada",
+      "address": "ul. Spacerowa 24, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [
+        "Villarada"
+      ],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235823351"
+        },
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788606596"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235823351",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "https://villarada.pl/",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920102,
+    "name": "Widokówka",
+    "subtitle": "Noclegi · Osiedle Lecha 21",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3389783,
+    "lng": 15.2816876,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: Osiedle Lecha 21, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Widokówka",
+      "address": "Osiedle Lecha 21, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/108038121"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/108038121",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920103,
+    "name": "Willa Bohema",
+    "subtitle": "Noclegi · ul. Wiśniowa 12",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.329407,
+    "lng": 15.2873217,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Wiśniowa 12, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Willa Bohema",
+      "address": "ul. Wiśniowa 12, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632580"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632580",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920104,
+    "name": "Pokoje Gościnne Red Chapel",
+    "subtitle": "Noclegi · ul. Podgórna 5",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.329397,
+    "lng": 15.28532,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Podgórna 5, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje Gościnne Red Chapel",
+      "address": "ul. Podgórna 5, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235632675"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235632675",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920105,
+    "name": "Apartamenty Domiś, Milan",
+    "subtitle": "Apartamenty · ul. Kolonia 14A",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3473935,
+    "lng": 15.2973332,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Apartamenty w Łagowie. Adres podany w źródle: ul. Kolonia 14A, 66-220 Łagów.",
+    "details": {
+      "kind": "apartment",
+      "official_name": "Apartamenty Domiś, Milan",
+      "address": "ul. Kolonia 14A, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/235709322"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235709322",
+      "coordinate_accuracy": "address",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920106,
+    "name": "Łagowski Reset",
+    "subtitle": "Noclegi · ul. Moniuszki 4",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3447755,
+    "lng": 15.3025107,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Moniuszki 4, 66-220 Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Łagowski Reset",
+      "address": "ul. Moniuszki 4, 66-220 Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "Powiat Świebodziński · ewidencja noclegów",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/gmina-lagow-pozostale-obiekty-hotelowe"
+        },
+        {
+          "title": "OpenStreetMap · adres / ulica",
+          "url": "https://www.openstreetmap.org/way/298663794"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/298663794",
+      "coordinate_accuracy": "street",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Lokalizacja przybliżona do ulicy, nie wskazuje budynku ani wejścia. Przed wyjazdem potwierdź adres u gospodarza. Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920107,
+    "name": "Ośrodek Wypoczynkowy „Defka”",
+    "subtitle": "Ośrodek / noclegi · Łagów",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.333824,
+    "lng": 15.2891903,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Ośrodek / noclegi w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "hostel",
+      "official_name": "Ośrodek Wypoczynkowy „Defka”",
+      "address": "",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/1338252676"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/1338252676",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920108,
+    "name": "Pokoje \"Pod Dębem\"",
+    "subtitle": "Noclegi · Łagów",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3331494,
+    "lng": 15.2862929,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pokoje \"Pod Dębem\"",
+      "address": "",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788498263"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788498263",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920109,
+    "name": "Piast",
+    "subtitle": "Noclegi · Łagów",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3334521,
+    "lng": 15.2862784,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Piast",
+      "address": "",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788498275"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788498275",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920110,
+    "name": "Bar Przystań-Zostań",
+    "subtitle": "Bar / szybkie jedzenie · ul. Toporowska 4a",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3340395,
+    "lng": 15.2874056,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Bar / szybkie jedzenie w Łagowie. Adres podany w źródle: ul. Toporowska 4a, Łagów.",
+    "details": {
+      "kind": "fast_food",
+      "official_name": "Bar Przystań-Zostań",
+      "address": "ul. Toporowska 4a, Łagów",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788498277"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788498277",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920111,
+    "name": "Zofia",
+    "subtitle": "Noclegi · Łagów",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3339397,
+    "lng": 15.2910353,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Zofia",
+      "address": "",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788555791"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788555791",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920112,
+    "name": "Ogród Smaków - bistro, kawiarnia",
+    "subtitle": "Restauracja · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3333098,
+    "lng": 15.2954814,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Restauracja w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "restaurant",
+      "official_name": "Ogród Smaków - bistro, kawiarnia",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788555798"
+        },
+        {
+          "title": "OpenStreetMap · drugi wpis tego samego lokalu",
+          "url": "https://www.openstreetmap.org/way/1552519012"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788555798",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920113,
+    "name": "U Janeczki",
+    "subtitle": "Noclegi · ul. Kolonia 2",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3447159,
+    "lng": 15.305427,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Kolonia 2, Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "U Janeczki",
+      "address": "ul. Kolonia 2, Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788555849"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788555849",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920114,
+    "name": "Smreka - noclegi",
+    "subtitle": "Noclegi · ul. Podgórna 6",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3304044,
+    "lng": 15.28506,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Adres podany w źródle: ul. Podgórna 6, Łagów.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Smreka - noclegi",
+      "address": "ul. Podgórna 6, Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/7788555967"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/7788555967",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920115,
+    "name": "Stolarnia cafe",
+    "subtitle": "Kawiarnia · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3332218,
+    "lng": 15.2938198,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Kawiarnia w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "cafe",
+      "official_name": "Stolarnia cafe",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/9888680938"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/9888680938",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920116,
+    "name": "LODZIArnia",
+    "subtitle": "Lodziarnia · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3332441,
+    "lng": 15.2941048,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Lodziarnia w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "ice_cream",
+      "official_name": "LODZIArnia",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/9888680939"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/9888680939",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920117,
+    "name": "Burgery",
+    "subtitle": "Bar / szybkie jedzenie · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3313614,
+    "lng": 15.2958457,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Bar / szybkie jedzenie w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "fast_food",
+      "official_name": "Burgery",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/11049287685"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/11049287685",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920118,
+    "name": "Lody z Gościńca",
+    "subtitle": "Lodziarnia · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3326363,
+    "lng": 15.2961049,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Lodziarnia w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "ice_cream",
+      "official_name": "Lody z Gościńca",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/11049287686"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/11049287686",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920119,
+    "name": "Kebab the King",
+    "subtitle": "Bar / szybkie jedzenie · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3323438,
+    "lng": 15.2963256,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Bar / szybkie jedzenie w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "fast_food",
+      "official_name": "Kebab the King",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/11049287687"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/11049287687",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920120,
+    "name": "Smashy",
+    "subtitle": "Restauracja · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3329538,
+    "lng": 15.2965427,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Restauracja w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "restaurant",
+      "official_name": "Smashy",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/11049287688"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/11049287688",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920121,
+    "name": "Ice Ice Baby",
+    "subtitle": "Kawiarnia · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3330975,
+    "lng": 15.2954457,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Kawiarnia w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "cafe",
+      "official_name": "Ice Ice Baby",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/11049287693"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/11049287693",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920122,
+    "name": "M.Zdanowicz",
+    "subtitle": "Kawiarnia · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3335627,
+    "lng": 15.2963341,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Kawiarnia w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "cafe",
+      "official_name": "M.Zdanowicz",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/11049287694"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/11049287694",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920123,
+    "name": "Cafe Warsztat",
+    "subtitle": "Restauracja · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3343808,
+    "lng": 15.2912735,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Restauracja w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "restaurant",
+      "official_name": "Cafe Warsztat",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/11049287695"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/11049287695",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920124,
+    "name": "Pod Lipami",
+    "subtitle": "Restauracja · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3337001,
+    "lng": 15.2937307,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Restauracja w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "restaurant",
+      "official_name": "Pod Lipami",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/11300038762"
+        },
+        {
+          "title": "OpenStreetMap · drugi wpis tego samego lokalu",
+          "url": "https://www.openstreetmap.org/way/1550138200"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/11300038762",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920125,
+    "name": "Kamienica",
+    "subtitle": "Lodziarnia · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3342766,
+    "lng": 15.2923012,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Lodziarnia w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "ice_cream",
+      "official_name": "Kamienica",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/node/14103760666"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/node/14103760666",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920126,
+    "name": "Ważka",
+    "subtitle": "Restauracja · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3276278,
+    "lng": 15.2922596,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Restauracja w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "restaurant",
+      "official_name": "Ważka",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/235123512"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235123512",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920127,
+    "name": "Rybka pod chmurką",
+    "subtitle": "Bar / szybkie jedzenie · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3328058,
+    "lng": 15.2962485,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Bar / szybkie jedzenie w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "fast_food",
+      "official_name": "Rybka pod chmurką",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/235823403"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/235823403",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920128,
+    "name": "Domagała",
+    "subtitle": "Kawiarnia · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3332549,
+    "lng": 15.2955444,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Kawiarnia w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "cafe",
+      "official_name": "Domagała",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/628773125"
+        },
+        {
+          "title": "OpenStreetMap · drugi wpis tego samego lokalu",
+          "url": "https://www.openstreetmap.org/way/1552518991"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/628773125",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920129,
+    "name": "Pensjonat SAGE",
+    "subtitle": "Pensjonat i restauracja · ul. Mickiewicza 21",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3458903,
+    "lng": 15.2984163,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Noclegi w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "guest_house",
+      "official_name": "Pensjonat SAGE",
+      "address": "ul. Mickiewicza 21, 66-220 Łagów",
+      "categories": [
+        "stay",
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/633029521"
+        },
+        {
+          "title": "Powiat Świebodziński · hotele i pensjonaty",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/hotele"
+        },
+        {
+          "title": "Pensjonat SAGE · strona obiektu",
+          "url": "https://www.pensjonatsage.pl/"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/633029521",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "https://www.pensjonatsage.pl/",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920130,
+    "name": "Bar plażowy",
+    "subtitle": "Bar / szybkie jedzenie · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3278768,
+    "lng": 15.2919739,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Bar / szybkie jedzenie w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "fast_food",
+      "official_name": "Bar plażowy",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/1189976537"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/1189976537",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920131,
+    "name": "Karczma Podzamcze",
+    "subtitle": "Restauracja · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3339852,
+    "lng": 15.2933602,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Restauracja w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "restaurant",
+      "official_name": "Karczma Podzamcze",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/1214322342"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/1214322342",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "https://karczmapodzamcze.pl/",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920132,
+    "name": "AutoCamping",
+    "subtitle": "Camping · ul. Zamkowa 7",
+    "category": "stay",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3324645,
+    "lng": 15.2936595,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Camping w Łagowie. Adres podany w źródle: ul. Zamkowa 7, Łagów.",
+    "details": {
+      "kind": "camp_site",
+      "official_name": "AutoCamping",
+      "address": "ul. Zamkowa 7, Łagów",
+      "categories": [
+        "stay"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/1214575273"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/1214575273",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 920133,
+    "name": "Bingo Street Food",
+    "subtitle": "Bar / szybkie jedzenie · Łagów",
+    "category": "food",
+    "image": "/images/attraction-placeholder.svg",
+    "lat": 52.3330786,
+    "lng": 15.2953207,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Bar / szybkie jedzenie w Łagowie. Lokalizacja według OpenStreetMap.",
+    "details": {
+      "kind": "fast_food",
+      "official_name": "Bingo Street Food",
+      "address": "",
+      "categories": [
+        "food"
+      ],
+      "aliases": [],
+      "sources": [
+        {
+          "title": "OpenStreetMap · obiekt",
+          "url": "https://www.openstreetmap.org/way/1552714530"
+        },
+        {
+          "title": "OpenStreetMap · drugi wpis tego samego lokalu",
+          "url": "https://www.openstreetmap.org/way/1552714527"
+        }
+      ],
+      "coordinate_source": "https://www.openstreetmap.org/way/1552714530",
+      "coordinate_accuracy": "poi",
+      "description_license": "Opis autorski na podstawie danych źródłowych. Dane mapowe © OpenStreetMap contributors, ODbL 1.0.",
+      "visit_note": "Dostępność i aktualną ofertę potwierdź bezpośrednio w obiekcie.",
+      "website": "",
+      "checked_at": "2026-10-30"
+    }
+  },
+  {
+    "id": 1,
+    "name": "Łagów",
+    "subtitle": "Zamek · Łagów",
+    "category": "heritage",
+    "image": "/images/heritage/q16618861.webp",
+    "lat": 52.334686,
+    "lng": 15.292786,
+    "rating": 0,
+    "location": "Łagów",
+    "description": "Zamek joannitów – znajduje się we wsi Łagów, w województwie lubuskim, na przesmyku między jeziorami: Łagowskim i Ciecz.",
+    "details": {
+      "kind": "castle",
+      "official_name": "Zamek joannitów w Łagowie",
+      "wikidata": "Q16618861",
+      "coordinate_source": "https://www.wikidata.org/wiki/Q16618861",
+      "description_license": "CC BY-SA 4.0",
+      "sources": [
+        {
+          "title": "Zamek joannitów w Łagowie",
+          "url": "https://pl.wikipedia.org/wiki/Zamek_joannit%C3%B3w_w_%C5%81agowie"
+        },
+        {
+          "title": "Wikidata Q16618861",
+          "url": "https://www.wikidata.org/wiki/Q16618861"
+        },
+        {
+          "title": "Powiat Świebodziński · hotele",
+          "url": "https://samorzad.gov.pl/web/powiat-swiebodzinski/hotele"
+        },
+        {
+          "title": "Zamek Joannitów · hotel i restauracja",
+          "url": "https://www.zamek-lagow.pl/"
+        },
+        {
+          "title": "OpenStreetMap · restauracja",
+          "url": "https://www.openstreetmap.org/node/1338302683"
+        }
+      ],
+      "registry": [
+        "23",
+        "Ku.Kons.II/116/51"
+      ],
+      "condition": "unspecified",
+      "checked_at": "2026-10-30",
+      "photo": {
+        "author": "Jacek Halicki",
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2018_Zamek_joannit%C3%B3w_w_%C5%81agowie_1.jpg",
+        "archival": false,
+        "transformation": "Zmniejszenie do szerokości 1200 px i zapis WebP, bez kadrowania."
+      },
+      "categories": [
+        "heritage",
+        "stay",
+        "food"
+      ],
+      "address": "ul. Kościuszki 3, 66-220 Łagów",
+      "website": "https://www.zamek-lagow.pl/",
+      "aliases": [
+        "Hotel Zamek Joannitów",
+        "Restauracja Zamek Joannitów"
+      ],
+      "planning_note": "Zamek Joannitów na przesmyku między jeziorami — główna atrakcja historyczna Łagowa."
+    }
+  }
+]

@@ -1,0 +1,6 @@
+import fs from 'node:fs/promises'
+const catalog=JSON.parse(await fs.readFile('data/lagow/source-records.json','utf8'))
+await fs.writeFile('src/catalog/lagow.json',JSON.stringify(catalog,null,2)+'\n')
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
+await fs.writeFile('public/lagow-credits.html',`<!doctype html><html lang="pl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Łagów — źródła atrakcji</title><style>body{font:16px/1.7 system-ui;max-width:900px;margin:30px auto;padding:20px;color:#234333}article{border-bottom:1px solid #ddd;padding:15px 0}a{color:#176e4f}</style><h1>Łagów i okolice — źródła atrakcji</h1><p>8 nowych miejsc i uzupełnienie istniejącego jeziora. Zamek zachowuje dotychczasowy wpis. Opisy autorskie, dane lokalizacyjne © OpenStreetMap contributors, ODbL 1.0. Nie kopiujemy zdjęć ani opisów z przewodnika; brak własnego zdjęcia oznaczono ilustracją.</p>${catalog.map(p=>`<article><h2>${esc(p.name)}</h2><p>${p.details.sources.map(s=>`<a href="${esc(s.url)}" rel="noopener noreferrer">${esc(s.title)}</a>`).join(' · ')}</p>${p.details.visit_note?`<p>${esc(p.details.visit_note)}</p>`:''}</article>`).join('')}</html>`)
+console.log('Łagów: 8 new attractions and 1 existing lake updated')

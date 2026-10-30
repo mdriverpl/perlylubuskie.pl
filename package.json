@@ -7,7 +7,8 @@
     "dev": "vite --host 127.0.0.1 --configLoader native",
     "build": "vite build --configLoader native",
     "preview": "vite preview --host 127.0.0.1 --configLoader native",
-    "test": "node scripts/test-ui.mjs && node scripts/test-routing-ui.mjs && node scripts/test-community-ui.mjs && node scripts/test-explore-ui.mjs"
+    "test": "node scripts/test-ui.mjs && node scripts/test-routing-ui.mjs && node scripts/test-community-ui.mjs && node scripts/test-explore-ui.mjs && node scripts/test-heritage.mjs && node scripts/test-here-map.mjs && node scripts/test-location-search-ui.mjs && node scripts/test-likes-ui.mjs && node scripts/test-planned-places-ui.mjs && node scripts/test-wineries.mjs && node scripts/test-custom-points-ui.mjs && node scripts/test-add-route-ui.mjs && node scripts/test-route-lists-ui.mjs && node scripts/test-home-sections-ui.mjs && node scripts/test-nearby-ui.mjs && node scripts/test-place-catalog-ui.mjs && node scripts/test-public-routes-ui.mjs && node scripts/test-gps-nearby-ui.mjs && node scripts/test-pwa.mjs && node scripts/test-pwa-ui.mjs && node scripts/test-ai-ui.mjs && node scripts/test-lagow-catalog.mjs && node scripts/test-hospitality.mjs && node scripts/test-default-facets.mjs && node scripts/test-navigation-ui.mjs",
+    "catalog:build": "node scripts/build-wineries-catalog.mjs && node scripts/build-lagow-catalog.mjs && node scripts/build-hospitality-catalog.mjs && node scripts/build-heritage-catalog.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

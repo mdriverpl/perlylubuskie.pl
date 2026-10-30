@@ -1,0 +1,117 @@
+{
+  "name": "Pętla wokół jeziora Ciecz",
+  "license": "ODbL 1.0",
+  "points": [
+    {
+      "name": "Jezioro Ciecz (Trześniowskie)",
+      "lat": 52.333463,
+      "lng": 15.295044
+    },
+    {
+      "name": "Ciecz · punkt 2",
+      "lat": 52.340014,
+      "lng": 15.294711
+    },
+    {
+      "name": "Ciecz · punkt 3",
+      "lat": 52.347322,
+      "lng": 15.293762
+    },
+    {
+      "name": "Ciecz · punkt 4",
+      "lat": 52.353867,
+      "lng": 15.302015
+    },
+    {
+      "name": "Ciecz · punkt 5",
+      "lat": 52.361379,
+      "lng": 15.300031
+    },
+    {
+      "name": "Ciecz · punkt 6",
+      "lat": 52.369177,
+      "lng": 15.299889
+    },
+    {
+      "name": "Ciecz · punkt 7",
+      "lat": 52.373448,
+      "lng": 15.297124
+    },
+    {
+      "name": "Ciecz · punkt 8",
+      "lat": 52.36665,
+      "lng": 15.292145
+    },
+    {
+      "name": "Ciecz · punkt 9",
+      "lat": 52.35904,
+      "lng": 15.292816
+    },
+    {
+      "name": "Ciecz · punkt 10",
+      "lat": 52.35239,
+      "lng": 15.293586
+    },
+    {
+      "name": "Ciecz · punkt 11",
+      "lat": 52.345694,
+      "lng": 15.288999
+    },
+    {
+      "name": "Ciecz · punkt 12",
+      "lat": 52.339227,
+      "lng": 15.28819
+    },
+    {
+      "name": "Powrót nad Jezioro Ciecz (Trześniowskie)",
+      "lat": 52.333463,
+      "lng": 15.295044
+    }
+  ],
+  "sources": [
+    {
+      "title": "Jezioro Ciecz (Trześniowskie) · OpenStreetMap",
+      "url": "https://www.openstreetmap.org/relation/12256921"
+    },
+    {
+      "title": "Ścieżki i drogi · OpenStreetMap",
+      "url": "https://www.openstreetmap.org/way/1201882314"
+    },
+    {
+      "title": "Gmina Sulęcin: ograniczenia dostępu przy północnym brzegu",
+      "url": "https://sulecin.pl/cms/3617/szlaki_piesze"
+    },
+    {
+      "title": "Nazwy Trześniowskie i Ciecz · Koło PZW Łagów",
+      "url": "https://2858.pzw.pl/strefa-wedkarza/lowiska-i-wody-pzw/trzesniowskie-ciecz_oL9sY5csiMpj3kuzfI7p"
+    }
+  ],
+  "retrieved_on": "2026-10-30",
+  "validation": {
+    "bounds": [
+      52.3334764,
+      15.2865948,
+      52.3744983,
+      15.3025357
+    ],
+    "water_checks": [
+      [
+        52.3396297,
+        15.2913026
+      ],
+      [
+        52.3539873,
+        15.2994216
+      ],
+      [
+        52.368345,
+        15.2951344
+      ]
+    ],
+    "max_distance_m": 25000
+  },
+  "description": "Pętla wokół jeziora Ciecz (Trześniowskiego), wyznaczona po ścieżkach i drogach wokół akwenu.",
+  "warnings": [
+    "Północny brzeg jeziora Trześniowskiego leży w strefie poligonu w Wędrzynie. Przejście północnego odcinka wymaga odpowiedniego zezwolenia; bez niego nie pokonuj pełnej pętli."
+  ]
+}

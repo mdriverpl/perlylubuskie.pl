@@ -1,3 +1,4 @@
+import { places as catalogPlaces } from '../src/data.js'
 // Link the actual Vite-served ES module graph to catch missing browser exports.
 // Does not execute browser code or substitute for visual QA.
 import vm from 'node:vm'
@@ -25,7 +26,8 @@ await entry.link((specifier,parent)=>load(new URL(specifier,parent.identifier).h
 console.log(`PASS: ${modules.size} Vite-served modules link without missing imports/exports`)
 try {
  await entry.evaluate()
- assert.match(dom.window.document.querySelector('h1')?.textContent || '',/Odkrywaj/)
- assert.equal(dom.window.document.querySelectorAll('.explore-place').length,6)
- console.log('PASS: actual Vite entry mounts the new filtered homepage and six place cards in jsdom')
+ assert.match(dom.window.document.querySelector('h1')?.textContent || '',/Czego szukam/)
+ assert.ok(dom.window.document.querySelector('.leaflet-container'))
+ assert.equal(dom.window.document.querySelector('[aria-label="Widok mapy"]').getAttribute('aria-pressed'),'true')
+ console.log('PASS: actual Vite entry mounts the homepage in map view')
 } finally { dom.window.close() }

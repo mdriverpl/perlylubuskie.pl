@@ -1,6 +1,6 @@
 Routing engine: BRouter, copyright (c) 2019 BRouter contributors.
 Engine source: https://github.com/abrensch/brouter
-Pinned source revision: 0b3506c31eb81f67c88affa0460291ccadcb1ec9
+Pinned source revision: 4d2639af77ea5ed9c30d3e400764eb6f9e8522da (v1.7.10)
 Engine license: MIT; see /app/LICENSE.brouter.
 
 Routing data: copyright OpenStreetMap contributors, licensed under the ODbL 1.0.

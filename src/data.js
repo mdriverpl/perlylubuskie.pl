@@ -1,3 +1,7 @@
+import heritage from './catalog/heritage.json' with { type: 'json' }
+import wineries from './catalog/wineries.json' with { type: 'json' }
+import lagow from './catalog/lagow.json' with { type: 'json' }
+import hospitality from './catalog/hospitality.json' with { type: 'json' }
 export const categories = [
   { id: 'nature', name: 'Przyroda', icon: 'trees', color: 'green', caption: 'Złap oddech' },
   { id: 'heritage', name: 'Zabytki', icon: 'castle', color: 'sand', caption: 'Dotknij historii' },
@@ -5,8 +9,9 @@ export const categories = [
   { id: 'walk', name: 'Trasy piesze', icon: 'footprints', color: 'pink', caption: 'Odkrywaj krok po kroku' },
   { id: 'food', name: 'Jedzenie', icon: 'utensils', color: 'peach', caption: 'Posmakuj regionu' },
   { id: 'stay', name: 'Noclegi', icon: 'bed', color: 'purple', caption: 'Zostań na dłużej' },
+  { id: 'leisure', name: 'Atrakcje rodzinne', icon: 'sparkles', color: 'green', caption: 'Odkrywajcie razem' },
 ]
-export const places = [
+export const demoPlaces = [
   { id: 1, name: 'Łagów', subtitle: 'Zamek Joannitów i dwa jeziora', category: 'heritage', image: '/images/lagow.webp', lat: 52.3347, lng: 15.2922, rating: 4.9, location: 'Łagów', description: 'Wąski przesmyk między dwoma jeziorami, brukowane uliczki i średniowieczny zamek. W Łagowie najlepiej zwolnić tempo, wejść na wieżę i znaleźć własne miejsce nad wodą.' },
   { id: 2, name: 'Park Mużakowski', subtitle: 'Krajobraz bez granic · UNESCO', category: 'heritage', image: '/images/park.webp', lat: 51.5507, lng: 14.7357, rating: 4.8, location: 'Łęknica', description: 'Rozległe łąki, malownicze mosty i ścieżki po obu stronach Nysy Łużyckiej. Park krajobrazowy wpisany na listę UNESCO zaprasza na długi spacer.' },
   { id: 3, name: 'Międzyrzecki Rejon Umocniony', subtitle: 'Odkryj podziemną historię', category: 'heritage', image: '/images/tunnel.webp', lat: 52.3712, lng: 15.5062, rating: 4.7, location: 'Pniewo', description: 'Sieć podziemnych korytarzy i fortyfikacji tworzy niezwykły zapis historii regionu. Zwiedzanie tras podziemnych odbywa się z przewodnikiem; dostępność sprawdź przed wyjazdem.' },
@@ -14,6 +19,11 @@ export const places = [
   { id: 5, name: 'Jezioro Trześniowskie', subtitle: 'Czysta woda, cisza i las', category: 'nature', image: '/images/lake.webp', lat: 52.3511, lng: 15.2973, rating: 4.8, location: 'Łagów', description: 'Otoczone lasem jezioro zachęca do odpoczynku i spacerów. Z nadbrzeżnych ścieżek otwierają się piękne widoki na wodę i zielone wzgórza.' },
   { id: 6, name: 'Ujście Warty', subtitle: 'Tam, gdzie natura ma głos', category: 'nature', image: '/images/warta.webp', lat: 52.5712, lng: 14.7974, rating: 4.9, location: 'Chyrzyno', description: 'Rozlewiska, otwarta przestrzeń i świat ptaków. Zabierz lornetkę i odkrywaj park narodowy po udostępnionych ścieżkach, z szacunkiem dla przyrody.' },
 ]
+const basePlaces = [...demoPlaces.map(p=>lagow.find(h=>h.id===p.id)||heritage.find(h=>h.id===p.id)||p),...heritage.filter(p=>p.id>6),...wineries,...lagow.filter(p=>p.id>6)]
+export const places = [...basePlaces.map(p=>{
+ const extra=hospitality.find(h=>h.id===p.id)
+ return extra?{...p,details:{...p.details,...extra.details}}:p.id===4?{...p,details:{...p.details,kind:'inspiration'}}:p
+}),...hospitality.filter(p=>!basePlaces.some(b=>b.id===p.id))]
 export const trails = [
  { id: 'lakes', name: 'Wokół jezior łagowskich', type: 'bike', image: '/images/bike.webp', distance: 32, time: '3–4 h', difficulty: 'Łatwa', ids: [1,5,4] },
  { id: 'parks', name: 'Ścieżkami Parku Mużakowskiego', type: 'walk', image: '/images/park-trail.webp', distance: 18, time: '4–5 h', difficulty: 'Średnia', ids: [2] },
