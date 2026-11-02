@@ -19,8 +19,19 @@ for(const catalogOnly of [false,true]){
  assert.deepEqual(inputs.filter(i=>i.checked).map(i=>i.value),defaultPlaceFacets)
  assert.deepEqual(inputs.slice(-3).map(i=>i.value),['stays','wineries','restaurants'])
  if(catalogOnly){
+  assert.deepEqual([...document.querySelectorAll('.catalog-category')].map(el=>el.dataset.category),['castles','palaces','lakes','nature','history','family'])
+  for(const id of ['castles','palaces','lakes']){
+   const button=document.querySelector(`[data-category="${id}"]`);button.click();await nextTick()
+   assert.equal(button.getAttribute('aria-pressed'),'true')
+   assert.equal(document.querySelectorAll('.explore-place').length,places.filter(placeFacets.find(f=>f.id===id).match).length)
+   assert.equal(document.querySelectorAll('.catalog-category[aria-pressed="true"]').length,1)
+  }
+  document.querySelector('.catalog-categories-heading button').click();await nextTick()
+  assert.deepEqual([...document.querySelectorAll('.facet-list input:checked')].map(i=>i.value),defaultPlaceFacets)
   assert.ok(document.querySelectorAll('.explore-place').length>0)
   assert.ok(![...document.querySelectorAll('.place-title')].some(e=>e.textContent==='Laura Spa'))
+  assert.equal(document.querySelector('.catalog-more-categories').open,false)
+  document.querySelector('.catalog-more-categories summary').click();await nextTick()
   document.querySelector('input[value="stays"]').click();await nextTick()
   assert.ok([...document.querySelectorAll('.place-title')].some(e=>e.textContent==='Laura Spa'))
  }
