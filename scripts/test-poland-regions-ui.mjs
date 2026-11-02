@@ -16,7 +16,7 @@ globalThis.fetch=async path=>{
 const {createApp,nextTick}=await import('vue')
 await import('../artifacts/poland-regions-test.mjs')
 const App=(await import('../artifacts/ui-test.mjs')).default
-const app=createApp(App);app.mount('#app')
+let app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 await settle();await settle();await settle()
 const map=document.querySelector('#poland-regions');assert.ok(map)
@@ -34,5 +34,15 @@ province('kujawsko-pomorskie').dispatchEvent(new window.KeyboardEvent('keydown',
 assert.equal(window.location.pathname,'/miejsca');assert.equal(document.querySelector('#active-region').value,'kujawsko-pomorskie')
 assert.equal(document.querySelector('.place-title').textContent,'Kujawsko-pomorskie — test')
 assert.equal(document.querySelector('#poland-regions'),null)
+assert.equal(document.querySelectorAll('#active-region').length,1,'Only one region selector is rendered')
+assert.ok(document.querySelector('.explore-home #active-region'),'Region selector is inside Places, above the hidden mobile filters')
+async function chooseRegion(slug){const select=document.querySelector('.explore-home #active-region');select.value=slug;select.dispatchEvent(new Event('change',{bubbles:true}));await settle();await settle()}
+await chooseRegion('all');assert.equal(document.querySelectorAll('.explore-place').length,3)
+await chooseRegion('dolnoslaskie');assert.equal(document.querySelectorAll('.explore-place').length,1)
+assert.equal(document.querySelector('.place-title').textContent,'Dolnośląskie — test')
+assert.equal(JSON.parse(localStorage.getItem('perly:region')),'dolnoslaskie')
+app.unmount();app=createApp(App);app.mount('#app');await settle();await settle()
+assert.equal(document.querySelector('.explore-home #active-region').value,'dolnoslaskie','Province selection survives reload')
+assert.equal(document.querySelector('.place-title').textContent,'Dolnośląskie — test')
 app.unmount();dom.window.close()
 console.log('PASS: map before TOP 20, 16 outlines, published place/public route counts, no private route leakage, readable list and keyboard catalog navigation')
