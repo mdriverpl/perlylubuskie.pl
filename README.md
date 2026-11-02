@@ -182,6 +182,8 @@ Koszt AI: serwer wybiera maksymalnie 60 kandydatów, ograniczając katalog do ro
 
 ## Panel województw
 
+Kujawsko-Pomorskie: lokalny pakiet `backend/region-catalogs/kujawsko-pomorskie.json` zawiera 255 obiektów (54 pałace, 23 zamki, 94 jeziora, 38 obiektów przyrodniczych, 40 muzeów i zabytków, 6 atrakcji rodzinnych), w tym 246 ze zdjęciem. Pliki są w `public/images/kujawsko-pomorskie/`, a pełne źródła i licencje w `/kujawsko-pomorskie-credits.html`. Import korzysta ze wspólnego mechanizmu zachowującego istniejące miejsca i stan publikacji województwa. Nie dodaje noclegów, winiarni ani restauracji i nie stanowi pełnego rejestru atrakcji.
+
 Przygotowany lokalnie katalog Dolnego Śląska jest w `backend/region-catalogs/dolnoslaskie.json`, a fotografie w `public/images/dolnoslaskie/`. API importuje pakiet jednorazowo dla jego sumy kontrolnej, pomijając istniejące identyfikatory Wikidata i zachowując ręczne edycje. Brakujące zdjęcia mogą zostać uzupełnione. Import zachowuje stan publikacji regionu i zatrzymuje jego wcześniejsze zadania serwerowe. Źródła oraz licencje wszystkich lokalnych materiałów są dostępne w `/dolnoslaskie-credits.html`. Katalog obejmuje 506 obiektów i 491 fotografii, nie stanowi kompletnego rejestru zabytków.
 
 Przycisk „Zakończ i opublikuj” pozwala zatrzymać aktywne wyszukiwanie i opublikować już zapisane miejsca jedną operacją. Bez tego parametru zwykła publikacja jest nadal blokowana podczas pracy AI. Worker nie może dopisywać miejsc po publikacji. Pasek nie pokazuje 100%, kiedy trwa jeszcze wyszukiwanie kolejnych kategorii.

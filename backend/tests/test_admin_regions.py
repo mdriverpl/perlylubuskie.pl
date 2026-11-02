@@ -25,7 +25,7 @@ def test_region_permissions_draft_import_and_publication():
         admin,email=account(client)
         with SessionLocal() as db:
             user=db.scalar(select(User).where(User.email==email));user.is_superadmin=True;db.commit()
-        slug='kujawsko-pomorskie'
+        slug='podlaskie'
         try:
             assert client.get('/api/admin/regions').status_code in (401,403)
             assert client.get('/api/admin/regions',headers=ordinary).status_code==403

@@ -105,7 +105,7 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
     from sqlalchemy import select,delete
     from app.main import app,SessionLocal,User,Place,Region,RegionResearchJob,RegionResearchCandidate
     monkeypatch.setenv('OPENAI_API_KEY','test-key')
-    slug='kujawsko-pomorskie';path='/api/admin/regions/'+slug+'/research';email=f'research-{uuid4().hex}@example.com'
+    slug='podlaskie';path='/api/admin/regions/'+slug+'/research';email=f'research-{uuid4().hex}@example.com'
     points=[candidate(1),candidate(2,name='Second castle'),candidate(3,name='Unverified castle')]
     def discover(*args,**kwargs):
         if kwargs.get('group')=='nature':raise research.ResearchError('Source unavailable')
