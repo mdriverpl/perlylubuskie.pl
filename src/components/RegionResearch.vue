@@ -42,22 +42,27 @@ async function act(suffix='',body){
 <template>
  <section class="region-research" aria-label="Automatyczne uzupełnianie województwa">
   <h3>Wyszukaj i dodaj atrakcje z AI</h3>
-  <p>System wyszukuje nazwane atrakcje w OpenStreetMap, sprawdza informacje w internecie i zapisuje polskie opisy, współrzędne oraz źródła. Pobiera dostępne zdjęcia z Wikimedia Commons z autorem i licencją. Bez noclegów, winiarni i restauracji.</p>
+  <p>System wyszukuje atrakcje w Wikimedia Commons i Wikidata, a przy braku wyników korzysta z OpenStreetMap. Sprawdza informacje w internecie i zapisuje polskie opisy, współrzędne oraz źródła. Pobiera dostępne zdjęcia z Wikimedia Commons z autorem i licencją. Bez noclegów, winiarni i restauracji.</p>
   <p>Wyszukiwanie korzysta z konta OpenAI skonfigurowanego na serwerze i może naliczać opłaty. Katalog nie gwarantuje wszystkich atrakcji; brak zdjęć i niepotwierdzone informacje pokażemy w raporcie.</p>
   <p v-if="loading" role="status">Odczytuję postęp…</p>
   <p v-else-if="!configured" role="alert">Na serwerze trzeba skonfigurować klucz OpenAI.</p>
   <p v-if="error" role="alert" class="research-error">{{error}} <button class="text-link" @click="poll">Odśwież</button></p>
   <template v-if="job">
    <div class="research-status" role="status" aria-live="polite"><strong>{{labels[job.status]||job.status}}</strong><span v-if="running">{{phase}}</span><span v-if="job.cancel_requested&&running">Zatrzymanie nastąpi po bieżącym zapytaniu.</span></div>
+   <p v-if="job.status==='queued'">Zadanie czeka na wolną porcję pracy serwera. Aktywne zadania: {{job.active_jobs||1}}. Województwa są obsługiwane naprzemiennie.</p>
+   <p v-else-if="running&&job.report?.message" role="status">{{job.report.message}}</p>
+   <p v-if="running&&job.report?.discovery_groups">Wyszukane kategorie: {{job.report.discovery_cursor||0}} / {{job.report.discovery_groups}}. Pierwsze wyniki są przetwarzane przed zakończeniem całego wyszukiwania.</p>
    <div class="research-progress">
     <div class="research-progress-label"><strong>Postęp dodawania</strong><strong v-if="percent!==null">{{percent}}%</strong><span v-else>Ustalam liczbę obiektów…</span></div>
     <progress :value="job.total?job.processed:undefined" :max="job.total||1" :aria-label="job.total?`Sprawdzono ${job.processed} z ${job.total}`:'Wyszukiwanie obiektów — liczba jeszcze nieznana'"></progress>
     <p v-if="job.total">Sprawdzono {{job.processed}} z {{job.total}} obiektów. Dodano do bazy: <strong>{{job.added}}</strong>, uzupełniono: <strong>{{job.updated}}</strong>.</p>
+    <p v-if="job.total&&job.discovery_done===false">Procent dotyczy dotychczas znalezionych obiektów. Ich liczba będzie rosnąć przy pobieraniu kolejnych kategorii.</p>
     <p>Dane są przetwarzane porcjami do {{job.batch_size||8}} obiektów i zapisywane na bieżąco. Lista atrakcji poniżej odświeża się automatycznie po zapisaniu nowych danych.</p>
    </div>
    <p>Sprawdzono {{job.processed}} / {{job.total}} · Znaleziono {{job.discovered}} · Dodano {{job.added}} · Uzupełniono {{job.updated}} · Duplikaty {{job.duplicates}} · Do sprawdzenia {{job.review}}</p>
    <p>Ze zdjęciem: {{job.photos}} · Zapisane bez zdjęcia: {{job.missing_photos}}</p>
    <p v-if="job.report?.limited">Znaleziono więcej obiektów niż limit {{job.max_places}}. Zebrano pierwszą partię; zwiększ limit przy kolejnym wyszukiwaniu.</p>
+   <div v-if="job.report?.discovery_errors?.length" class="research-error"><p>Nie udało się pobrać części kategorii. Wyniki są niepełne; spróbuj ponownie później.</p><ul><li v-for="issue in job.report.discovery_errors" :key="issue.group">{{issue.name}}: {{issue.message}}</li></ul></div>
    <p v-if="job.error" class="research-error" role="alert">{{job.error}}</p>
    <details v-if="job.issues?.length"><summary>Braki i uwagi (pierwsze {{job.issues.length}})</summary><ul><li v-for="(issue,index) in job.issues" :key="index"><strong>{{issue.name}}</strong>: {{issue.message}}</li></ul></details>
   </template>

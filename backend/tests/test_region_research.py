@@ -2,6 +2,7 @@ import io
 import json
 import os
 import threading
+import time
 from uuid import uuid4
 
 import httpx
@@ -69,6 +70,33 @@ def test_photo_licensing_hosts_and_real_image_storage(monkeypatch,tmp_path):
     with pytest.raises(research.ResearchError):research.store_photo({**photo,'source_url':photo['source_url']+'other','download_url':'http://127.0.0.1/private'})
 
 
+def test_commons_discovery_uses_real_coordinates_and_keeps_source(monkeypatch):
+    def get(url,params):
+        if params.get('list')=='categorymembers':return {'query':{'categorymembers':[{'title':'Category:Castle Test'}]}}
+        return {'query':{'pages':{'1':{'title':'Category:Castle Test','pageprops':{'wikibase_item':'Q123'}}}}}
+    monkeypatch.setattr(research,'get_json',get)
+    entity={'labels':{'pl':{'value':'Zamek Test'}},'claims':{'P625':[{'mainsnak':{'datavalue':{'value':{'latitude':51.1,'longitude':16.2,'globe':'http://www.wikidata.org/entity/Q2'}}}}]}}
+    monkeypatch.setattr(research,'wikidata_entities',lambda ids:{'Q123':entity})
+    monkeypatch.setattr(research.httpx,'post',lambda *args,**kwargs:pytest.fail('Fast discovery must not wait for Overpass'))
+    items,total=research.discover_region('dolnoslaskie',['castle'],100,group='castle')
+    assert total==1 and items[0]['lat']==51.1
+    assert items[0]['source_url']=='https://www.wikidata.org/wiki/Q123'
+    assert items[0]['coordinate_license']=='Wikidata CC0 1.0'
+    entity['claims']['P625'][0]['mainsnak']['datavalue']['value']['globe']='http://www.wikidata.org/entity/Q111'
+    assert research.discover_commons('dolnoslaskie','castle',100)==([],0)
+
+
+def test_discovery_timeouts_are_bounded_and_reported(monkeypatch):
+    monkeypatch.setattr(research,'discover_commons',lambda *args:([],0))
+    attempts=[];messages=[]
+    def post(url,**kwargs):
+        assert kwargs['timeout'].read==40 and kwargs['timeout'].connect==10
+        attempts.append(url);raise httpx.ReadTimeout('Unavailable')
+    monkeypatch.setattr(research.httpx,'post',post)
+    with pytest.raises(research.ResearchError):research.discover_region('dolnoslaskie',['castle'],100,group='castle',progress=messages.append)
+    assert len(attempts)==2 and len(messages)==3
+
+
 @pytest.mark.skipif(not os.environ.get('TEST_DATABASE_URL'),reason='Needs isolated PostgreSQL')
 def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
     os.environ['DATABASE_URL']=os.environ['TEST_DATABASE_URL']
@@ -79,7 +107,10 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
     monkeypatch.setenv('OPENAI_API_KEY','test-key')
     slug='kujawsko-pomorskie';path='/api/admin/regions/'+slug+'/research';email=f'research-{uuid4().hex}@example.com'
     points=[candidate(1),candidate(2,name='Second castle'),candidate(3,name='Unverified castle')]
-    monkeypatch.setattr(research,'discover_region',lambda *args:(points,3))
+    def discover(*args,**kwargs):
+        if kwargs.get('group')=='nature':raise research.ResearchError('Source unavailable')
+        return (points,3) if kwargs.get('group')=='castle' else ([],0)
+    monkeypatch.setattr(research,'discover_region',discover)
     monkeypatch.setattr(research,'wikidata_entities',lambda ids:{})
     calls=[]
     def summarize(region,items,entities):
@@ -104,6 +135,13 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             created=client.post(path,headers=headers,json={'max_places':100});assert created.status_code==202,created.text
             job_id=created.json()['id'];event=threading.Event()
             assert created.json()['batch_size']==research.BATCH_SIZE
+            with SessionLocal() as db:
+                job=db.get(RegionResearchJob,job_id);job.status='cancelled';job.active_region=None;job.cancel_requested=True;job.error='OpenStreetMap nie odpowiedziało poprawnie.';db.commit()
+            assert research.recover_discovery_jobs()==0,'User cancellation must never be undone'
+            with SessionLocal() as db:
+                job=db.get(RegionResearchJob,job_id);job.status='failed';job.cancel_requested=False;db.commit()
+            assert research.recover_discovery_jobs()==1
+            assert research.recover_discovery_jobs()==0
             assert client.post(path,headers=headers,json={}).status_code==409
             assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True}).status_code==409
             research.process_job_step(job_id,event)
@@ -112,10 +150,14 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             research.process_job_step(job_id,event)
             assert client.get(path,headers=headers).json()['job']['status']=='cancelled'
             assert client.post(path+'/resume',headers=headers).status_code==202
-            research.process_job_step(job_id,event);research.process_job_step(job_id,event)
+            research.process_job_step(job_id,event)
+            partial=client.get(path,headers=headers).json()['job']
+            assert partial['added']==2 and partial['discovery_done'] is False
+            for _ in range(8):research.process_job_step(job_id,event)
             report=client.get(path,headers=headers).json()['job']
             assert report['status']=='completed' and report['added']==2 and report['review']==1
             assert report['missing_photos']==2
+            assert report['report']['discovery_errors'][0]['group']=='nature','Source failure must not prevent processing later categories'
             assert saved_during_batch==[0,1],'Places commit progressively while a batch is still running'
             assert len(calls)==1
             with SessionLocal() as db:
@@ -123,7 +165,15 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
                 assert all(p.details['coordinate_source'] and p.details['sources'] and p.research_key for p in places)
                 places[0].description='Manual edit';places[0].details={**places[0].details,'admin_managed':True};db.commit()
             created=client.post(path,headers=headers,json={'max_places':100});new_id=created.json()['id']
-            research.process_job_step(new_id,event);research.process_job_step(new_id,event);research.process_job_step(new_id,event)
+            worker=threading.Thread(target=research.worker_loop,args=(event,),daemon=True);worker.start()
+            try:
+                deadline=time.monotonic()+10
+                while time.monotonic()<deadline:
+                    if client.get(path,headers=headers).json()['job']['status']=='completed':break
+                    time.sleep(.05)
+            finally:
+                event.set();worker.join(timeout=3)
+            assert not worker.is_alive()
             report=client.get(path,headers=headers).json()['job']
             assert report['duplicates']==2 and report['added']==0
             with SessionLocal() as db:

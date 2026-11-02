@@ -27,7 +27,11 @@ assert.match(document.body.textContent,/Oczekuje na rozpoczęcie/)
 assert.ok(scheduled)
 assert.equal(document.querySelector('progress').hasAttribute('value'),false,'Discovery shows indeterminate progress')
 job={...job,status:'running',phase:'research',total:4,processed:2,added:2,batch_size:8}
+job.discovery_done=false;job.report={discovery_groups:6,discovery_cursor:1,message:'AI sprawdza pierwszą porcję obiektów.'}
 await scheduled();await settle()
+assert.match(document.body.textContent,/AI sprawdza pierwszą porcję/)
+assert.match(document.body.textContent,/Wyszukane kategorie: 1 \/ 6/)
+assert.match(document.body.textContent,/Procent dotyczy dotychczas znalezionych/)
 assert.match(document.querySelector('.research-progress-label').textContent,/50%/)
 assert.match(document.querySelector('.research-progress').textContent,/porcjami do 8 obiektów/)
 assert.equal(events,1,'Saved partial results refresh the region before completion')

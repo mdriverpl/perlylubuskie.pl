@@ -8,6 +8,7 @@ import math
 import os
 import re
 import threading
+import time
 import unicodedata
 from datetime import datetime,timezone
 from pathlib import Path
@@ -18,7 +19,7 @@ from PIL import Image,ImageOps
 from pydantic import BaseModel,Field,ValidationError
 from sqlalchemy import select,text
 
-logger=logging.getLogger(__name__)
+logger=logging.getLogger('uvicorn.error')
 HEADERS={'User-Agent':'PerlyRegionResearch/1.0 (+https://perlyziemilubuskiej.pl)'}
 ISO_CODES={'dolnoslaskie':'02','kujawsko-pomorskie':'04','lubelskie':'06','lubuskie':'08','lodzkie':'10','malopolskie':'12','mazowieckie':'14','opolskie':'16','podkarpackie':'18','podlaskie':'20','pomorskie':'22','slaskie':'24','swietokrzyskie':'26','warminsko-mazurskie':'28','wielkopolskie':'30','zachodniopomorskie':'32'}
 BATCH_SIZE=8
@@ -95,28 +96,74 @@ def parse_candidates(elements,allowed):
     return sorted(candidates.values(),key=lambda p:(not bool(p['wikidata'] or p['tags'].get('wikimedia_commons')),p['kind'],p['name']))
 
 
-def discover_region(slug,allowed,max_places):
+DISCOVERY_GROUPS={
+    'castle':('Zamki','nwr(area.region)["historic"="castle"]["name"];nwr(area.region)["building"="castle"]["name"];'),
+    'palace':('Pałace','nwr(area.region)["historic"="palace"]["name"];nwr(area.region)["building"="palace"]["name"];nwr(area.region)["castle_type"="palace"]["name"];'),
+    'leisure':('Atrakcje rodzinne','nwr(area.region)["tourism"~"^(attraction|zoo|theme_park|aquarium)$"]["name"];nwr(area.region)["leisure"="water_park"]["name"];'),
+    'lake':('Jeziora','nwr(area.region)["natural"="water"]["water"="lake"]["name"];nwr(area.region)["natural"="water"]["name"~"^[Jj]ezior"];'),
+    'nature':('Parki i przyroda','nwr(area.region)["leisure"~"^(park|nature_reserve)$"]["name"];nwr(area.region)["boundary"~"^(national_park|protected_area)$"]["name"];nwr(area.region)["tourism"="viewpoint"]["name"];'),
+    'heritage':('Zabytki i historia','nwr(area.region)["historic"]["name"];nwr(area.region)["tourism"="museum"]["name"];'),
+}
+
+COMMONS_REGIONS=dict(zip(ISO_CODES,('Lower Silesian','Kuyavian-Pomeranian','Lublin','Lubusz','Łódź','Lesser Poland','Masovian','Opole','Subcarpathian','Podlaskie','Pomeranian','Silesian','Świętokrzyskie','Warmian-Masurian','Greater Poland','West Pomeranian')))
+COMMONS_GROUPS={'castle':'Castles','palace':'Palaces','lake':'Lakes','nature':'Nature reserves','heritage':'Cultural heritage monuments','leisure':'Tourist attractions'}
+
+
+def discover_commons(slug,group,max_places):
+    category=f"Category:{COMMONS_GROUPS[group]} in {COMMONS_REGIONS[slug]} Voivodeship"
+    data=get_json('https://commons.wikimedia.org/w/api.php',{'action':'query','list':'categorymembers','cmtitle':category,'cmtype':'subcat|page','cmlimit':500,'format':'json'})
+    titles=[p['title'] for p in data.get('query',{}).get('categorymembers',[]) if p.get('title')]
+    ids={}
+    for offset in range(0,len(titles),50):
+        pages=get_json('https://commons.wikimedia.org/w/api.php',{'action':'query','titles':'|'.join(titles[offset:offset+50]),'prop':'pageprops','format':'json'})
+        for page in pages.get('query',{}).get('pages',{}).values():
+            qid=page.get('pageprops',{}).get('wikibase_item','')
+            if re.fullmatch(r'Q[1-9][0-9]*',qid):ids[qid]=page['title']
+    items=[];keys=list(ids)
+    for offset in range(0,len(keys),50):
+        entities=wikidata_entities(keys[offset:offset+50])
+        if not entities and keys[offset:offset+50]:raise ResearchError('Wikidata nie odpowiedziała. Wznów zadanie później.')
+        for qid,entity in entities.items():
+            name=clean_text((entity.get('labels',{}).get('pl') or entity.get('labels',{}).get('en') or {}).get('value'))
+            if not name or not ids.get(qid):continue
+            if group=='castle' and normalized(name).startswith('palac '):continue
+            coordinates=[c.get('mainsnak',{}).get('datavalue',{}).get('value',{}) for c in entity.get('claims',{}).get('P625',[]) if c.get('rank')!='deprecated']
+            point=next((c for c in coordinates if isinstance(c.get('latitude'),(int,float)) and isinstance(c.get('longitude'),(int,float)) and 49<=c['latitude']<=55 and 14<=c['longitude']<=24.2 and c.get('globe','http://www.wikidata.org/entity/Q2').endswith('/Q2')),None)
+            if not point:continue
+            source='https://www.wikidata.org/wiki/'+qid
+            wiki=entity.get('sitelinks',{}).get('plwiki',{}).get('title','')
+            items.append({'source_key':'wd:'+qid,'name':name[:200],'kind':group,'lat':point['latitude'],'lng':point['longitude'],'location':'','source_url':source,'source_name':'Wikidata — dane obiektu','wikidata':qid,'tags':{'wikimedia_commons':ids[qid],**({'wikipedia':'pl:'+wiki} if wiki else {})},'coordinate_accuracy':'wikidata_coordinate','coordinate_license':'Wikidata CC0 1.0','discovery_source':'https://commons.wikimedia.org/wiki/'+quote(category.replace(' ','_'))})
+    logger.info('Region Commons discovery region=%s group=%s count=%s',slug,group,len(items))
+    return items[:max_places],len(items)
+
+
+def discover_region(slug,allowed,max_places,group=None,progress=None):
     code=ISO_CODES.get(slug)
     if not code:raise ResearchError('Nieobsługiwane województwo.')
-    query=f'''[out:json][timeout:120];area["ISO3166-2"="PL-{code}"]["admin_level"="4"]->.region;
-    (nwr(area.region)["historic"]["name"];nwr(area.region)["building"~"^(castle|palace)$"]["name"];
-    nwr(area.region)["tourism"~"^(museum|attraction|zoo|theme_park|aquarium|viewpoint)$"]["name"];
-    nwr(area.region)["leisure"~"^(park|nature_reserve|water_park)$"]["name"];
-    nwr(area.region)["boundary"~"^(national_park|protected_area)$"]["name"];
-    nwr(area.region)["natural"="water"]["water"="lake"]["name"];
-    nwr(area.region)["natural"="water"]["name"~"^[Jj]ezior"];
-    );out center tags;'''
-    for endpoint in ('https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'):
+    if group:
+        if progress:progress(f'Pobieram: {DISCOVERY_GROUPS[group][0]} z Wikimedia Commons i Wikidata.')
         try:
-            response=httpx.post(endpoint,data={'data':query},headers=HEADERS,timeout=150)
+            items,total=discover_commons(slug,group,max_places)
+            if items:return items,total
+        except ResearchError:
+            logger.warning('Commons discovery unavailable region=%s group=%s; trying OpenStreetMap.',slug,group)
+    selectors=DISCOVERY_GROUPS[group][1] if group else ''.join(value[1] for key,value in DISCOVERY_GROUPS.items() if key in allowed)
+    query=f'''[out:json][timeout:30];area["ISO3166-2"="PL-{code}"]["admin_level"="4"]->.region;({selectors});out center tags;'''
+    for attempt,endpoint in enumerate(('https://overpass.kumi.systems/api/interpreter','https://overpass-api.de/api/interpreter'),1):
+        if progress:progress(f'Pobieram: {DISCOVERY_GROUPS[group][0] if group else "atrakcje"}. Źródło {attempt}/2; limit oczekiwania 40 s.')
+        started=time.monotonic()
+        try:
+            response=httpx.post(endpoint,data={'data':query},headers=HEADERS,timeout=httpx.Timeout(40,connect=10))
             response.raise_for_status()
             if len(response.content)>30_000_000:raise ResearchError('Źródło zwróciło zbyt duży katalog. Zmniejsz zakres zbierania.')
             data=response.json()
             if data.get('remark') or not isinstance(data.get('elements'),list):raise ValueError('incomplete overpass response')
-            items=parse_candidates(data['elements'],allowed)
-            if not items:raise ResearchError('Nie znaleziono obiektów w wybranych kategoriach. Sprawdź źródło lub spróbuj później.')
+            items=parse_candidates(data['elements'],[group] if group else allowed)
+            logger.info('Region discovery region=%s group=%s count=%s elapsed=%.1fs',slug,group,len(items),time.monotonic()-started)
             return items[:max_places],len(items)
-        except (httpx.HTTPError,ValueError):continue
+        except (httpx.HTTPError,ValueError) as error:
+            logger.warning('Region discovery source failed region=%s group=%s attempt=%s error_type=%s elapsed=%.1fs',slug,group,attempt,type(error).__name__,time.monotonic()-started)
+            continue
     raise ResearchError('OpenStreetMap nie odpowiedziało poprawnie. Możesz wznowić zadanie później.')
 
 
@@ -320,19 +367,52 @@ def process_job_step(job_id,event):
             job.status='cancelled';job.active_region=None;job.updated_at=datetime.now(timezone.utc);db.commit();return
         job.status='running';job.updated_at=datetime.now(timezone.utc);db.commit()
         slug,name,allowed,creator,maximum,discovery=region.slug,region.name,region.allowed_types,job.created_by,job.max_places,job.discovery_done
-    if not discovery:
-        items,total=discover_region(slug,allowed,maximum)
+        has_pending=db.scalar(select(RegionResearchCandidate.id).where(RegionResearchCandidate.job_id==job_id,RegionResearchCandidate.status=='pending').limit(1)) is not None
+        groups=[key for key in DISCOVERY_GROUPS if key in allowed]
+        cursor=(job.report or {}).get('discovery_cursor',0)
+        count=db.scalar(select(text('count(*)')).select_from(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job_id))
+    if not discovery and not has_pending:
+        if cursor>=len(groups) or count>=maximum:
+            with SessionLocal() as db:
+                job=db.get(RegionResearchJob,job_id);job.discovery_done=True;job.updated_at=datetime.now(timezone.utc)
+                job.report={**(job.report or {}),'limited':bool((job.report or {}).get('limited')) or cursor<len(groups),'message':'Zakończono wyszukiwanie obiektów.'};db.commit()
+            return
+        group=groups[cursor]
+        def progress(message):
+            with SessionLocal() as db:
+                job=db.get(RegionResearchJob,job_id);job.phase='discovery';job.updated_at=datetime.now(timezone.utc)
+                job.report={**(job.report or {}),'message':message,'discovery_groups':len(groups),'discovery_cursor':cursor};db.commit()
+            logger.info('Region research discovery job=%s region=%s group=%s',job_id,slug,group)
+        try:items,total=discover_region(slug,allowed,maximum-count,group=group,progress=progress)
+        except ResearchError as error:
+            if stopped(job_id,event):return
+            with SessionLocal() as db:
+                job=db.get(RegionResearchJob,job_id);report=job.report or {}
+                errors=[entry for entry in report.get('discovery_errors',[]) if entry['group']!=group]+[{'group':group,'name':DISCOVERY_GROUPS[group][0],'message':str(error)}]
+                job.report={**report,'discovery_errors':errors,'discovery_cursor':cursor+1,'message':f'Źródła kategorii {DISCOVERY_GROUPS[group][0]} nie odpowiedziały. Przechodzę do następnej kategorii.'}
+                job.discovery_done=cursor+1>=len(groups);job.updated_at=datetime.now(timezone.utc);db.commit()
+            return
         if stopped(job_id,event):return
         with SessionLocal() as db:
             job=db.get(RegionResearchJob,job_id)
-            for item in items:db.add(RegionResearchCandidate(job_id=job_id,source_key=item['source_key'],payload=item))
-            job.discovered=total;job.discovery_done=True;job.phase='research';job.report={'source':'OpenStreetMap + AI web search + Wikidata/Wikimedia Commons','limited':total>len(items),'scope':'Nazwane obiekty z dostępnych źródeł, bez gwarancji kompletności.'};db.commit()
+            existing=set(db.scalars(select(RegionResearchCandidate.source_key).where(RegionResearchCandidate.job_id==job_id)))
+            for item in items:
+                if item['source_key'] not in existing:db.add(RegionResearchCandidate(job_id=job_id,source_key=item['source_key'],payload=item));existing.add(item['source_key'])
+            job.discovered=len(existing);job.discovery_done=cursor+1>=len(groups) or len(existing)>=maximum;job.phase='research';job.updated_at=datetime.now(timezone.utc)
+            job.report={**(job.report or {}),'source':'Wikimedia Commons / Wikidata / OpenStreetMap + AI web search','limited':bool((job.report or {}).get('limited')) or total>len(items) or len(existing)>=maximum and cursor+1<len(groups),'scope':'Nazwane obiekty z dostępnych źródeł, bez gwarancji kompletności.','discovery_cursor':cursor+1,'discovery_groups':len(groups),'message':f'Znaleziono {len(items)} obiektów: {DISCOVERY_GROUPS[group][0]}. Przygotowuję opisy i zdjęcia.'};db.commit()
         return
     with SessionLocal() as db:
         rows=db.scalars(select(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job_id,RegionResearchCandidate.status=='pending').order_by(RegionResearchCandidate.id).limit(BATCH_SIZE)).all()
         if not rows:
-            job=db.get(RegionResearchJob,job_id);job.status='completed';job.phase='completed';job.active_region=None;job.updated_at=datetime.now(timezone.utc);db.commit();return
+            job=db.get(RegionResearchJob,job_id)
+            empty=db.scalar(select(RegionResearchCandidate.id).where(RegionResearchCandidate.job_id==job_id).limit(1)) is None
+            job.status='failed' if empty and (job.report or {}).get('discovery_errors') else 'completed';job.phase='completed';job.active_region=None;job.updated_at=datetime.now(timezone.utc)
+            if job.status=='failed':job.error='Źródła nie zwróciły danych. Wznów wyszukiwanie później.'
+            db.commit();return
         batch=[{'id':row.id,'payload':row.payload,'result':row.result} for row in rows]
+        job=db.get(RegionResearchJob,job_id);job.phase='research';job.updated_at=datetime.now(timezone.utc)
+        job.report={**(job.report or {}),'message':f'AI sprawdza porcję {len(batch)} obiektów. Następnie zapisze dane i dostępne zdjęcia.'};db.commit()
+        logger.info('Region research batch job=%s region=%s size=%s',job_id,slug,len(batch))
         needs=[]
         for row in batch:
             previous=existing_place(db,slug,row['payload'])
@@ -369,11 +449,12 @@ def process_job_step(job_id,event):
                 if image and not (previous.details or {}).get('admin_managed') and previous.image.endswith('placeholder.svg'):
                     previous.image=image;previous.details={**(previous.details or {}),'photo':photo};item.status='updated';item.photo_added=True
             else:
-                sources=[{'title':'OpenStreetMap — dane obiektu','url':candidate['source_url']}]+[source for source in summary['sources'] if source['url']!=candidate['source_url']]
-                details={'kind':candidate['kind'],'official_name':candidate['name'],'wikidata':candidate.get('wikidata',''),'sources':sources,'coordinate_source':candidate['source_url'],'coordinate_accuracy':candidate['coordinate_accuracy'],'coordinate_license':'OpenStreetMap ODbL 1.0','description_license':'Opis opracowany z AI na podstawie wskazanych źródeł','photo':photo,'ai_generated':True,'research_job':job_id,'submitted_by':creator,'checked_at':datetime.now(timezone.utc).date().isoformat()}
+                sources=[{'title':candidate.get('source_name','OpenStreetMap — dane obiektu'),'url':candidate['source_url']}]+[source for source in summary['sources'] if source['url']!=candidate['source_url']]
+                details={'kind':candidate['kind'],'official_name':candidate['name'],'wikidata':candidate.get('wikidata',''),'sources':sources+([{'title':'Wikimedia Commons — kategoria województwa','url':candidate['discovery_source']}] if candidate.get('discovery_source') else []),'coordinate_source':candidate['source_url'],'coordinate_accuracy':candidate['coordinate_accuracy'],'coordinate_license':candidate.get('coordinate_license','OpenStreetMap ODbL 1.0'),'description_license':'Opis opracowany z AI na podstawie wskazanych źródeł','photo':photo,'ai_generated':True,'research_job':job_id,'submitted_by':creator,'checked_at':datetime.now(timezone.utc).date().isoformat()}
                 place=Place(id=db.scalar(text("SELECT nextval('submitted_place_ids')")),research_key=candidate['source_key'],name=candidate['name'],subtitle=summary['subtitle'],category={'castle':'heritage','palace':'heritage','lake':'nature'}.get(candidate['kind'],candidate['kind']),image=image or '/images/heritage-placeholder.svg',lat=candidate['lat'],lng=candidate['lng'],rating=0,location=candidate.get('location') or summary.get('location') or name,description=summary['description'],region=slug,details=details)
                 db.add(place);db.flush();item.place_id=place.id;item.status='added';item.photo_added=bool(image)
             item.error=photo_error[:500];job.updated_at=datetime.now(timezone.utc);job.phase='research';db.commit()
+            logger.info('Region research saved job=%s region=%s result=%s place_id=%s',job_id,slug,item.status,item.place_id)
 
 
 def worker_loop(event):
@@ -387,7 +468,7 @@ def worker_loop(event):
                     while not event.is_set():
                         lock.execute(text('SELECT 1'));lock.commit()
                         with SessionLocal() as db:
-                            job_id=db.scalar(select(RegionResearchJob.id).where(RegionResearchJob.status.in_(['queued','running'])).order_by(RegionResearchJob.created_at).limit(1))
+                            job_id=db.scalar(select(RegionResearchJob.id).where(RegionResearchJob.status.in_(['queued','running'])).order_by(RegionResearchJob.cancel_requested.desc(),RegionResearchJob.updated_at,RegionResearchJob.created_at).limit(1))
                         if not job_id:event.wait(2);continue
                         try:process_job_step(job_id,event)
                         except Exception as error:
@@ -407,3 +488,20 @@ def start_worker():
     event=threading.Event()
     if os.environ.get('REGION_RESEARCH_WORKER','1')!='0':threading.Thread(target=worker_loop,args=(event,),daemon=True,name='region-research').start()
     return event
+
+
+def recover_discovery_jobs():
+    """Retry old zero-result source failures once after the source fix; never undo cancellation."""
+    from .main import SessionLocal,RegionResearchJob,Region
+    recovered=0
+    with SessionLocal() as db:
+        jobs=db.scalars(select(RegionResearchJob).where(RegionResearchJob.status=='failed',RegionResearchJob.discovery_done.is_(False),RegionResearchJob.cancel_requested.is_(False)).order_by(RegionResearchJob.created_at.desc())).all()
+        for job in jobs:
+            report=job.report or {};region=db.get(Region,job.region)
+            if not job.error.startswith('OpenStreetMap nie odpowiedziało') or report.get('source_fix_retried') or not region or region.active:continue
+            if db.scalar(select(RegionResearchJob.id).where(RegionResearchJob.active_region==job.region)):continue
+            job.status='queued';job.active_region=job.region;job.error='';job.updated_at=datetime.now(timezone.utc)
+            job.report={**report,'source_fix_retried':True,'message':'Wznawiam zadanie po poprawieniu pobierania danych.'};recovered+=1
+        db.commit()
+    if recovered:logger.info('Recovered %s region source discovery jobs.',recovered)
+    return recovered

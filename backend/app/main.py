@@ -228,6 +228,7 @@ async def lifespan(app: FastAPI):
             statement = statement.on_conflict_do_update(index_elements=[Place.id], set_={key: getattr(statement.excluded, key) for key in place if key != 'id'},where=Place.details['admin_managed'].as_boolean().is_not(True))
             db.execute(statement)
         db.commit()
+    region_research.recover_discovery_jobs()
     worker=region_research.start_worker()
     try:
         yield
@@ -364,7 +365,7 @@ def research_status(job,db):
     photos=db.scalar(select(func.count()).select_from(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job.id,RegionResearchCandidate.photo_added.is_(True)))
     issues=db.execute(select(RegionResearchCandidate.payload,RegionResearchCandidate.error).where(RegionResearchCandidate.job_id==job.id,RegionResearchCandidate.error!='').order_by(RegionResearchCandidate.id).limit(20)).all()
     saved=sum(counts.get(key,0) for key in ('added','updated','duplicate'))
-    return {'id':job.id,'region':job.region,'status':job.status,'phase':job.phase,'max_places':job.max_places,'batch_size':region_research.BATCH_SIZE,'discovered':job.discovered,'total':sum(counts.values()),'processed':sum(value for key,value in counts.items() if key!='pending'),'added':counts.get('added',0),'updated':counts.get('updated',0),'duplicates':counts.get('duplicate',0),'review':counts.get('review',0),'photos':photos,'missing_photos':max(0,saved-photos),'cancel_requested':job.cancel_requested,'error':job.error,'report':job.report,'issues':[{'name':payload.get('name',''),'message':error} for payload,error in issues],'updated_at':job.updated_at}
+    return {'id':job.id,'region':job.region,'status':job.status,'phase':job.phase,'max_places':job.max_places,'batch_size':region_research.BATCH_SIZE,'discovery_done':job.discovery_done,'active_jobs':db.scalar(select(func.count()).select_from(RegionResearchJob).where(RegionResearchJob.status.in_(['queued','running']))),'discovered':job.discovered,'total':sum(counts.values()),'processed':sum(value for key,value in counts.items() if key!='pending'),'added':counts.get('added',0),'updated':counts.get('updated',0),'duplicates':counts.get('duplicate',0),'review':counts.get('review',0),'photos':photos,'missing_photos':max(0,saved-photos),'cancel_requested':job.cancel_requested,'error':job.error,'report':job.report,'issues':[{'name':payload.get('name',''),'message':error} for payload,error in issues],'updated_at':job.updated_at}
 
 
 def latest_research(slug,db):
@@ -407,6 +408,8 @@ def resume_region_research(slug: str,user: User=Depends(superadmin),db: Session=
     if not job or job.status not in ('failed','cancelled'):raise HTTPException(422,'To zadanie nie wymaga wznowienia.')
     if not region or region.active:raise HTTPException(422,'Przed wznowieniem województwo musi być szkicem.')
     if not ai_routes.configured():raise HTTPException(503,'Skonfiguruj klucz OpenAI na serwerze.')
+    if job.discovery_done and (job.report or {}).get('discovery_errors'):
+        job.discovery_done=False;job.phase='discovery';job.report={**job.report,'discovery_cursor':0,'discovery_errors':[]}
     job.status='queued';job.active_region=slug;job.cancel_requested=False;job.error=''
     try:db.commit()
     except IntegrityError:
