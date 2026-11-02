@@ -85,7 +85,11 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
     def summarize(region,items,entities):
         calls.append(len(items));return {point['source_key']:description(point,point['name']!='Unverified castle') for point in items}
     monkeypatch.setattr(research,'research_batch',summarize)
-    monkeypatch.setattr(research,'obtain_photo',lambda *args:('',None,'Brak zdjęcia'))
+    saved_during_batch=[]
+    def photo(*args):
+        with SessionLocal() as db:saved_during_batch.append(len(db.scalars(select(Place).where(Place.region==slug)).all()))
+        return '',None,'Brak zdjęcia'
+    monkeypatch.setattr(research,'obtain_photo',photo)
     with TestClient(app) as client:
         response=client.post('/api/auth/register',json={'email':email,'name':'Test','password':'research-test-password-123'})
         headers={'Authorization':'Bearer '+response.json()['access_token']}
@@ -99,6 +103,7 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             assert client.post(path,headers=headers,json={'max_places':5001}).status_code==422
             created=client.post(path,headers=headers,json={'max_places':100});assert created.status_code==202,created.text
             job_id=created.json()['id'];event=threading.Event()
+            assert created.json()['batch_size']==research.BATCH_SIZE
             assert client.post(path,headers=headers,json={}).status_code==409
             assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True}).status_code==409
             research.process_job_step(job_id,event)
@@ -111,6 +116,7 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             report=client.get(path,headers=headers).json()['job']
             assert report['status']=='completed' and report['added']==2 and report['review']==1
             assert report['missing_photos']==2
+            assert saved_during_batch==[0,1],'Places commit progressively while a batch is still running'
             assert len(calls)==1
             with SessionLocal() as db:
                 places=db.scalars(select(Place).where(Place.region==slug)).all()

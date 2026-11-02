@@ -36,7 +36,13 @@ async function act(task){
  busy.value=true;error.value='';message.value=''
  try{await task()}catch(e){error.value=e.message}finally{busy.value=false}
 }
-async function researchChanged(){await refresh();records.value=await api('/admin/regions/'+slug.value+'/places');emit('changed')}
+async function researchChanged(){
+ const selected=slug.value,version=++listVersion
+ try{
+  const [data]=await Promise.all([api('/admin/regions/'+selected+'/places'),refresh()])
+  if(version===listVersion&&slug.value===selected){records.value=data;emit('changed')}
+ }catch(e){if(version===listVersion)error.value=e.message}
+}
 function createRegion(automatic=true){return act(async()=>{
  await api('/admin/regions','POST',{slug:newSlug.value,allowed_types:allowed.value})
  const added=newSlug.value;await refresh();slug.value=added
