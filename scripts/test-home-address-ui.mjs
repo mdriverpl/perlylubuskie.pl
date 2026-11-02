@@ -26,6 +26,7 @@ const names=()=>[...document.querySelectorAll('.explore-place .place-title')].ma
 const type=async(selector,text)=>{const input=document.querySelector(selector);input.value=text;input.dispatchEvent(new Event('input',{bubbles:true}));await settle()}
 const reload=async()=>{app.unmount();app=createApp(App);app.mount('#app');await settle()}
 await settle()
+await click(document.querySelector('#hero-tab-address'))
 assert.ok(document.querySelector('.hero-ai-panel .home-address-search'),'Address search sits below AI')
 assert.equal(gpsCalls,0)
 await type('#home-address','Zielona Góra, Testowa 2')
