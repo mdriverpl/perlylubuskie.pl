@@ -92,17 +92,16 @@ def search_location(q: str = Query(min_length=2, max_length=120)):
     query = q.strip()
     if len(query) < 2:
         raise HTTPException(422, 'Wpisz co najmniej dwa znaki.')
-    body, _, _ = here_request('geocode', {'q': query + ', lubuskie', 'in': 'countryCode:POL', 'at': '52.15,15.16', 'limit': 5, 'lang': 'pl-PL'}, service='geocode')
+    body, _, _ = here_request('geocode', {'q': query, 'in': 'countryCode:POL', 'limit': 5, 'lang': 'pl-PL'}, service='geocode')
     try:
         items = json.loads(body)['items']
         results = []
         for item in items:
             address = item.get('address', {})
-            state = address.get('state', '').lower()
             lat, lng = item['position']['lat'], item['position']['lng']
-            if address.get('countryCode') != 'POL' or not ('lubusk' in state or 'lubusz' in state):
+            if address.get('countryCode') != 'POL':
                 continue
-            if not (51.3 <= lat <= 53.1 and 14.4 <= lng <= 16.5):
+            if not (-90 <= lat <= 90 and -180 <= lng <= 180):
                 continue
             results.append({'id': item['id'], 'name': item['title'], 'lat': lat, 'lng': lng})
         return {'items': results, 'provider': 'HERE'}

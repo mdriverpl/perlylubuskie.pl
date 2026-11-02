@@ -23,7 +23,7 @@ export function useLocationSearch(){
    if(current!==version)return
    items.value=data.items
    if(items.value.length===1)selected.value=items.value[0]
-   if(!items.value.length)error.value=isReverse?'Nie znaleziono adresu dla tej pozycji GPS.':'Nie znaleziono lokalizacji w województwie lubuskim. Spróbuj dopisać gminę lub adres.'
+   if(!items.value.length)error.value=isReverse?'Nie znaleziono adresu dla tej pozycji GPS.':'Nie znaleziono lokalizacji w Polsce. Spróbuj dopisać miejscowość, ulicę lub numer domu.'
    return selected.value
   }catch(e){if(current===version)error.value=e.name==='TimeoutError'?'Wyszukiwanie trwa zbyt długo. Spróbuj ponownie.':e.name==='TypeError'?'Nie udało się połączyć z wyszukiwaniem adresów. Spróbuj ponownie.':e.message||'Nie udało się wyszukać miejscowości.'}
   finally{if(current===version)loading.value=false}

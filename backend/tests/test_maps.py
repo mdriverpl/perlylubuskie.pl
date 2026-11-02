@@ -74,13 +74,14 @@ def test_metadata_success_does_not_enable_invalid_key(monkeypatch):
     assert 'invalid-key' not in response.text
 
 
-def test_location_search_is_regional_and_uses_separate_here_service(monkeypatch):
+def test_location_search_covers_poland_and_uses_separate_here_service(monkeypatch):
     location = {'id': 'here:sample:laz', 'title': 'Łaz, gmina Zabór, Polska', 'position': {'lat': 51.94944, 'lng': 15.68673}, 'address': {'state': 'Woj. Lubuskie', 'countryCode': 'POL'}}
-    outside = dict(location, id='outside', address={'state': 'Woj. Śląskie', 'countryCode': 'POL'})
+    outside = dict(location, id='outside', address={'state': 'Berlin', 'countryCode': 'DEU'})
     def request(path, params, *, service):
         assert service == 'geocode' and path == 'geocode'
-        assert params['q'] == 'Łaz, lubuskie'
+        assert params['q'] == 'Łaz'
         assert params['in'] == 'countryCode:POL'
+        assert 'at' not in params
         return json.dumps({'items': [location, outside]}).encode(), 'application/json', 'no-store'
     monkeypatch.setattr(maps, 'here_request', request)
     response = client.get('/api/maps/search', params={'q': ' Łaz '})
@@ -88,6 +89,23 @@ def test_location_search_is_regional_and_uses_separate_here_service(monkeypatch)
     assert response.json()['items'] == [{'id': 'here:sample:laz', 'name': location['title'], 'lat': 51.94944, 'lng': 15.68673}]
     for query in ['', 'a', '   ', 'x' * 121]:
         assert client.get('/api/maps/search', params={'q': query}).status_code == 422
+
+
+@pytest.mark.parametrize('query,lat,lng',[
+    ('Warszawa, Marszałkowska 1',52.219,21.019),
+    ('Gdańsk, Długa 1',54.35,18.646),
+    ('Zakopane, Krupówki 1',49.296,19.95),
+    ('Poznań, Stary Rynek 1',52.408,16.934),
+    ('Białystok',53.132,23.168),
+])
+def test_addresses_outside_lubuskie_are_returned(monkeypatch,query,lat,lng):
+    def request(path,params,*,service):
+        assert params['q']==query
+        return json.dumps({'items':[{'id':'address','title':query,'position':{'lat':lat,'lng':lng},'address':{'countryCode':'POL'}}]}).encode(),'application/json','no-store'
+    monkeypatch.setattr(maps,'here_request',request)
+    response=client.get('/api/maps/search',params={'q':query})
+    assert response.status_code==200
+    assert response.json()['items']==[{'id':'address','name':query,'lat':lat,'lng':lng}]
 
 
 def test_reverse_address_uses_gps_coordinates_and_separate_service(monkeypatch):
