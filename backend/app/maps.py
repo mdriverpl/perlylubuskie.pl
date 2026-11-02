@@ -41,7 +41,7 @@ def here_request(path, params=None, *, service='maps'):
     if not _slots.acquire(blocking=False):
         raise HTTPException(503, 'Mapa jest chwilowo zajęta.')
     try:
-        base = {'maps': 'https://maps.hereapi.com/v3/', 'geocode': 'https://geocode.search.hereapi.com/v1/'}[service]
+        base = {'maps': 'https://maps.hereapi.com/v3/', 'geocode': 'https://geocode.search.hereapi.com/v1/', 'reverse': 'https://revgeocode.search.hereapi.com/v1/'}[service]
         url = base + path + '?' + urlencode(dict(params or {}, apiKey=key))
         with urlopen(url, timeout=10) as upstream:
             body = upstream.read(2_000_001)
@@ -108,3 +108,18 @@ def search_location(q: str = Query(min_length=2, max_length=120)):
         return {'items': results, 'provider': 'HERE'}
     except (ValueError, KeyError, TypeError):
         raise HTTPException(502, 'Nieprawidłowy wynik wyszukiwania HERE.') from None
+
+
+@router.get('/reverse')
+def reverse_location(lat: float = Query(ge=-90, le=90), lng: float = Query(ge=-180, le=180)):
+    body, _, _ = here_request('revgeocode', {'at': f'{lat},{lng}', 'limit': 1, 'lang': 'pl-PL'}, service='reverse')
+    try:
+        results = []
+        for item in json.loads(body)['items'][:1]:
+            position = item['position']
+            if not (-90 <= position['lat'] <= 90 and -180 <= position['lng'] <= 180):
+                raise ValueError('Invalid coordinates')
+            results.append({'id': item['id'], 'name': item.get('address', {}).get('label') or item['title'], 'lat': lat, 'lng': lng})
+        return {'items': results, 'provider': 'HERE'}
+    except (ValueError, KeyError, TypeError):
+        raise HTTPException(502, 'Nieprawidłowy wynik odczytu adresu HERE.') from None

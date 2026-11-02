@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch, onBeforeUnmount } from 'vue'
+import {readApiJson} from '../apiResponse.js'
 import Check from 'lucide-vue-next/dist/esm/icons/check.js'
 import MessageCircle from 'lucide-vue-next/dist/esm/icons/message-circle.js'
 import ThumbsUp from 'lucide-vue-next/dist/esm/icons/thumbs-up.js'
@@ -14,8 +15,7 @@ let generation=0,controller,disposed=false
 const comments=computed(()=>community.value?.comments||[])
 async function request(path,options={}) {
  const response=await fetch(path,{signal:AbortSignal.timeout(12000),...options,headers:{'Content-Type':'application/json',...(props.token?{Authorization:`Bearer ${props.token}`} :{}),...options.headers}})
- if(!response.ok){let message='Nie udało się zapisać zmiany. Spróbuj ponownie.';try{const data=await response.json();if(typeof data.detail==='string')message=data.detail}catch{}throw new Error(message)}
- return response.status===204?null:response.json()
+ return readApiJson(response,'Nie udało się zapisać zmiany. Serwer jest chwilowo niedostępny. Spróbuj ponownie.')
 }
 async function load(more=false) {
  if(!props.online)return

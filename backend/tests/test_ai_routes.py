@@ -13,6 +13,7 @@ def settings(monkeypatch):
     monkeypatch.setenv('OPENAI_API_KEY','test-only-api-key')
     monkeypatch.setenv('OPENAI_MODEL','gpt-6-astra')
     ai._requests.clear();ai._daily.clear()
+    ai._intent_cache.clear()
 
 
 def intent(**patch):
@@ -112,3 +113,50 @@ def test_unknown_lake_and_wrong_circuit_are_rejected(monkeypatch):
     ai.validate_lake_loop(correct,circuit)
     with pytest.raises(HTTPException):ai.validate_lake_loop({**correct,'distance_m':70000},circuit)
     with pytest.raises(HTTPException):ai.validate_lake_loop({**correct,'geometry':{'coordinates':correct['geometry']['coordinates'][:10]}},circuit)
+
+
+def test_local_context_keeps_castle_and_dining_without_lodging_spam():
+    from types import SimpleNamespace
+    raw=json.loads((Path(ai.__file__).parents[1]/'seed.json').read_text(encoding='utf8'))
+    catalog=[ai.catalog_entry(SimpleNamespace(**{'details':{},**p})) for p in raw]
+    selected=ai.planning_catalog('Zaplanuj dzień w Łagowie i kolację',catalog)
+    assert 1 in {p['id'] for p in selected}
+    castle=next(p for p in selected if p['id']==1)
+    assert 'zamek' in castle['name'].lower() and castle['significance']
+    assert any(p['category']=='food' for p in selected)
+    assert all(p['category']!='stay' for p in selected)
+    assert all(52.1<p['lat']<52.6 and 14.9<p['lng']<15.7 for p in selected)
+    assert len(selected)<=60
+    assert len(json.dumps(selected,ensure_ascii=False))<len(json.dumps(catalog,ensure_ascii=False))*.3
+    with_stays=ai.planning_catalog('Zaplanuj pobyt w Łagowie z noclegiem',catalog)
+    assert any(p['category']=='stay' for p in with_stays)
+    for prompt in ['Rowerem po pałacach w Lubuskiem','Zaplanuj dzień w Zaborze','Weekend w Zielonej Górze']:
+        assert len(json.dumps(ai.planning_catalog(prompt,catalog),ensure_ascii=False,separators=(',',':')))<=18000
+
+
+def test_repeated_intent_uses_cache_but_catalog_change_invalidates_it(monkeypatch):
+    calls=[]
+    def post(*args,**kwargs):
+        calls.append(kwargs)
+        return httpx.Response(200,json={'status':'completed','output':[{'content':[{'type':'output_text','text':intent().model_dump_json()}]}]})
+    monkeypatch.setattr(ai.httpx,'post',post)
+    first=ai.interpret('Spacer w Łagowie',CATALOG)
+    first.place_ids.append(999)
+    assert ai.interpret('  spacer   w Łagowie ',CATALOG).place_ids==[1,5]
+    assert len(calls)==1
+    changed=[{**p,'lat':p['lat']+.001} for p in CATALOG]
+    ai.interpret('Spacer w Łagowie',changed)
+    assert len(calls)==2
+    for key,value in list(ai._intent_cache.items()):ai._intent_cache[key]=(0,value[1])
+    ai.interpret('Spacer w Łagowie',changed)
+    assert len(calls)==3
+
+
+@pytest.mark.parametrize('lake,transport,prompt',[('ciecz','walk','Spacer dookoła jeziora Ciecz'),('lagowskie','bike','Rowerem dookoła Jeziora Łagowskiego')])
+def test_known_lake_never_calls_paid_ai(monkeypatch,lake,transport,prompt):
+    monkeypatch.setattr(ai,'interpret',lambda *args:pytest.fail('Known circuits must not call paid AI'))
+    route=json.loads((Path(__file__).parent/'fixtures'/f'{lake}-route.json').read_text())
+    captured=[]
+    monkeypatch.setattr(ai,'calculate_route',lambda points,mode:captured.append(mode) or route)
+    proposal=ai.propose(prompt,CATALOG,'qa')
+    assert proposal['transport']==transport and captured==[transport]

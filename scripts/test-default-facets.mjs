@@ -10,7 +10,7 @@ const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/planer',preten
 for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event','localStorage'])globalThis[key]=dom.window[key]
 const {createApp,nextTick}=await import('vue')
 const descriptor=parse(await readFile('src/components/ExploreHome.vue','utf8')).descriptor
-const compiled=compileScript(descriptor,{id:'default-facets',inlineTemplate:true}).content.replace("from '../explore.js'","from '../src/explore.js'").replace("from '../useGeolocation.js'","from '../src/useGeolocation.js'").replace("from '../useLocationSearch.js'","from '../src/useLocationSearch.js'").replace("import TravelMap from './TravelMap.vue'","const TravelMap={props:['places'],template:'<div />'}")
+const compiled=compileScript(descriptor,{id:'default-facets',inlineTemplate:true}).content.replace("from '../explore.js'","from '../src/explore.js'").replace("from '../useGeolocation.js'","from '../src/useGeolocation.js'").replace("from '../useLocationSearch.js'","from '../src/useLocationSearch.js'").replace("from '../rememberedAddress.js'","from '../src/rememberedAddress.js'").replace("import TravelMap from './TravelMap.vue'","const TravelMap={props:['places'],template:'<div />'}")
 await mkdir('artifacts',{recursive:true});await writeFile('artifacts/default-facets-test.mjs',compiled)
 const Component=(await import('../artifacts/default-facets-test.mjs')).default
 for(const catalogOnly of [false,true]){

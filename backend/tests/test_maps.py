@@ -88,3 +88,26 @@ def test_location_search_is_regional_and_uses_separate_here_service(monkeypatch)
     assert response.json()['items'] == [{'id': 'here:sample:laz', 'name': location['title'], 'lat': 51.94944, 'lng': 15.68673}]
     for query in ['', 'a', '   ', 'x' * 121]:
         assert client.get('/api/maps/search', params={'q': query}).status_code == 422
+
+
+def test_reverse_address_uses_gps_coordinates_and_separate_service(monkeypatch):
+    def request(path, params, *, service):
+        assert service == 'reverse' and path == 'revgeocode'
+        assert params == {'at': '52.4,16.9', 'limit': 1, 'lang': 'pl-PL'}
+        item = {'id': 'address', 'title': 'Street', 'address': {'label': 'Poznań, ulica 1'}, 'position': {'lat': 52.4001, 'lng': 16.9001}}
+        return json.dumps({'items': [item]}).encode(), 'application/json', 'no-store'
+    monkeypatch.setattr(maps, 'here_request', request)
+    response = client.get('/api/maps/reverse?lat=52.4&lng=16.9')
+    assert response.status_code == 200
+    assert response.json()['items'] == [{'id': 'address', 'name': 'Poznań, ulica 1', 'lat': 52.4, 'lng': 16.9}]
+    for query in ['lat=91&lng=0', 'lat=0&lng=181', 'lat=nan&lng=0', 'lat=0', 'lat=0&lng=inf']:
+        assert client.get('/api/maps/reverse?' + query).status_code == 422
+
+
+def test_reverse_address_handles_missing_configuration_and_invalid_results(monkeypatch):
+    monkeypatch.delenv('HERE_API_KEY', raising=False)
+    assert client.get('/api/maps/reverse?lat=52&lng=15').status_code == 503
+    monkeypatch.setattr(maps, 'here_request', lambda *args, **kwargs: (b'{"items": []}', 'application/json', 'no-store'))
+    assert client.get('/api/maps/reverse?lat=52&lng=15').json()['items'] == []
+    monkeypatch.setattr(maps, 'here_request', lambda *args, **kwargs: (b'{"items": [{"position": {"lat": 99, "lng": 15}}]}', 'application/json', 'no-store'))
+    assert client.get('/api/maps/reverse?lat=52&lng=15').status_code == 502

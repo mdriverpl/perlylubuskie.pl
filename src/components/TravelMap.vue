@@ -31,7 +31,7 @@ const mapElement=ref(null)
 function draw() {
  if (!map) return
  const catalogPoints=props.places.filter(p=>p.details?.kind!=='custom')
- const viewportKey=JSON.stringify([catalogPoints.map(p=>[p.id,p.lat,p.lng]).sort((a,b)=>a[0]-b[0]),props.userLocation?.lat,props.userLocation?.lng,props.searchLocation?.lat,props.searchLocation?.lng])
+ const viewportKey=JSON.stringify([catalogPoints.map(p=>[p.id,p.lat,p.lng]).sort((a,b)=>a[0]-b[0]),props.searchLocation?.lat,props.searchLocation?.lng])
  const refit=viewportKey!==lastViewportKey||props.geometry!==lastGeometry
  lastViewportKey=viewportKey;lastGeometry=props.geometry
  layer.clearLayers()

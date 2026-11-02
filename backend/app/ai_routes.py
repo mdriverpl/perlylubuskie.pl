@@ -6,6 +6,8 @@ import time
 import math
 import re
 import unicodedata
+import hashlib
+import logging
 from collections import defaultdict, deque
 from pathlib import Path
 import httpx
@@ -18,6 +20,68 @@ _lock = threading.Lock()
 _requests = defaultdict(deque)
 _daily = deque()
 _slots = threading.BoundedSemaphore(2)
+_intent_cache = {}
+_logger = logging.getLogger(__name__)
+
+
+def normalized(value):
+    return ''.join(c for c in unicodedata.normalize('NFD', value.casefold().replace('ł', 'l')) if not unicodedata.combining(c))
+
+
+def planning_catalog(prompt, catalog):
+    """Select local public facts before paying to send context to the model."""
+    words = re.findall(r'[a-z0-9]+', normalized(prompt))
+    def city_mentioned(city):
+        parts = re.findall(r'[a-z]+', normalized(city))
+        if not parts or any(p in ('okolice', 'lubuskie', 'polska') for p in parts):
+            return False
+        stems = [p[:-1] if len(p)>3 and p[-1] in 'aeoy' else p for p in parts]
+        return all(any(w.startswith(stem) for w in words) for stem in stems)
+    focused = [p for p in catalog if city_mentioned(p.get('location', ''))]
+    def near_focus(p):
+        for origin in focused:
+            if not all(isinstance(v, (int,float)) for v in (p.get('lat'),p.get('lng'),origin.get('lat'),origin.get('lng'))):
+                continue
+            km = math.hypot((p['lat']-origin['lat'])*111.2,(p['lng']-origin['lng'])*68)
+            if km<=25:
+                return True
+        return False
+    wants_stays = any(w.startswith(('nocleg','hotel','pensjon','apartament','camping','kemping')) for w in words)
+    candidates = [p for p in catalog if p.get('kind')!='inspiration' and (wants_stays or p.get('category')!='stay')]
+    if focused:
+        candidates = [p for p in candidates if p in focused or near_focus(p)]
+    interests = {'castle':('zam','castle'), 'palace':('palac',), 'vineyard':('winn','winiar'), 'food':('restaur','kolac','obiad','jedz'), 'nature':('jezio','las','przyrod','park')}
+    def score(p):
+        score = 100 if p in focused else 0
+        if p.get('significance'):score += 30
+        for kind,terms in interests.items():
+            if (p.get('kind')==kind or p.get('category')==kind) and any(w.startswith(terms) for w in words):score += 20
+        title_words = re.findall(r'[a-z]+', normalized(p['name']))
+        score += sum(4 for w in words if len(w)>3 and any(t.startswith(w[:max(4,len(w)-2)]) for t in title_words))
+        return -score
+    candidates.sort(key=lambda p:(score(p),p['id']))
+    # Round-robin towns at equal relevance so broad regional requests are not
+    # dominated by the first town's accommodation/dining listings.
+    ordered=[];pending=list(candidates)
+    while pending and len(ordered)<60:
+        seen=set();remaining=[]
+        for p in pending:
+            key=(score(p),p.get('location',''),p.get('category',''))
+            if key in seen:remaining.append(p)
+            else:ordered.append(p);seen.add(key)
+            if len(ordered)==60:break
+        pending=remaining
+    packed=[]
+    for p in ordered:
+        entry={k:p[k] for k in ('id','name','location','category','kind','lat','lng') if k in p}
+        entry['name']=entry['name'][:120]
+        entry['location']=entry.get('location','')[:80]
+        if p.get('description'):entry['description']=p['description'][:120]
+        if p.get('significance'):entry['significance']=p['significance'][:160]
+        packed.append(entry)
+        if len(json.dumps(packed,ensure_ascii=False,separators=(',',':')))>18000:
+            packed.pop();break
+    return packed
 
 
 class AiRequest(BaseModel):
@@ -98,6 +162,15 @@ def catalog_entry(place):
 
 
 def interpret(prompt, catalog):
+    catalog = planning_catalog(prompt, catalog)
+    if len(catalog)<2:
+        raise HTTPException(422, 'Brakuje miejsc do ułożenia trasy. Podaj miejscowość lub inne atrakcje.')
+    model = os.environ.get('OPENAI_MODEL', 'gpt-6-astra')
+    cache_key = hashlib.sha256(json.dumps([model,normalized(' '.join(prompt.split())),catalog],ensure_ascii=False,sort_keys=True).encode()).hexdigest()
+    with _lock:
+        cached = _intent_cache.get(cache_key)
+        if cached and cached[0]>time.monotonic():
+            return cached[1].model_copy(deep=True)
     schema = Intent.model_json_schema()
     schema['additionalProperties'] = False
     schema['required'] = list(schema['properties'])
@@ -120,9 +193,9 @@ def interpret(prompt, catalog):
     )
     try:
         response = httpx.post('https://api.openai.com/v1/responses', headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY']}, json={
-            'model': os.environ.get('OPENAI_MODEL', 'gpt-6-astra'), 'store': False,
+            'model': model, 'store': False,
             'reasoning': {'effort': 'medium'},
-            'instructions': instructions, 'input': json.dumps({'request': prompt, 'catalog': catalog}, ensure_ascii=False),
+            'instructions': instructions, 'input': json.dumps({'catalog': catalog, 'request': prompt}, ensure_ascii=False, separators=(',',':')),
             'max_output_tokens': 4000, 'text': {'format': {'type': 'json_schema', 'name': 'lubuskie_trip', 'strict': True, 'schema': schema}},
         }, timeout=60)
     except (httpx.TimeoutException, httpx.RequestError):
@@ -138,7 +211,16 @@ def interpret(prompt, catalog):
         if data.get('status') != 'completed':
             raise ValueError('incomplete')
         output = ''.join(c.get('text', '') for item in data.get('output', []) for c in item.get('content', []) if c.get('type') == 'output_text')
-        return Intent.model_validate_json(output)
+        intent = Intent.model_validate_json(output)
+        usage = data.get('usage') or {}
+        _logger.info('AI usage model=%s input_tokens=%s output_tokens=%s',model,usage.get('input_tokens'),usage.get('output_tokens'))
+        with _lock:
+            now=time.monotonic()
+            for key in list(_intent_cache):
+                if _intent_cache[key][0]<=now:del _intent_cache[key]
+            if len(_intent_cache)>=128:_intent_cache.pop(next(iter(_intent_cache)))
+            _intent_cache[cache_key]=(now+600,intent.model_copy(deep=True))
+        return intent
     except (ValueError, TypeError, ValidationError):
         raise HTTPException(502, 'AI zwróciło niepełny plan. Spróbuj krótszego polecenia.') from None
 
@@ -153,7 +235,12 @@ def propose(prompt, catalog, client):
     if not _slots.acquire(blocking=False):
         raise HTTPException(429, 'AI planuje już inne wycieczki. Spróbuj za chwilę.')
     try:
-        intent = interpret(prompt.strip(), catalog)
+        if lake:
+            text = normalized(prompt)
+            cycling = 'rower' in text and not re.search(r'bez\s+rower|piesz|spacer',text)
+            intent = Intent(title='Pętla wokół jeziora',description='',transport='bike' if cycling else 'walk',circuit=lake,place_ids=[],loop=True,supported=True,message='')
+        else:
+            intent = interpret(prompt.strip(), catalog)
         if not intent.supported:
             raise HTTPException(422, intent.message or 'Brakuje danych do przygotowania tej trasy.')
         if lake:

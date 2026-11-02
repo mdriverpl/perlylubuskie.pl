@@ -1,13 +1,12 @@
 import * as L from 'leaflet/dist/leaflet-src.esm.js'
+import {readApiJson} from './apiResponse.js'
 
 // Render a separate map so creating the cover never changes the user's viewport.
 export async function createRouteCover({points,geometry,transport}){
  if(!points.length)throw new Error('Dodaj punkty, aby utworzyć zdjęcie trasy.')
  const request=async(url,options={})=>{
   const response=await fetch(url,{signal:AbortSignal.timeout(45000),...options})
-  const data=await response.json()
-  if(!response.ok)throw new Error(data.detail||'Nie udało się przygotować zdjęcia trasy.')
-  return data
+  return readApiJson(response,'Nie udało się przygotować zdjęcia trasy. Serwer jest chwilowo niedostępny. Spróbuj ponownie.')
  }
  if(!geometry&&points.length>1&&transport!=='car'){
   const payload={place_ids:points.map(p=>p.id),transport,custom_points:points.filter(p=>p.id<0).map(({id,name,lat,lng})=>({id,name,lat,lng})),point_positions:points.map(({id,lat,lng})=>({id,lat,lng}))}

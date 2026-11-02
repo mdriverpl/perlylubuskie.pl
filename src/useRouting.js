@@ -1,4 +1,5 @@
 import { ref, watch, onBeforeUnmount } from 'vue'
+import {readApiJson} from './apiResponse.js'
 
 export function useRouting({ ids, transport, enabled, online, customPoints, pointPositions }) {
  const route=ref(null), loading=ref(false), error=ref('')
@@ -16,8 +17,7 @@ export function useRouting({ ids, transport, enabled, online, customPoints, poin
    const timeout=setTimeout(()=>activeController.abort(),45000)
    try {
     const response=await fetch('/api/routing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:activeController.signal})
-    const data=await response.json()
-    if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:'Nie udało się wyznaczyć trasy.')
+    const data=await readApiJson(response,'Nie udało się wyznaczyć trasy. Serwer jest chwilowo niedostępny. Spróbuj ponownie.')
     if(data.geometry?.type!=='LineString' || data.geometry.coordinates.length<2 || !Number.isFinite(data.distance_m) || !Number.isFinite(data.duration_s))throw new Error('Otrzymano nieprawidłową trasę.')
     if(current===generation)route.value=data
    } catch(e) {
