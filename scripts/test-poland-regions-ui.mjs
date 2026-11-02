@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict'
+import {JSDOM} from 'jsdom'
+const dom=new JSDOM('<div id="app"></div>',{url:'https://localhost/start',pretendToBeVisual:true})
+for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event','localStorage'])globalThis[key]=dom.window[key]
+globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window);globalThis.getComputedStyle=window.getComputedStyle.bind(window)
+window.scrollTo=()=>{};Element.prototype.scrollIntoView=()=>{}
+const allowed_types=['castle','palace','lake','nature','heritage','leisure']
+const regions=[{slug:'lubuskie',name:'Lubuskie',place_count:351,active:true,allowed_types},{slug:'dolnoslaskie',name:'Dolnośląskie',place_count:506,active:true,allowed_types},{slug:'kujawsko-pomorskie',name:'Kujawsko-pomorskie',place_count:255,active:true,allowed_types}]
+const places=regions.map((r,i)=>({id:i+1,region:r.slug,name:r.name+' — test',description:'Opis',subtitle:'Atrakcja',location:r.name,category:'heritage',details:{kind:'castle'},image:'/images/heritage-placeholder.svg',lat:53,lng:18,rating:0}))
+const routes=[{id:10,name:'Publiczny spacer',is_public:true,transport:'walk',place_ids:[1,1,2]},{id:11,name:'Publiczna rowerowa',is_public:true,transport:'bike',place_ids:[3]}]
+localStorage.setItem('perly-saved',JSON.stringify([{id:99,name:'Prywatna',transport:'walk',place_ids:[1]}]))
+globalThis.fetch=async path=>{
+ const data=path==='/api/regions'?regions:path==='/api/places'?places:path==='/api/routes/public'?routes:[]
+ return {ok:true,json:async()=>structuredClone(data)}
+}
+const {createApp,nextTick}=await import('vue')
+await import('../artifacts/poland-regions-test.mjs')
+const App=(await import('../artifacts/ui-test.mjs')).default
+const app=createApp(App);app.mount('#app')
+const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
+await settle();await settle();await settle()
+const map=document.querySelector('#poland-regions');assert.ok(map)
+assert.ok(map.compareDocumentPosition(document.querySelector('#places'))&Node.DOCUMENT_POSITION_FOLLOWING,'Map appears before TOP 20')
+assert.equal(map.querySelectorAll('.poland-province>path').length,16)
+assert.equal(map.querySelectorAll('.poland-region-rows button').length,16)
+assert.equal(map.querySelector('.poland-total strong').textContent.replace(/\s/g,''),'1112')
+const province=slug=>map.querySelector(`[data-region="${slug}"]`)
+assert.match(province('lubuskie').getAttribute('aria-label'),/351 miejsc, 1 trasa piesza, 0 tras rowerowych/)
+assert.match(province('kujawsko-pomorskie').getAttribute('aria-label'),/255 miejsc, 0 tras pieszych, 1 trasa rowerowa/)
+assert.equal(province('podlaskie').getAttribute('aria-disabled'),'true')
+province('podlaskie').dispatchEvent(new Event('click',{bubbles:true}));await settle();assert.equal(window.location.pathname,'/start')
+const list=map.querySelector('.poland-region-list');assert.equal(list.open,false);list.querySelector('summary').click();await settle();assert.equal(list.open,true)
+province('kujawsko-pomorskie').dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));await settle();await settle()
+assert.equal(window.location.pathname,'/miejsca');assert.equal(document.querySelector('#active-region').value,'kujawsko-pomorskie')
+assert.equal(document.querySelector('.place-title').textContent,'Kujawsko-pomorskie — test')
+assert.equal(document.querySelector('#poland-regions'),null)
+app.unmount();dom.window.close()
+console.log('PASS: map before TOP 20, 16 outlines, published place/public route counts, no private route leakage, readable list and keyboard catalog navigation')

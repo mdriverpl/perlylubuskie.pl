@@ -1,6 +1,6 @@
 <script setup>
 function imageFallback(event){event.target.onerror=null;event.target.src="/images/heritage-placeholder.svg"}
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick, provide } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick, provide, defineAsyncComponent } from 'vue'
 import Search from "lucide-vue-next/dist/esm/icons/search.js"
 import ThumbsUp from 'lucide-vue-next/dist/esm/icons/thumbs-up.js'
 import MessageCircle from 'lucide-vue-next/dist/esm/icons/message-circle.js'
@@ -40,6 +40,7 @@ import PlaceCommunity from './components/PlaceCommunity.vue'
 import ExploreHome from './components/ExploreHome.vue'
 import HomeAddressSearch from './components/HomeAddressSearch.vue'
 import AdminRegions from './components/AdminRegions.vue'
+const PolandRegions=defineAsyncComponent(()=>import('./components/PolandRegions.vue'))
 import List from 'lucide-vue-next/dist/esm/icons/list.js'
 import Sparkles from 'lucide-vue-next/dist/esm/icons/sparkles.js'
 import AiPlanner from './components/AiPlanner.vue'
@@ -184,6 +185,7 @@ watch(saved,v=>localStorage.setItem('perly-saved',JSON.stringify(v)),{deep:true}
 async function api(path,options={}) {const response=await fetch(`/api${path}`,{signal:AbortSignal.timeout(8000),...options, headers:{'Content-Type':'application/json',...(token.value?{Authorization:`Bearer ${token.value}`} :{}),...options.headers}});return readApiJson(response)}
 function notify(message){toast.value=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.value='',4000)}
 function navigate(target){plannerFocus.value=null;routeIsPublic.value=false;routePreview.value=false;pointPositions.value=[];editingRoute.value=null;view.value=target;menu.value=false;onlyFavorites.value=false;category.value='all';query.value='';window.scrollTo({top:0,behavior:'smooth'})}
+function openProvince(slug){selectedRegion.value=slug;navigate('places')}
 function focusSearch(){navigate('places');nextTick(()=>document.getElementById('explore-query')?.focus())}
 function chooseCategory(id){if(id==='bike'||id==='walk'){transport.value=id;trailFilter.value=trailFilter.value===id?'all':id;document.querySelector('#trails')?.scrollIntoView({behavior:'smooth'});return}category.value=category.value===id?'all':id;document.querySelector('#places')?.scrollIntoView({behavior:'smooth',block:'start'})}
 async function toggleFavorite(id){const exists=favorites.value.includes(id);favorites.value=exists?favorites.value.filter(x=>x!==id):[...favorites.value,id];if(user.value&&apiOnline.value&&id>0){try{await api(`/favorites/${id}`,{method:exists?'DELETE':'PUT'})}catch(e){favorites.value=exists?[...favorites.value,id]:favorites.value.filter(x=>x!==id);notify(e.message)}}}
@@ -276,6 +278,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
    </div><div class="photo-credit">Wizualizacja krajobrazu Ziemi Lubuskiej</div>
   </section>
   <div class="content-width">
+   <PolandRegions :regions="regions" :places="places" :routes="publicSaved" @select="openProvince"/>
    <div class="home-display-toolbar" aria-label="Wygląd strony głównej">
     <div class="home-display-group home-display-icons" role="group" aria-label="Widok strony głównej"><span>Widok</span><button aria-label="Widok listy" title="Widok listy" :aria-pressed="homeView==='list'" @click="homeView='list'"><List :size="22" aria-hidden="true"/></button><button v-for="size in [{id:'large',label:'Duże kafelki',cells:2},{id:'medium',label:'Średnie kafelki',cells:3},{id:'small',label:'Małe kafelki',cells:4}]" :key="size.id" :aria-label="size.label" :title="size.label" :aria-pressed="homeView==='tiles'&&homeTileSize===size.id" @click="homeView='tiles';homeTileSize=size.id"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true" focusable="false"><rect v-for="cell in size.cells*size.cells" :key="cell" :x="3+((cell-1)%size.cells)*(20/size.cells)" :y="3+Math.floor((cell-1)/size.cells)*(20/size.cells)" :width="20/size.cells-2" :height="20/size.cells-2" :rx="size.cells===2?1.4:.6"/></svg></button></div>
    </div>
