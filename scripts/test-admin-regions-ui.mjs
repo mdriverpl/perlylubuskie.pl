@@ -43,11 +43,15 @@ const submit=async form=>{form.dispatchEvent(new Event('submit',{bubbles:true,ca
 await settle();await settle()
 assert.ok(document.querySelector('.admin-regions'))
 assert.equal(document.querySelectorAll('.admin-types input:checked').length,6)
+assert.equal(document.querySelector('.admin-types').closest('details').open,false,'Category controls stay folded by default')
 assert.equal(document.querySelector('#admin-new-region').value,'kujawsko-pomorskie')
 await submit(document.querySelector('.admin-card form'))
 assert.equal(autoRequests,1,'Primary region creation launches AI research')
 assert.equal(document.querySelector('#admin-region').value,'kujawsko-pomorskie')
 assert.equal(document.querySelectorAll('#admin-place-type option').length,6)
+assert.equal(document.querySelector('.admin-manual').open,false,'Manual editing and JSON import stay folded by default')
+await click(document.querySelector('.admin-manual summary'))
+assert.equal(document.querySelector('.admin-manual').open,true)
 for(const [selector,value] of [['#admin-place-name','Atrakcja <b>Toruń</b>'],['#admin-place-location','Toruń'],['#admin-place-description','Opis'],['#admin-place-lat','53.01'],['#admin-place-lng','18.60']]){
  const input=document.querySelector(selector);input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));await settle()
 }
