@@ -45,9 +45,10 @@ def import_catalogs(directory=None):
                     continue
                 place=Place(id=db.scalar(text("SELECT nextval('submitted_place_ids')")),**record);db.add(place);db.flush();added+=1
             total=db.scalar(select(func.count()).select_from(Place).where(Place.region==slug))
-            for job in db.scalars(select(RegionResearchJob).where(RegionResearchJob.region==slug,RegionResearchJob.status.in_(['queued','running']))):
-                job.cancel_requested=True;job.status='cancelled';job.active_region=None;job.updated_at=datetime.now(timezone.utc)
-                job.report={**(job.report or {}),'local_import':{'added':added,'updated':updated,'skipped':skipped,'total':total},'message':'Katalog uzupełniono lokalnie. Możesz opublikować zapisane miejsca.'}
+            for index,job in enumerate(db.scalars(select(RegionResearchJob).where(RegionResearchJob.region==slug).order_by(RegionResearchJob.created_at.desc()))):
+                active=job.status in ('queued','running')
+                if active:job.cancel_requested=True;job.status='cancelled';job.active_region=None;job.updated_at=datetime.now(timezone.utc)
+                if active or index==0:job.report={**(job.report or {}),'local_import':{'added':added,'updated':updated,'skipped':skipped,'total':total},'message':'Katalog uzupełniono lokalnie. Możesz opublikować zapisane miejsca.'}
             db.execute(text('INSERT INTO local_catalog_imports(region,version) VALUES (:region,:version) ON CONFLICT(region) DO UPDATE SET version=EXCLUDED.version,imported_at=now()'),{'region':slug,'version':version})
             db.commit();result={'region':slug,'added':added,'updated':updated,'skipped':skipped,'total':total};results.append(result)
             logger.info('Local catalog imported region=%s added=%s updated=%s skipped=%s total=%s',slug,added,updated,skipped,total)
