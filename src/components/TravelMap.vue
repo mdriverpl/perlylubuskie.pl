@@ -4,7 +4,7 @@ import * as L from 'leaflet/dist/leaflet-src.esm.js'
 import {readApiJson} from '../apiResponse.js'
 import {preferredMap,rememberMap,osmTileUrl} from '../mapPreferences.js'
 import {pointClusters,validMapPoint} from '../mapClusters.js'
-const props = defineProps({ places: Array, focusLocation: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
+const props = defineProps({ places: Array, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
 let map, layer, markerLayer, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
 const provider=ref('osm'), mapStyle=ref('terrain'), mapError=ref(''),switchingMap=ref(false)
@@ -80,7 +80,7 @@ const mapElement=ref(null)
 function draw() {
  if (!map) return
  const catalogPoints=props.places.filter(p=>p.details?.kind!=='custom')
- const viewportKey=JSON.stringify([catalogPoints.map(p=>[p.id,p.lat,p.lng]).sort((a,b)=>a[0]-b[0]),props.searchLocation?.lat,props.searchLocation?.lng])
+ const viewportKey=JSON.stringify([catalogPoints.map(p=>[p.id,p.lat,p.lng]).sort((a,b)=>a[0]-b[0]),props.searchLocation?.lat,props.searchLocation?.lng,props.distanceArea])
  const refit=viewportKey!==lastViewportKey||props.geometry!==lastGeometry
  lastViewportKey=viewportKey;lastGeometry=props.geometry
  layer.clearLayers()
@@ -96,9 +96,14 @@ function draw() {
   const label=document.createElement('span');label.textContent=point.name
   L.circleMarker([point.lat,point.lng],{radius:9,color:'#fff',weight:3,fillColor:'#ce7b28',fillOpacity:1}).addTo(layer).bindTooltip(label,{permanent:true,direction:'top'})
  }
+ const area=props.distanceArea
+ let distanceCircle
+ if(validMapPoint(area)&&Number.isFinite(area.radiusKm)&&area.radiusKm>0){
+  distanceCircle=L.circle([area.lat,area.lng],{radius:area.radiusKm*1000,color:'#19744f',weight:2,fillOpacity:.06}).addTo(layer)
+ }
  const focus=props.focusLocation
  const focusChanged=focus!==lastFocus;lastFocus=focus
- if(Number.isFinite(focus?.lat)&&Math.abs(focus.lat)<=90&&Number.isFinite(focus?.lng)&&Math.abs(focus.lng)<=180){
+ if(!distanceCircle&&Number.isFinite(focus?.lat)&&Math.abs(focus.lat)<=90&&Number.isFinite(focus?.lng)&&Math.abs(focus.lng)<=180){
   if(refit||focusChanged)map.setView([focus.lat,focus.lng],Number.isFinite(focus.zoom)?Math.max(8,Math.min(16,focus.zoom)):14)
   return
  }
@@ -107,6 +112,7 @@ function draw() {
   const line=L.polyline(points, { color: '#1685d2', weight: 5, dashArray:props.geometryApproximate?'8 8':undefined }).addTo(layer)
   if(refit)map.fitBounds(line.getBounds(),{padding:[45,45],maxZoom:14})
  }
+ else if(distanceCircle){if(refit)map.fitBounds(distanceCircle.getBounds(),{padding:[30,30],maxZoom:14})}
  else if(props.searchLocation){if(refit)map.setView([props.searchLocation.lat,props.searchLocation.lng],13)}
  else if(props.fitPlaces&&refit){
   const bounds=(props.allowCustomPoints&&catalogPoints.length?catalogPoints:props.places).map(p=>[p.lat,p.lng])
@@ -130,7 +136,7 @@ onMounted(async () => {
  if(preferredMap()==='here')await selectProvider('here')
 })
 watch(mapStyle,setTiles)
-watch(()=>[props.selected,props.places,props.geometry,props.userLocation,props.searchLocation,props.draggablePoints,props.focusLocation],draw,{deep:true})
+watch(()=>[props.selected,props.places,props.geometry,props.userLocation,props.searchLocation,props.draggablePoints,props.focusLocation,props.distanceArea],draw,{deep:true})
 onBeforeUnmount(()=>{disposed=true;resizeObserver?.disconnect();map?.remove();tiles?.off()})
 </script>
 <template><div class="travel-map"><div ref="mapElement" class="travel-map-canvas" aria-label="Mapa miejsc i tras w Polsce"></div><div class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div><div v-if="provider==='here'" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div><p v-if="mapError" class="map-provider-error" role="status">{{mapError}}</p></div></template>

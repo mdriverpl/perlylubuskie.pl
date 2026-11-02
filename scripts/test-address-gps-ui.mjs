@@ -42,6 +42,12 @@ assert.equal(reverseCalls,1);assert.equal(input().value,'Adres z GPS 1, Lubuskie
 assert.equal(document.querySelector('[aria-label="Sortuj miejsca"]').value,'distance')
 assert.equal(pendingRadius.value,'5')
 assert.deepEqual(names(),['Przy GPS'])
+await click(document.querySelector('[aria-label="Widok mapy"]'))
+assert.equal(document.querySelector('.test-explore-map').dataset.ids,'101','Map uses the same radius-filtered points')
+pendingRadius.value='100';pendingRadius.dispatchEvent(new Event('change',{bubbles:true}));await settle()
+assert.deepEqual(document.querySelector('.test-explore-map').dataset.ids.split(','),['101','102'],'Changing the limit updates map points')
+await click(document.querySelector('.explore-view-switch button:nth-child(2)'))
+
 pendingRadius.value='';pendingRadius.dispatchEvent(new Event('change',{bubbles:true}));await settle()
 assert.deepEqual(names(),['Przy GPS','Przy adresie'])
 await new Promise(r=>setTimeout(r,650));await settle();assert.equal(searchCalls,0,'GPS address does not trigger a second search')
