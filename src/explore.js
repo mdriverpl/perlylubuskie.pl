@@ -12,6 +12,10 @@ export const placeFacets = [
 export const defaultPlaceFacets=placeFacets.filter(f=>!['stays','wineries','restaurants'].includes(f.id)).map(f=>f.id)
 export function normalizeRegion(value){return value.trim().toLocaleLowerCase('pl').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ł/g,'l').replace(/^woj(?:ewodztwo)?\.?\s*/,'').trim()}
 export function matchesRegion(value){return ['lubuskie','ziemia lubuska'].includes(normalizeRegion(value))}
+export function provinceSlug(value){
+ const name=normalizeRegion(value).replace(/[\s–—-]+/g,'')
+ return ['dolnoslaskie','kujawsko-pomorskie','lubelskie','lubuskie','lodzkie','malopolskie','mazowieckie','opolskie','podkarpackie','podlaskie','pomorskie','slaskie','swietokrzyskie','warminsko-mazurskie','wielkopolskie','zachodniopomorskie'].find(slug=>slug.replace(/-/g,'')===name)||null
+}
 export function filterPlaces(places,region,query,facets){
  if(!matchesRegion(region))return []
  const needle=query.trim().toLocaleLowerCase('pl')

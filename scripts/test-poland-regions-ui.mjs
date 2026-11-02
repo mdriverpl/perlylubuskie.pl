@@ -9,7 +9,9 @@ const regions=[{slug:'lubuskie',name:'Lubuskie',place_count:351,active:true,allo
 const places=regions.map((r,i)=>({id:i+1,region:r.slug,name:r.name+' — test',description:'Opis',subtitle:'Atrakcja',location:r.name,category:'heritage',details:{kind:'castle'},image:'/images/heritage-placeholder.svg',lat:53,lng:18,rating:0}))
 const routes=[{id:10,name:'Publiczny spacer',is_public:true,transport:'walk',place_ids:[1,1,2]},{id:11,name:'Publiczna rowerowa',is_public:true,transport:'bike',place_ids:[3]}]
 localStorage.setItem('perly-saved',JSON.stringify([{id:99,name:'Prywatna',transport:'walk',place_ids:[1]}]))
+let geocoderRequests=0
 globalThis.fetch=async path=>{
+ if(path.startsWith('/api/maps/search'))geocoderRequests++
  const data=path==='/api/regions'?regions:path==='/api/places'?places:path==='/api/routes/public'?routes:[]
  return {ok:true,json:async()=>structuredClone(data)}
 }
@@ -44,5 +46,21 @@ assert.equal(JSON.parse(localStorage.getItem('perly:region')),'dolnoslaskie')
 app.unmount();app=createApp(App);app.mount('#app');await settle();await settle()
 assert.equal(document.querySelector('.explore-home #active-region').value,'dolnoslaskie','Province selection survives reload')
 assert.equal(document.querySelector('.place-title').textContent,'Dolnośląskie — test')
+async function typeProvince(text,automatic=false){
+ const field=document.querySelector('#explore-query');field.value=text;field.dispatchEvent(new Event('input',{bubbles:true}));await settle()
+ if(automatic)await new Promise(r=>setTimeout(r,650))
+ else field.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}))
+ await settle();await settle()
+}
+await typeProvince('województwo kujawsko pomorskie')
+assert.equal(document.querySelector('#active-region').value,'kujawsko-pomorskie')
+assert.equal(document.querySelector('#explore-query').value,'')
+assert.equal(document.querySelector('.place-title').textContent,'Kujawsko-pomorskie — test')
+await typeProvince('LUBUSKIE',true)
+assert.equal(document.querySelector('#active-region').value,'lubuskie','Province is also recognized automatically after typing')
+await typeProvince('podlaskie')
+assert.equal(document.querySelector('#active-region').value,'lubuskie','Unavailable provinces do not select a different catalog silently')
+assert.match(document.querySelector('.location-search-error').textContent,/nie ma jeszcze opublikowanego katalogu/)
+assert.equal(geocoderRequests,0,'Province selection must not invoke the address geocoder')
 app.unmount();dom.window.close()
 console.log('PASS: map before TOP 20, 16 outlines, published place/public route counts, no private route leakage, readable list and keyboard catalog navigation')
