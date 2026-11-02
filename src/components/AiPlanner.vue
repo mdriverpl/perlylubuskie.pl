@@ -7,7 +7,7 @@ import Mail from 'lucide-vue-next/dist/esm/icons/mail.js'
 import MessageSquare from 'lucide-vue-next/dist/esm/icons/message-square.js'
 import {routeShareLinks} from '../routeShare.js'
 import {readApiJson} from '../apiResponse.js'
-const props=defineProps({places:{type:Array,default:()=>[]},online:Boolean,initialPrompt:{type:String,default:''},autoStart:Boolean})
+const props=defineProps({places:{type:Array,default:()=>[]},online:Boolean,initialPrompt:{type:String,default:''},autoStart:Boolean,region:{type:String,default:''}})
 const emit=defineEmits(['use'])
 const prompt=ref(props.initialPrompt||'Zaplanuj pieszą trasę dookoła Jeziora Łagowskiego'),busy=ref(false),error=ref(''),proposal=ref(null),enabled=ref(null)
 let controller,disposed=false
@@ -26,7 +26,7 @@ async function generate(){
  busy.value=true;error.value='';proposal.value=null;shareOpen.value=false;controller=new AbortController()
  const timer=setTimeout(()=>controller.abort(),110000)
  try{
-  const response=await fetch('/api/ai/plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt.value.trim()}),signal:controller.signal})
+  const response=await fetch('/api/ai/plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt.value.trim(),...(props.region?{region:props.region}:{})}),signal:controller.signal})
   const data=await readApiJson(response,'Nie udało się przygotować propozycji. Serwer jest chwilowo niedostępny. Spróbuj ponownie.')
   if(!data.place_ids?.length||!data.geometry?.coordinates?.length||!Number.isFinite(data.distance_m)||!Array.isArray(data.custom_points))throw Error('Otrzymano niepełną propozycję trasy.')
   if(!disposed)proposal.value=data

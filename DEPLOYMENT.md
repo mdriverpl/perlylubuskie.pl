@@ -7,7 +7,7 @@ Gotowy zestaw składa się z czterech kontenerów:
 | Vue + Nginx | `ghcr.io/mdriverpl/perlylubuskie-web:latest` | frontend i proxy `/api` |
 | FastAPI | `ghcr.io/mdriverpl/perlylubuskie-api:latest` | API, schemat i katalog początkowy |
 | PostgreSQL | `postgres:17-alpine` | dane w trwałym wolumenie `postgres_data` |
-| BRouter | `ghcr.io/mdriverpl/perlylubuskie-router:latest` | silnik pieszy i rowerowy, snapshot danych OSM zachodniej Polski |
+| BRouter | `ghcr.io/mdriverpl/perlylubuskie-router:latest` | silnik pieszy i rowerowy, snapshot danych OSM obejmujący Polskę |
 
 Obrazy aplikacji są budowane dla **Linux amd64**. Serwer wymaga Dockera z Compose v2. Schemat bazy i sześć miejsc początkowych są tworzone automatycznie przy pierwszym starcie API. Hasła, konta użytkowników i zawartość lokalnej bazy nie są publikowane w obrazach.
 
@@ -88,6 +88,6 @@ Plik kopii zawiera dane użytkowników: przechowuj go poza repozytorium, w bezpi
 
 Obrazy obejmują bieżące funkcje i dane demonstracyjne opisane w README. Dla tras pieszych i rowerowych GPX zawiera przebieg wyznaczony przez BRouter po drogach i ścieżkach. Czas jest szacowany i nie uwzględnia postojów. Sprawdź dostępność ścieżek oraz warunki w terenie.
 
-Router nie wystawia portu do internetu. Ma limit pamięci 768 MB i obejmuje zachodnią Polskę. Pierwsze pobranie jego obrazu wymaga około 215 MB samych danych mapowych, oprócz środowiska Java. Przy budowaniu obrazu dane są pobierane z `brouter.de`; zmiana `MAP_DATA_VERSION` w `routing/Dockerfile` odświeża snapshot. Nie usuwaj wolumenu PostgreSQL przy dodawaniu usługi `router` do istniejącego wdrożenia.
+Router nie wystawia portu do internetu. Ma limit pamięci 768 MB i obejmuje Polskę za pomocą pięciu segmentów danych BRouter. Przy budowaniu obrazu dane są pobierane z `brouter.de`; zmiana `MAP_DATA_VERSION` w `routing/Dockerfile` odświeża snapshot. Nie usuwaj wolumenu PostgreSQL przy dodawaniu usługi `router` do istniejącego wdrożenia.
 
 Dane trasowania: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL. Silnik [BRouter](https://github.com/abrensch/brouter) ma licencję MIT. Snapshot danych w obrazie pochodzi z [segmentów BRouter](https://brouter.de/brouter/segments4/), przetworzonych z OSM; obowiązuje atrybucja i warunki ODbL.

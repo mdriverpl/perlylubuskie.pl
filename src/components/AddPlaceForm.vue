@@ -1,16 +1,19 @@
 <script setup>
-import {ref} from 'vue'
-defineProps({busy:Boolean,error:String})
+import {ref,computed,watch} from 'vue'
+const props=defineProps({busy:Boolean,error:String,regions:{type:Array,default:()=>[]},initialRegion:{type:String,default:'lubuskie'}})
 const emit=defineEmits(['submit'])
-const draft=ref({name:'',subtitle:'',location:'',description:'',place_type:'heritage',lat:null,lng:null,image:''})
+const draft=ref({name:'',subtitle:'',location:'',description:'',place_type:'heritage',lat:null,lng:null,image:'',region:props.initialRegion})
 const types=[['castle','Zamek'],['palace','Pałac'],['vineyard','Winnica'],['food','Restauracja'],['lake','Jezioro'],['nature','Park lub przyroda'],['heritage','Zabytek'],['stay','Nocleg'],['leisure','Atrakcja rodzinna']]
+const allowedTypes=computed(()=>{const region=props.regions.find(r=>r.slug===draft.value.region);return region?types.filter(([id])=>region.allowed_types.includes(id)):types})
+watch(allowedTypes,value=>{if(value.length&&!value.some(([id])=>id===draft.value.place_type))draft.value.place_type=value[0][0]},{immediate:true})
 </script>
 <template>
  <form class="add-place-form modal-body" @submit.prevent="emit('submit',{...draft})">
   <div class="section-kicker">KATALOG MIEJSC</div><h2>Dodaj miejsce</h2>
   <p>Miejsce pojawi się we wspólnym katalogu. Inni będą mogli je polubić i skomentować.</p>
   <label>Nazwa<input id="new-place-name" v-model="draft.name" required maxlength="200" autocomplete="off"></label>
-  <label>Rodzaj<select id="new-place-type" v-model="draft.place_type"><option v-for="[id,name] in types" :key="id" :value="id">{{name}}</option></select></label>
+  <label v-if="regions.length>1">Województwo<select v-model="draft.region"><option v-for="region in regions" :key="region.slug" :value="region.slug">{{region.name}}</option></select></label>
+  <label>Rodzaj<select id="new-place-type" v-model="draft.place_type"><option v-for="[id,name] in allowedTypes" :key="id" :value="id">{{name}}</option></select></label>
   <label>Miejscowość<input id="new-place-location" v-model="draft.location" required maxlength="200"></label>
   <label>Krótki opis<input id="new-place-subtitle" v-model="draft.subtitle" maxlength="250"></label>
   <label>Opis<textarea id="new-place-description" v-model="draft.description" required maxlength="2000" rows="4"></textarea></label>

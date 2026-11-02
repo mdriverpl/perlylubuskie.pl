@@ -27,6 +27,8 @@ services:
       CORS_ORIGINS: http://localhost:8080
       ROUTER_URL: http://router:17777/brouter
       HERE_API_KEY: ${HERE_API_KEY:-}
+      SUPERADMIN_EMAILS: ${SUPERADMIN_EMAILS:-}
+      SUPERADMIN_INITIAL_PASSWORD: ${SUPERADMIN_INITIAL_PASSWORD:-}
     depends_on:
       db:
         condition: service_healthy

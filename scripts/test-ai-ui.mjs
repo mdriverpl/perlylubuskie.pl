@@ -13,7 +13,7 @@ globalThis.fetch=async(path,options={})=>{
  if(path==='/api/places')data=demoPlaces
  else if(path==='/api/routes/public')data=[]
  else if(path==='/api/ai/config')data={enabled:true}
- else if(path==='/api/ai/plan'){requests++;lastPrompt=JSON.parse(options.body).prompt;assert.deepEqual(Object.keys(JSON.parse(options.body)),['prompt']);ok=!fail;data=fail?{detail:'AI jest chwilowo niedostępne.'}:plan}
+ else if(path==='/api/ai/plan'){requests++;lastPrompt=JSON.parse(options.body).prompt;assert.deepEqual(Object.keys(JSON.parse(options.body)),['prompt','region']);assert.equal(JSON.parse(options.body).region,'lubuskie');ok=!fail;data=fail?{detail:'AI jest chwilowo niedostępne.'}:plan}
  else if(path==='/api/routing'){routing=JSON.parse(options.body);data=plan}
  else throw Error('Unexpected '+path)
  return {ok,json:async()=>structuredClone(data)}

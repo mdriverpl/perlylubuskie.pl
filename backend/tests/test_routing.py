@@ -70,3 +70,12 @@ def test_request_limits(points, mode):
     with pytest.raises(HTTPException) as exc:
         routing.calculate_route(points, mode)
     assert exc.value.status_code == 422
+
+
+@pytest.mark.parametrize('origin',[(53.01,18.60),(54.35,18.64),(49.30,19.95),(53.13,23.16)])
+def test_routing_accepts_new_regions_in_poland(monkeypatch,origin):
+    lat,lng=origin
+    points=[{'name':'Start','lat':lat,'lng':lng},{'name':'Finish','lat':lat+.001,'lng':lng+.001}]
+    data=response();data['features'][0]['geometry']['coordinates']=[[p['lng'],p['lat']] for p in points]
+    monkeypatch.setattr(routing,'urlopen',lambda *args,**kwargs:io.BytesIO(json.dumps(data).encode()))
+    assert routing.calculate_route(points,'walk')['distance_m']==2800

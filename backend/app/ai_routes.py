@@ -86,6 +86,7 @@ def planning_catalog(prompt, catalog):
 
 class AiRequest(BaseModel):
     prompt: str = Field(min_length=5, max_length=1000)
+    region: str = Field(default='',max_length=40)
 
 
 class Intent(BaseModel):

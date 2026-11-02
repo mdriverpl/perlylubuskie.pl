@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -42,6 +43,15 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
     name: Mapped[str] = mapped_column(String(80))
     password: Mapped[str] = mapped_column(String(255))
+    is_superadmin: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class Region(Base):
+    __tablename__ = 'regions'
+    slug: Mapped[str] = mapped_column(String(40), primary_key=True)
+    name: Mapped[str] = mapped_column(String(80))
+    allowed_types: Mapped[list[str]] = mapped_column(JSON)
+    active: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
 class Place(Base):
@@ -57,6 +67,7 @@ class Place(Base):
     location: Mapped[str] = mapped_column(String(200))
     description: Mapped[str] = mapped_column(String(2000))
     details: Mapped[dict] = mapped_column(JSON, default=dict)
+    region: Mapped[str] = mapped_column(String(40), default='lubuskie', index=True)
 
 
 class Favorite(Base):
@@ -130,11 +141,24 @@ def catalog_viewer(credentials: HTTPAuthorizationCredentials | None = Depends(op
         return None  # Public catalog remains readable after a saved session expires.
 
 
+def superadmin(user: User = Depends(current_user)):
+    if not user.is_superadmin:
+        raise HTTPException(403, 'Ta operacja wymaga konta superadministratora.')
+    return user
+
+
+def bootstrap_admin_emails():
+    return {email.strip().lower() for email in os.environ.get('SUPERADMIN_EMAILS', '').split(',') if email.strip()}
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(engine)
     # Additive catalog migration; stable IDs preserve community data and saved trips.
     with engine.begin() as connection:
+        connection.execute(text('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE'))
+        connection.execute(text("ALTER TABLE places ADD COLUMN IF NOT EXISTS region VARCHAR(40) NOT NULL DEFAULT 'lubuskie'"))
+        connection.execute(text('CREATE INDEX IF NOT EXISTS ix_places_region ON places(region)'))
         connection.execute(text('CREATE SEQUENCE IF NOT EXISTS submitted_place_ids START WITH 1000000000'))
         connection.execute(text("ALTER TABLE places ADD COLUMN IF NOT EXISTS details JSON NOT NULL DEFAULT '{}'"))
         connection.execute(text('ALTER TABLE places ALTER COLUMN image TYPE TEXT'))
@@ -144,10 +168,27 @@ async def lifespan(app: FastAPI):
         connection.execute(text('ALTER TABLE trips ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE'))
         connection.execute(text("ALTER TABLE trips ADD COLUMN IF NOT EXISTS custom_points JSON NOT NULL DEFAULT '[]'"))
     with SessionLocal() as db:
+        if not db.get(Region, 'lubuskie'):
+            db.add(Region(slug='lubuskie', name='Lubuskie', allowed_types=['castle','palace','lake','nature','heritage','leisure','stay','vineyard','food'], active=True))
+        configured_admins=bootstrap_admin_emails()
+        matched_admins=0
+        created_admins=0
+        bootstrap_password=os.environ.get('SUPERADMIN_INITIAL_PASSWORD','')
+        for email in configured_admins:
+            connection_user = db.scalar(select(User).where(func.lower(User.email) == email))
+            if not connection_user and len(configured_admins)==1 and len(bootstrap_password)>=24:
+                connection_user=User(email=email,name='Administrator',password=password_hash.hash(bootstrap_password),is_superadmin=True)
+                db.add(connection_user)
+                created_admins+=1
+            if connection_user:
+                connection_user.is_superadmin = True
+                matched_admins+=1
+        if configured_admins:
+            logging.getLogger('uvicorn.error').info('Superadmin bootstrap: %s accounts enabled, %s newly created, %s configured.',matched_admins,created_admins,len(configured_admins))
         data = json.loads((Path(__file__).resolve().parents[1] / 'seed.json').read_text(encoding='utf-8'))
         for place in data:
             statement = insert(Place).values(**dict(place, details=place.get('details', {})))
-            statement = statement.on_conflict_do_update(index_elements=[Place.id], set_={key: getattr(statement.excluded, key) for key in place if key != 'id'})
+            statement = statement.on_conflict_do_update(index_elements=[Place.id], set_={key: getattr(statement.excluded, key) for key in place if key != 'id'},where=Place.details['admin_managed'].as_boolean().is_not(True))
             db.execute(statement)
         db.commit()
     yield
@@ -165,8 +206,11 @@ def ai_config():
 
 @app.post('/api/ai/plan')
 def ai_plan(data: ai_routes.AiRequest, request: Request, db: Session = Depends(get_db)):
+    statement=select(Place).join(Region,Region.slug==Place.region).where(Region.active.is_(True))
+    if data.region:
+        statement=statement.where(Place.region==data.region)
     catalog = [ai_routes.catalog_entry(p)
-               for p in db.scalars(select(Place).order_by(Place.id).limit(400)).all()]
+               for p in db.scalars(statement.order_by(Place.id).limit(5000)).all()]
     return ai_routes.propose(data.prompt, catalog, request.client.host if request.client else 'unknown')
 
 
@@ -196,6 +240,7 @@ class PlaceOut(BaseModel):
     comment_count: int = 0
     popularity: int = 0
     liked: bool = False
+    region: str = 'lubuskie'
 
 
 class PlaceInput(BaseModel):
@@ -207,15 +252,136 @@ class PlaceInput(BaseModel):
     lat: float = Field(ge=-90, le=90, allow_inf_nan=False)
     lng: float = Field(ge=-180, le=180, allow_inf_nan=False)
     image: str = Field(default='', max_length=2000, pattern=r'^(?:https://[^\s]+)?$')
+    region: str = Field(default='lubuskie', max_length=40)
+    source_url: str = Field(default='', max_length=2000, pattern=r'^(?:https://[^\s]+)?$')
+
+
+def new_catalog_place(data, user, db):
+    if not all(value.strip() for value in (data.name, data.location, data.description)):
+        raise HTTPException(422, 'Podaj nazwę, miejscowość i opis miejsca.')
+    category = {'castle': 'heritage', 'palace': 'heritage', 'lake': 'nature'}.get(data.place_type, data.place_type)
+    region = db.get(Region, data.region)
+    if not region or (not region.active and not user.is_superadmin):
+        raise HTTPException(422, 'Wybierz dostępne województwo.')
+    if data.place_type not in region.allowed_types:
+        raise HTTPException(422, 'Ten rodzaj miejsca jest wyłączony w województwie.')
+    place = Place(id=db.scalar(text("SELECT nextval('submitted_place_ids')")), name=data.name.strip(), subtitle=data.subtitle.strip(), location=data.location.strip(), description=data.description.strip(), lat=data.lat, lng=data.lng, image=data.image or '/images/heritage-placeholder.svg', category=category, rating=0, region=data.region, details={'kind': data.place_type, 'submitted_by': user.id, **({'source_url':data.source_url} if data.source_url else {})})
+    return place
 
 
 @app.post('/api/places', response_model=PlaceOut, status_code=201)
 def create_place(data: PlaceInput, user: User = Depends(current_user), db: Session = Depends(get_db)):
-    if not all(value.strip() for value in (data.name, data.location, data.description)):
-        raise HTTPException(422, 'Podaj nazwę, miejscowość i opis miejsca.')
-    category = {'castle': 'heritage', 'palace': 'heritage', 'lake': 'nature'}.get(data.place_type, data.place_type)
-    place = Place(id=db.scalar(text("SELECT nextval('submitted_place_ids')")), name=data.name.strip(), subtitle=data.subtitle.strip(), location=data.location.strip(), description=data.description.strip(), lat=data.lat, lng=data.lng, image=data.image or '/images/heritage-placeholder.svg', category=category, rating=0, details={'kind': data.place_type, 'submitted_by': user.id})
+    place = new_catalog_place(data,user,db)
     db.add(place)
+    db.commit()
+    return place
+
+
+REGION_NAMES = {
+    'dolnoslaskie':'Dolnośląskie','kujawsko-pomorskie':'Kujawsko-pomorskie','lubelskie':'Lubelskie','lubuskie':'Lubuskie',
+    'lodzkie':'Łódzkie','malopolskie':'Małopolskie','mazowieckie':'Mazowieckie','opolskie':'Opolskie',
+    'podkarpackie':'Podkarpackie','podlaskie':'Podlaskie','pomorskie':'Pomorskie','slaskie':'Śląskie',
+    'swietokrzyskie':'Świętokrzyskie','warminsko-mazurskie':'Warmińsko-mazurskie','wielkopolskie':'Wielkopolskie','zachodniopomorskie':'Zachodniopomorskie',
+}
+PLACE_TYPES = {'castle':'Zamki','palace':'Pałace','lake':'Jeziora','nature':'Parki i przyroda','heritage':'Zabytki i historia','leisure':'Atrakcje rodzinne','stay':'Noclegi','vineyard':'Winiarnie','food':'Restauracje'}
+CORE_TYPES = ['castle','palace','lake','nature','heritage','leisure']
+
+
+def region_summaries(db, include_drafts=False):
+    regions = db.scalars(select(Region).order_by(Region.name)).all()
+    counts = dict(db.execute(select(Place.region,func.count()).group_by(Place.region)).all())
+    return [{'slug':r.slug,'name':r.name,'allowed_types':r.allowed_types,'active':r.active,'place_count':counts.get(r.slug,0)} for r in regions if include_drafts or r.active]
+
+
+@app.get('/api/regions')
+def public_regions(db: Session = Depends(get_db)):
+    return region_summaries(db)
+
+
+class RegionInput(BaseModel):
+    slug: str = Field(min_length=2,max_length=40)
+    allowed_types: list[str] = Field(default_factory=lambda:list(CORE_TYPES),min_length=1,max_length=9)
+
+
+class RegionUpdate(BaseModel):
+    active: bool
+
+
+class RegionImport(BaseModel):
+    places: list[PlaceInput] = Field(min_length=1,max_length=500)
+
+
+@app.get('/api/admin/regions')
+def admin_regions(user: User = Depends(superadmin), db: Session = Depends(get_db)):
+    return {'regions':region_summaries(db,True),'options':[{'slug':slug,'name':name} for slug,name in REGION_NAMES.items()],'types':[{'id':key,'name':value} for key,value in PLACE_TYPES.items()]}
+
+
+@app.post('/api/admin/regions',status_code=201)
+def add_region(data: RegionInput,user: User = Depends(superadmin),db: Session = Depends(get_db)):
+    if data.slug not in REGION_NAMES or any(kind not in PLACE_TYPES for kind in data.allowed_types) or len(set(data.allowed_types))!=len(data.allowed_types):
+        raise HTTPException(422,'Wybierz województwo i poprawne rodzaje miejsc.')
+    if db.get(Region,data.slug):
+        raise HTTPException(409,'To województwo już istnieje.')
+    db.add(Region(slug=data.slug,name=REGION_NAMES[data.slug],allowed_types=data.allowed_types,active=False))
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409,'To województwo już istnieje.') from None
+    return region_summaries(db,True)
+
+
+@app.patch('/api/admin/regions/{slug}')
+def publish_region(slug: str,data: RegionUpdate,user: User = Depends(superadmin),db: Session = Depends(get_db)):
+    region=db.get(Region,slug)
+    if not region:
+        raise HTTPException(404,'Nie znaleziono województwa.')
+    if slug=='lubuskie' and not data.active:
+        raise HTTPException(422,'Podstawowe województwo musi pozostać dostępne.')
+    if data.active and not db.scalar(select(func.count()).select_from(Place).where(Place.region==slug)):
+        raise HTTPException(422,'Dodaj co najmniej jedno miejsce przed publikacją.')
+    region.active=data.active
+    db.commit()
+    return region_summaries(db,True)
+
+
+@app.get('/api/admin/regions/{slug}/places',response_model=list[PlaceOut])
+def admin_places(slug: str,user: User = Depends(superadmin),db: Session = Depends(get_db)):
+    return db.scalars(select(Place).where(Place.region==slug).order_by(Place.name)).all()
+
+
+@app.post('/api/admin/regions/{slug}/import')
+def import_region_places(slug: str,data: RegionImport,user: User = Depends(superadmin),db: Session = Depends(get_db)):
+    region=db.get(Region,slug)
+    if not region:
+        raise HTTPException(404,'Nie znaleziono województwa.')
+    def signature(p):return (p.name.strip().casefold(),round(p.lat,6),round(p.lng,6))
+    existing={signature(p) for p in db.scalars(select(Place).where(Place.region==slug))}
+    added=skipped=0
+    for record in data.places:
+        if record.place_type not in region.allowed_types:
+            raise HTTPException(422,f'Rodzaj miejsca „{record.place_type}” jest wyłączony. Nie zaimportowano pliku.')
+        record=record.model_copy(update={'region':slug})
+        if signature(record) in existing:
+            skipped+=1
+            continue
+        place=new_catalog_place(record,user,db)
+        db.add(place);existing.add(signature(record));added+=1
+    db.commit()
+    return {'added':added,'skipped':skipped}
+
+
+@app.put('/api/admin/places/{place_id}',response_model=PlaceOut)
+def update_catalog_place(place_id: int,data: PlaceInput,user: User = Depends(superadmin),db: Session = Depends(get_db)):
+    place=db.get(Place,place_id)
+    if not place:
+        raise HTTPException(404,'Nie znaleziono miejsca.')
+    replacement=new_catalog_place(data,user,db)
+    for key in ('name','subtitle','location','description','lat','lng','image','category','region'):
+        if key=='image' and not data.image:
+            continue
+        setattr(place,key,getattr(replacement,key))
+    place.details={**(place.details or {}),'kind':data.place_type,'source_url':data.source_url,'admin_managed':True}
     db.commit()
     return place
 
@@ -259,7 +425,7 @@ class RoutingInput(BaseModel):
 def route_places(ids, db, custom_points=(), point_positions=()):
     if len({p.id for p in custom_points}) != len(custom_points) or any(p.id not in ids or not p.name.strip() for p in custom_points):
         raise HTTPException(422, 'Nieprawidłowe własne punkty trasy.')
-    found = db.scalars(select(Place).where(Place.id.in_([i for i in ids if i > 0]))).all()
+    found = db.scalars(select(Place).join(Region,Region.slug==Place.region).where(Region.active.is_(True),Place.id.in_([i for i in ids if i > 0]))).all()
     lookup = {p.id: p for p in found}
     lookup.update({p.id: p for p in custom_points})
     if any(place_id not in lookup for place_id in ids):
@@ -282,7 +448,16 @@ def routing(data: RoutingInput, db: Session = Depends(get_db)):
 def auth_response(user):
     now = datetime.now(timezone.utc)
     token = jwt.encode({'sub': str(user.id), 'iat': now, 'exp': now + timedelta(hours=12), 'iss': 'perly'}, SECRET_KEY, algorithm='HS256')
-    return {'access_token': token, 'token_type': 'bearer', 'user': {'id': user.id, 'name': user.name, 'email': user.email}}
+    return {'access_token': token, 'token_type': 'bearer', 'user': user_profile(user)}
+
+
+def user_profile(user):
+    return {'id':user.id,'name':user.name,'email':user.email,'is_superadmin':bool(user.is_superadmin)}
+
+
+@app.get('/api/auth/me')
+def me(user: User = Depends(current_user)):
+    return user_profile(user)
 
 
 @app.get('/api/health')
@@ -293,6 +468,8 @@ def health(db: Session = Depends(get_db)):
 
 @app.post('/api/auth/register', status_code=201)
 def register(data: Register, db: Session = Depends(get_db)):
+    if str(data.email).lower() in bootstrap_admin_emails():
+        raise HTTPException(403, 'Konto administratora wymaga konfiguracji na serwerze.')
     if not data.name.strip():
         raise HTTPException(422, 'Podaj imię.')
     user = User(email=str(data.email).lower(), name=data.name.strip(), password=password_hash.hash(data.password))
@@ -315,10 +492,13 @@ def login(data: Login, db: Session = Depends(get_db)):
 
 
 @app.get('/api/places', response_model=list[PlaceOut])
-def places(q: str = '', category: str = '', db: Session = Depends(get_db), user: User | None = Depends(catalog_viewer)):
+def places(q: str = '', category: str = '', region: str = '', db: Session = Depends(get_db), user: User | None = Depends(catalog_viewer)):
     likes = select(PlaceLike.place_id, func.count().label('count')).group_by(PlaceLike.place_id).subquery()
     comments = select(Comment.place_id, func.count().label('count')).group_by(Comment.place_id).subquery()
     query = select(Place, func.coalesce(likes.c.count, 0), func.coalesce(comments.c.count, 0)).outerjoin(likes, likes.c.place_id == Place.id).outerjoin(comments, comments.c.place_id == Place.id).order_by(Place.id)
+    query = query.join(Region, Region.slug == Place.region).where(Region.active.is_(True))
+    if region:
+        query = query.where(Place.region == region)
     if q:
         query = query.where(or_(Place.name.ilike(f'%{q}%'), Place.subtitle.ilike(f'%{q}%'), Place.location.ilike(f'%{q}%'), Place.details['address'].as_string().ilike(f'%{q}%'), cast(Place.details['aliases'], Text).ilike(f'%{q}%')))
     if category:
@@ -339,7 +519,9 @@ class CommentInput(BaseModel):
 
 
 def require_place(place_id, db):
-    if not db.get(Place, place_id):
+    place=db.get(Place,place_id)
+    region=db.get(Region,place.region) if place else None
+    if not place or not region or not region.active:
         raise HTTPException(404, 'Nie znaleziono miejsca.')
 
 

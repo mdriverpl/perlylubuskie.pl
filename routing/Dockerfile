@@ -3,10 +3,13 @@ RUN apk add --no-cache curl
 ARG BROUTER_COMMIT=4d2639af77ea5ed9c30d3e400764eb6f9e8522da
 RUN mkdir /source && curl --fail --location --retry 3 https://codeload.github.com/abrensch/brouter/tar.gz/$BROUTER_COMMIT -o /tmp/source.tar.gz \
     && tar -xzf /tmp/source.tar.gz -C /source --strip-components=1
-ARG MAP_DATA_VERSION=2026-10
+ARG MAP_DATA_VERSION=2026-11
 RUN mkdir /segments4 && echo "$MAP_DATA_VERSION" > /segments4/snapshot.txt \
     && curl --fail --location --retry 3 --max-time 300 https://brouter.de/brouter/segments4/E10_N50.rd5 -o /segments4/E10_N50.rd5 \
-    && curl --fail --location --retry 3 --max-time 300 https://brouter.de/brouter/segments4/E15_N50.rd5 -o /segments4/E15_N50.rd5
+    && curl --fail --location --retry 3 --max-time 300 https://brouter.de/brouter/segments4/E15_N50.rd5 -o /segments4/E15_N50.rd5 \
+    && curl --fail --location --retry 3 --max-time 300 https://brouter.de/brouter/segments4/E20_N50.rd5 -o /segments4/E20_N50.rd5 \
+    && curl --fail --location --retry 3 --max-time 300 https://brouter.de/brouter/segments4/E15_N45.rd5 -o /segments4/E15_N45.rd5 \
+    && curl --fail --location --retry 3 --max-time 300 https://brouter.de/brouter/segments4/E20_N45.rd5 -o /segments4/E20_N45.rd5
 
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /source
@@ -15,7 +18,7 @@ RUN chmod +x gradlew && ./gradlew --no-daemon clean build
 
 FROM eclipse-temurin:17-jre-jammy
 LABEL org.opencontainers.image.source="https://github.com/mdriverpl/perlylubuskie.pl"
-LABEL org.opencontainers.image.description="BRouter with OpenStreetMap segments for western Poland, cycling and walking"
+LABEL org.opencontainers.image.description="BRouter with OpenStreetMap segments covering Poland, cycling and walking"
 RUN groupadd --gid 1000 brouter && useradd --uid 1000 --gid brouter --home-dir /app --no-create-home brouter \
     && mkdir -p /app /segments4 /customprofiles && chown -R brouter:brouter /app /segments4 /customprofiles
 WORKDIR /app

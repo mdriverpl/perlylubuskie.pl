@@ -1,4 +1,4 @@
-export const viewPaths={discover:'/start',places:'/miejsca',explore:'/planer',walking:'/wycieczki-piesze',cycling:'/wycieczki-rowerowe',planner:'/trasa',about:'/o-regionie'}
+export const viewPaths={discover:'/start',places:'/miejsca',explore:'/planer',walking:'/wycieczki-piesze',cycling:'/wycieczki-rowerowe',planner:'/trasa',about:'/o-regionie',admin:'/admin'}
 export function viewFromUrl(value){
  const url=new URL(value.href||value,'http://localhost')
  const path=url.pathname.replace(/\/+$/,'')||'/'

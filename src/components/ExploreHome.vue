@@ -30,7 +30,7 @@ import { placeFacets, defaultPlaceFacets, filterPlaces, sortNearby, distanceKm, 
 import { useGeolocation, geolocationKey } from '../useGeolocation.js'
 import { useLocationSearch } from '../useLocationSearch.js'
 import { readAddress, rememberAddress, forgetAddress } from '../rememberedAddress.js'
-const props=defineProps({catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
+const props=defineProps({regionInfo:Object,catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
 const emit=defineEmits(['open','favorite','like','add','remove','move','clear','planner','create-point','create-place'])
 const plannedPlaces=computed(()=>props.selected.map(id=>[...props.places,...props.routePoints].find(p=>p.id===id)).filter(Boolean))
 const pointDraft=ref(null)
@@ -38,6 +38,8 @@ const pointDialog=ref(null)
 watch(pointDraft,async draft=>{if(!draft)return;await nextTick();pointDialog.value?.showModal();const input=document.getElementById('custom-point-name');input?.focus();input?.select()})
 const customPoints=computed(()=>props.routePoints.filter(p=>props.selected.includes(p.id)))
 const catalogPlaces=computed(()=>props.places.filter(p=>p.details?.kind!=='custom'))
+const facetTypes={castles:'castle',palaces:'palace',family:'leisure',lakes:'lake',nature:'nature',history:'heritage',stays:'stay',wineries:'vineyard',restaurants:'food'}
+const availableFacets=computed(()=>props.regionInfo?placeFacets.filter(f=>props.regionInfo.allowed_types.includes(facetTypes[f.id])):placeFacets)
 const mapPlaces=computed(()=>[...results.value,...customPoints.value])
 function draftCustomPoint(point){pointDraft.value={...point,name:'Własny punkt '+(customPoints.value.length+1)}}
 function saveCustomPoint(){if(!pointDraft.value?.name.trim())return;emit('create-point',{...pointDraft.value,name:pointDraft.value.name.trim()});pointDraft.value=null}
@@ -47,6 +49,7 @@ const rememberedAddress=readAddress()
 function savedQuery(){try{return (localStorage.getItem(queryStorageKey)||'').slice(0,200)}catch{return ''}}
 const query=ref(rememberedAddress?.query??savedQuery()),chosen=ref([...defaultPlaceFacets]),displayMode=ref(props.catalogOnly?'grid':'map'),sort=ref('distance')
 const radius=ref('')
+watch(availableFacets,value=>{chosen.value=defaultPlaceFacets.filter(id=>value.some(f=>f.id===id));if(!chosen.value.length)chosen.value=value.map(f=>f.id)},{immediate:true})
 const icons={castle:Castle,grape:Grape,sparkles:Sparkles,utensils:Utensils,waves:Waves,trees:Trees,landmark:Landmark,bed:Bed}
 const {position:userLocation,loading:locating,error:locationError,locate}=inject(geolocationKey,null)||useGeolocation()
 const {items:locationMatches,selected:searchedLocation,loading:searchingLocation,error:searchError,search:searchLocation,reverse:reverseLocation,clear:clearLocation}=useLocationSearch()
@@ -103,7 +106,7 @@ async function findLocation(showMap=true){clearTimeout(searchTimer);gpsAddressPe
 const catalogQuery=computed(()=>searchedLocation.value&&(radius.value||sort.value==='distance')?'':query.value)
 const base=computed(()=>withinRadius(filterPlaces(catalogPlaces.value,region,catalogQuery.value,[])))
 const results=computed(()=>{const found=withinRadius(filterPlaces(catalogPlaces.value,region,catalogQuery.value,chosen.value));if(sort.value==='nearby')return sortNearby(found,distanceOrigin.value);if(sort.value==='local'&&distanceOrigin.value)return [...found].sort((a,b)=>(b.popularity??0)-(a.popularity??0)||distanceKm(distanceOrigin.value,a)-distanceKm(distanceOrigin.value,b));if(sort.value==='distance'&&sortOrigin.value)return [...found].sort((a,b)=>distanceKm(sortOrigin.value,a)-distanceKm(sortOrigin.value,b)||a.name.localeCompare(b.name,'pl'));return [...found].sort((a,b)=>sort.value==='name'?a.name.localeCompare(b.name,'pl'):(sort.value==='likes'?(b.like_count??0)-(a.like_count??0):sort.value==='comments'?(b.comment_count??0)-(a.comment_count??0):(b.popularity??0)-(a.popularity??0)))})
-const activeFacets=computed(()=>placeFacets.filter(f=>chosen.value.includes(f.id)))
+const activeFacets=computed(()=>availableFacets.value.filter(f=>chosen.value.includes(f.id)))
 const viewModes=[{id:'list',name:'Lista',label:'Widok listy',icon:List},{id:'grid',name:'Kafelki',label:'Widok kafelków',icon:Grid2X2},{id:'map',name:'Mapa',label:'Widok mapy',icon:Map}]
 function reset(){query.value='';clearLocation();forgetAddress();chosen.value=[];radius.value='';mapFocus.value=null;sort.value='distance'}
 function clearAddress(){query.value='';clearLocation();forgetAddress()}
@@ -122,7 +125,7 @@ function openMarker(id){const place=[...props.places,...props.routePoints].find(
     <p v-if="searchError" class="location-search-error" role="alert">{{searchError}}</p>
     <div v-if="locationMatches.length>1" class="location-matches" aria-label="Znalezione lokalizacje HERE"><button v-for="item in locationMatches" :key="item.id" :aria-pressed="searchedLocation?.id===item.id" @click="searchedLocation=item;displayMode='map'">{{item.name}}</button></div>
     <button v-if="query||chosen.length||radius" class="clear-explore-filters compact-clear-filters" @click="reset"><X :size="14"/>Wyczyść filtry</button>
-    <fieldset class="facet-list"><legend class="facet-legend">Rodzaje miejsc</legend><label v-for="facet in placeFacets" :key="facet.id" :class="['facet-option',{checked:chosen.includes(facet.id)}]"><input type="checkbox" v-model="chosen" :value="facet.id"><component :is="icons[facet.icon]" :size="18"/><span>{{facet.name}}</span><small>{{base.filter(facet.match).length}}</small></label></fieldset>
+    <fieldset class="facet-list"><legend class="facet-legend">Rodzaje miejsc</legend><label v-for="facet in availableFacets" :key="facet.id" :class="['facet-option',{checked:chosen.includes(facet.id)}]"><input type="checkbox" v-model="chosen" :value="facet.id"><component :is="icons[facet.icon]" :size="18"/><span>{{facet.name}}</span><small>{{base.filter(facet.match).length}}</small></label></fieldset>
     <div v-if="activeFacets.length" class="explore-chips" aria-label="Aktywne filtry"><button v-for="facet in activeFacets" :key="facet.id" @click="removeFacet(facet.id)" :aria-label="`Usuń filtr: ${facet.name}`">{{facet.name}}<X :size="12"/></button></div>
 <p v-if="searchedLocation" class="searched-location" role="status"><MapPin :size="15"/>Odległości od: {{searchedLocation.name}}<button @click="clearAddress" aria-label="Usuń wyszukaną lokalizację"><X :size="15"/></button></p>
     <div :class="['explore-content-layout',{'catalog-content-layout':catalogOnly}]"><div class="explore-content-main">

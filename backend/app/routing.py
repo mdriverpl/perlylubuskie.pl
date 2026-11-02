@@ -1,4 +1,4 @@
-"""Bounded, cached access to our private BRouter instance (OSM western Poland)."""
+"""Bounded, cached access to our private BRouter instance (OSM Poland)."""
 import json
 import math
 import os
@@ -24,8 +24,8 @@ def calculate_route(points, transport):
         raise HTTPException(422, 'Wyznaczanie przebiegu jest dostępne dla roweru i pieszych.')
     if len(points) < 2 or len(points) > 20:
         raise HTTPException(422, 'Wybierz od 2 do 20 punktów trasy.')
-    if any(not (14 <= p['lng'] <= 17 and 50.5 <= p['lat'] <= 53.5) for p in points):
-        raise HTTPException(422, 'Punkt jest poza obsługiwanym obszarem zachodniej Polski.')
+    if any(not (14 <= p['lng'] <= 24.2 and 49 <= p['lat'] <= 55) for p in points):
+        raise HTTPException(422, 'Punkt jest poza obsługiwanym obszarem Polski.')
     key = (transport, tuple((round(p['lng'], 6), round(p['lat'], 6)) for p in points))
     with _lock:
         cached = _cache.get(key)
