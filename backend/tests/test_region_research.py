@@ -144,6 +144,7 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             assert research.recover_discovery_jobs()==0
             assert client.post(path,headers=headers,json={}).status_code==409
             assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True}).status_code==409
+            assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True,'finish_research':True}).status_code==422
             research.process_job_step(job_id,event)
             assert client.get(path,headers=headers).json()['job']['total']==3
             client.post(path+'/cancel',headers=headers)
@@ -181,6 +182,14 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             assert client.get('/api/places',params={'region':slug}).json()==[]
             assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True}).status_code==200
             assert len(client.get('/api/places',params={'region':slug}).json())==2
+            assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':False}).status_code==200
+            early=client.post(path,headers=headers,json={'max_places':100}).json()
+            research.process_job_step(early['id'],threading.Event())
+            assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True,'finish_research':True}).status_code==200
+            with SessionLocal() as db:
+                job=db.get(RegionResearchJob,early['id']);assert job.cancel_requested and job.status=='cancelled' and job.active_region is None
+            research.process_job_step(early['id'],threading.Event())
+            assert len(client.get('/api/places',params={'region':slug}).json())==2,'Cancelled worker must not add places after publication'
         finally:
             with SessionLocal() as db:
                 ids=select(RegionResearchJob.id).where(RegionResearchJob.region==slug)

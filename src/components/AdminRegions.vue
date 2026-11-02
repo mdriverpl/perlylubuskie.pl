@@ -51,7 +51,7 @@ function createRegion(automatic=true){return act(async()=>{
 })}
 function publish(){return act(async()=>{
  const active=!region.value.active
- await api('/admin/regions/'+slug.value,'PATCH',{active});await refresh();emit('changed');message.value=active?'Województwo jest opublikowane.':'Województwo przeniesiono do szkicu.'
+ await api('/admin/regions/'+slug.value,'PATCH',{active,finish_research:active&&researchRunning.value});researchKey.value++;await refresh();emit('changed');message.value=active?'Województwo jest opublikowane.':'Województwo przeniesiono do szkicu.'
 })}
 async function edit(place){manualOptions.value=true;editing.value=place.id;draft.value={...blank(),...place,image:place.image?.startsWith('https://')?place.image:'',place_type:place.details?.kind||place.category,source_url:place.details?.source_url||''};await nextTick();document.getElementById('admin-place-editor')?.scrollIntoView({behavior:'smooth',block:'center'})}
 function savePlace(){return act(async()=>{
@@ -96,8 +96,8 @@ function downloadTemplate(){
     <label>Województwo<select id="admin-region" v-model="slug" :disabled="busy"><option v-for="item in regions" :key="item.slug" :value="item.slug">{{item.name}} · {{item.active?'Opublikowane':'Szkic'}} · {{item.place_count}} miejsc</option></select></label>
     <template v-if="region">
      <RegionResearch :token="token" :region="region" :reload-key="researchKey" @changed="researchChanged" @status="researchRunning=$event"/>
-     <button v-if="!region.active" class="button admin-publish" :disabled="busy||researchRunning||!region.place_count" @click="publish">Opublikuj województwo</button>
-     <p v-if="!region.active&&researchRunning">Publikacja będzie dostępna po zakończeniu zbierania.</p>
+     <button v-if="!region.active" class="button admin-publish" :disabled="busy||!region.place_count" @click="publish">{{researchRunning?'Zakończ i opublikuj':'Opublikuj województwo'}}</button>
+     <p v-if="!region.active&&researchRunning">Możesz zakończyć wyszukiwanie i opublikować już zapisane miejsca.</p>
      <details class="admin-options admin-manual" :open="manualOptions" @toggle="manualOptions=$event.target.open"><summary>Opcje dodatkowe · {{records.length}} miejsc</summary>
      <p>Dozwolone: {{placeTypes.map(type=>type.name).join(', ')}}.</p>
      <button v-if="region.active" class="text-link" :disabled="busy||region.slug==='lubuskie'" @click="publish">Przenieś do szkicu</button>

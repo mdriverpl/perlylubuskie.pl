@@ -5,7 +5,7 @@ for(const key of ['window','document','Document','ShadowRoot','Element','HTMLEle
 globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window);globalThis.getComputedStyle=window.getComputedStyle.bind(window)
 window.scrollTo=()=>{};Element.prototype.scrollIntoView=()=>{}
 localStorage.setItem('perly-token','admin-token');localStorage.setItem('perly-user',JSON.stringify({id:7,name:'Administrator',email:'owner@example.com'}))
-let denied=false,regions=[{slug:'lubuskie',name:'Lubuskie',active:true,allowed_types:['castle','palace','lake','nature','heritage','leisure','stay','food','vineyard'],place_count:1}],records=[],id=1000000000,autoRequests=0
+let denied=false,regions=[{slug:'lubuskie',name:'Lubuskie',active:true,allowed_types:['castle','palace','lake','nature','heritage','leisure','stay','food','vineyard'],place_count:1}],records=[],id=1000000000,autoRequests=0,researchJob=null
 const types=['castle','palace','lake','nature','heritage','leisure','stay','food','vineyard'].map(id=>({id,name:id}))
 const options=[{slug:'lubuskie',name:'Lubuskie'},{slug:'kujawsko-pomorskie',name:'Kujawsko-pomorskie'}]
 const oldPlace={id:1,name:'Stare miejsce',category:'nature',region:'lubuskie',lat:52,lng:15,location:'Łagów',image:'/images/lake.webp',subtitle:'Opis',description:'Opis'}
@@ -26,10 +26,10 @@ globalThis.fetch=async(path,request={})=>{
  else if(path.startsWith('/api/admin/')){
   assert.match(request.headers.Authorization,/Bearer admin-token/)
   if(denied)return {ok:false,json:async()=>({detail:'Ta operacja wymaga konta superadministratora.'})}
-  if(path.endsWith('/research')&&request.method==='POST'){autoRequests++;assert.equal(JSON.parse(request.body).max_places,5000);data={id:'job-test',status:'completed'}}
-  else if(path.endsWith('/research'))data={configured:true,job:null}
+  if(path.endsWith('/research')&&request.method==='POST'){autoRequests++;assert.equal(JSON.parse(request.body).max_places,5000);researchJob={id:'job-test',status:'queued',phase:'discovery',total:0,processed:0,added:0,updated:0};data=researchJob}
+  else if(path.endsWith('/research'))data={configured:true,job:path.includes('kujawsko-pomorskie')?researchJob:null}
   else if(path.endsWith('/places'))data=path.includes('kujawsko-pomorskie')?records:[oldPlace]
-  else if(request.method==='PATCH'){regions[1].active=JSON.parse(request.body).active;data=regions}
+  else if(request.method==='PATCH'){const body=JSON.parse(request.body);assert.equal(body.finish_research,true);regions[1].active=body.active;researchJob={...researchJob,status:'cancelled',cancel_requested:true};data=regions}
   else data={regions,options,types}
  }else throw Error('Unexpected '+path)
  return {ok:true,json:async()=>structuredClone(data)}
@@ -57,7 +57,8 @@ for(const [selector,value] of [['#admin-place-name','Atrakcja <b>Toruń</b>'],['
 }
 await submit(document.querySelector('#admin-place-editor'))
 assert.equal(records.length,1);assert.ok(!document.querySelector('.admin-place-list b'),'Catalog titles are escaped')
-await click([...document.querySelectorAll('.admin-card button')].find(el=>el.textContent==='Opublikuj województwo'))
+const publish=document.querySelector('.admin-publish');assert.equal(publish.textContent,'Zakończ i opublikuj');assert.equal(publish.disabled,false)
+await click(publish)
 assert.equal(regions[1].active,true)
 await click([...document.querySelectorAll('.admin-card button')].find(el=>el.textContent==='Otwórz katalog'))
 assert.equal(window.location.pathname,'/miejsca');assert.equal(document.querySelector('#active-region').value,'kujawsko-pomorskie')

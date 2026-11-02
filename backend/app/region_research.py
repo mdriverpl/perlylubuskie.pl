@@ -362,7 +362,11 @@ def stopped(job_id,event):
 def process_job_step(job_id,event):
     from .main import SessionLocal,Region,RegionResearchJob,RegionResearchCandidate,Place
     with SessionLocal() as db:
-        job=db.get(RegionResearchJob,job_id);region=db.get(Region,job.region)
+        job=db.get(RegionResearchJob,job_id)
+        if not job:return
+        region=db.scalar(select(Region).where(Region.slug==job.region).with_for_update())
+        job=db.get(RegionResearchJob,job_id,populate_existing=True)
+        if job.status not in ('queued','running'):return
         if job.cancel_requested or not region or region.active:
             job.status='cancelled';job.active_region=None;job.updated_at=datetime.now(timezone.utc);db.commit();return
         job.status='running';job.updated_at=datetime.now(timezone.utc);db.commit()
@@ -441,8 +445,10 @@ def process_job_step(job_id,event):
         image,photo,photo_error=('',None,'') if skip_photo else obtain_photo(candidate,summary,entities)
         if stopped(job_id,event):return
         with SessionLocal() as db:
+            region=db.scalar(select(Region).where(Region.slug==slug).with_for_update())
             job=db.get(RegionResearchJob,job_id);item=db.get(RegionResearchCandidate,row['id'])
-            if job.cancel_requested or item.status!='pending':continue
+            if not region or region.active or job.cancel_requested or job.status not in ('queued','running'):return
+            if item.status!='pending':continue
             previous=existing_place(db,slug,candidate)
             if previous:
                 item.status='duplicate';item.place_id=previous.id;item.photo_added=bool(previous.image and not previous.image.endswith('placeholder.svg'))

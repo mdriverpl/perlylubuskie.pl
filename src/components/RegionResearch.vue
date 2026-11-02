@@ -7,10 +7,14 @@ const job=ref(null),configured=ref(false),loading=ref(true),busy=ref(false),erro
 let timer,version=0,controller
 const running=computed(()=>['queued','running'].includes(job.value?.status))
 watch(running,value=>emit('status',value),{immediate:true})
-const resumable=computed(()=>['failed','cancelled'].includes(job.value?.status))
+const resumable=computed(()=>['failed','cancelled'].includes(job.value?.status)&&!job.value?.report?.local_import)
 const labels={queued:'Oczekuje na rozpoczęcie',running:'Zbieranie danych trwa',completed:'Zbieranie zakończone',failed:'Zbieranie przerwane',cancelled:'Zatrzymano'}
 const phase=computed(()=>job.value?.phase==='discovery'?'Wyszukiwanie atrakcji w województwie':'Sprawdzanie informacji, opisy AI i pobieranie zdjęć')
-const percent=computed(()=>job.value?.total?Math.min(100,Math.floor(job.value.processed/job.value.total*100)):null)
+const percent=computed(()=>{
+ if(!job.value?.total||job.value.discovery_done===false)return null
+ const value=Math.min(100,Math.floor(job.value.processed/job.value.total*100))
+ return running.value&&value===100?null:value
+})
 async function api(suffix='',method='GET',body){
  const response=await fetch(`/api/admin/regions/${props.region.slug}/research${suffix}`,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+props.token},...(body?{body:JSON.stringify(body)}:{}),signal:controller.signal})
  return readApiJson(response,'Nie udało się odczytać postępu. Spróbuj ponownie.')
@@ -46,13 +50,14 @@ async function act(suffix='',body){
   <p v-if="loading" role="status">Odczytuję postęp…</p>
   <p v-else-if="!configured" role="alert">Na serwerze trzeba skonfigurować klucz OpenAI.</p>
   <p v-if="error" role="alert" class="research-error">{{error}} <button class="text-link" @click="poll">Odśwież</button></p>
-  <template v-if="job">
+  <p v-if="job?.report?.local_import" role="status">Katalog uzupełniono lokalnie. W bazie: <strong>{{region.place_count||job.report.local_import.total}}</strong> miejsc. Możesz je opublikować.</p>
+  <template v-if="job&&!job.report?.local_import">
    <div class="research-status" role="status" aria-live="polite"><strong>{{labels[job.status]||job.status}}</strong><span v-if="job.cancel_requested&&running">Zatrzymanie nastąpi po bieżącym zapytaniu.</span></div>
    <p v-if="job.status==='queued'">Oczekuje w kolejce · {{job.active_jobs||1}} aktywnych zadań.</p>
    <p v-else-if="running" role="status">{{job.report?.message||phase}}</p>
    <div class="research-progress">
-    <div class="research-progress-label"><strong>Postęp dodawania</strong><strong v-if="percent!==null">{{percent}}%</strong><span v-else>Wyszukuję obiekty…</span></div>
-    <progress :value="job.total?job.processed:undefined" :max="job.total||1" :aria-label="job.total?`Sprawdzono ${job.processed} z ${job.total}`:'Wyszukiwanie obiektów — liczba jeszcze nieznana'"></progress>
+    <div class="research-progress-label"><strong>Postęp dodawania</strong><strong v-if="percent!==null">{{percent}}%</strong><span v-else>{{!job.total||job.discovery_done===false?'Wyszukiwanie trwa…':'Kończę zbieranie…'}}</span></div>
+    <progress :value="percent===null?undefined:job.processed" :max="job.total||1" :aria-label="percent===null?'Wyszukiwanie trwa — końcowa liczba jeszcze nieznana':`Sprawdzono ${job.processed} z ${job.total}`"></progress>
     <p v-if="job.total">Sprawdzono {{job.processed}} / {{job.total}} · <strong>Dodano {{job.added}}</strong> · Zdjęcia {{job.photos}}</p>
     <p v-if="job.total&&job.discovery_done===false">Liczba obiektów rośnie w trakcie wyszukiwania.</p>
    </div>

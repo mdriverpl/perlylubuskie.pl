@@ -182,6 +182,10 @@ Koszt AI: serwer wybiera maksymalnie 60 kandydatów, ograniczając katalog do ro
 
 ## Panel województw
 
+Przygotowany lokalnie katalog Dolnego Śląska jest w `backend/region-catalogs/dolnoslaskie.json`, a fotografie w `public/images/dolnoslaskie/`. API importuje pakiet jednorazowo dla jego sumy kontrolnej, pomijając istniejące identyfikatory Wikidata i zachowując ręczne edycje. Brakujące zdjęcia mogą zostać uzupełnione. Import zachowuje stan publikacji regionu i zatrzymuje jego wcześniejsze zadania serwerowe. Źródła oraz licencje wszystkich lokalnych materiałów są dostępne w `/dolnoslaskie-credits.html`. Katalog obejmuje 506 obiektów i 491 fotografii, nie stanowi kompletnego rejestru zabytków.
+
+Przycisk „Zakończ i opublikuj” pozwala zatrzymać aktywne wyszukiwanie i opublikować już zapisane miejsca jedną operacją. Bez tego parametru zwykła publikacja jest nadal blokowana podczas pracy AI. Worker nie może dopisywać miejsc po publikacji. Pasek nie pokazuje 100%, kiedy trwa jeszcze wyszukiwanie kolejnych kategorii.
+
 Panel `/admin` pozwala superadministratorowi tworzyć województwa jako szkice i uzupełniać je automatycznie przyciskiem „Utwórz i uzupełnij AI”. Wybór zaczyna się od kujawsko-pomorskiego, domyślnie bez noclegów, winiarni i restauracji. Można wybrać limit 100–5000 obiektów, tworzyć puste szkice, edytować atrakcje oraz importować JSON (do 500 pozycji).
 
 Zbieranie działa w tle, osobno dla każdej kategorii. Najpierw pobiera obiekty z kategorii województwa w Wikimedia Commons, powiązane z Wikidata i rzeczywistymi współrzędnymi. Przy braku wyników próbuje dwóch źródeł Overpass (40 s na odpowiedź). Po pobraniu kategorii od razu przetwarza jej obiekty w porcjach do 8, zanim przejdzie do kolejnej kategorii. Nie czeka na katalog całego województwa. Zadania różnych regionów dostają kolejne porcje pracy naprzemiennie. Panel pokazuje etap, źródło, postęp kategorii, braki oraz zapisane miejsca na bieżąco. Niedostępna kategoria nie blokuje pozostałych; raport wyraźnie oznacza niepełne wyniki.

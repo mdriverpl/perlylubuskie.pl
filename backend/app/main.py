@@ -228,6 +228,8 @@ async def lifespan(app: FastAPI):
             statement = statement.on_conflict_do_update(index_elements=[Place.id], set_={key: getattr(statement.excluded, key) for key in place if key != 'id'},where=Place.details['admin_managed'].as_boolean().is_not(True))
             db.execute(statement)
         db.commit()
+    from .local_catalog import import_catalogs
+    import_catalogs()
     region_research.recover_discovery_jobs()
     worker=region_research.start_worker()
     try:
@@ -349,6 +351,7 @@ class RegionInput(BaseModel):
 
 class RegionUpdate(BaseModel):
     active: bool
+    finish_research: bool = False
 
 
 class RegionImport(BaseModel):
@@ -444,10 +447,13 @@ def publish_region(slug: str,data: RegionUpdate,user: User = Depends(superadmin)
         raise HTTPException(404,'Nie znaleziono województwa.')
     if slug=='lubuskie' and not data.active:
         raise HTTPException(422,'Podstawowe województwo musi pozostać dostępne.')
-    if db.scalar(select(RegionResearchJob.id).where(RegionResearchJob.active_region==slug)):
+    active_job=db.scalar(select(RegionResearchJob).where(RegionResearchJob.active_region==slug))
+    if active_job and not (data.active and data.finish_research):
         raise HTTPException(409,'Poczekaj na zakończenie zbierania AI albo zatrzymaj zadanie przed publikacją.')
     if data.active and not db.scalar(select(func.count()).select_from(Place).where(Place.region==slug)):
         raise HTTPException(422,'Dodaj co najmniej jedno miejsce przed publikacją.')
+    if active_job:
+        active_job.cancel_requested=True;active_job.status='cancelled';active_job.active_region=None;active_job.updated_at=datetime.now(timezone.utc)
     region.active=data.active
     db.commit()
     return region_summaries(db,True)
