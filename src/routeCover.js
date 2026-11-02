@@ -1,5 +1,6 @@
 import * as L from 'leaflet/dist/leaflet-src.esm.js'
 import {readApiJson} from './apiResponse.js'
+import {preferredMap,osmTileUrl} from './mapPreferences.js'
 
 // Render a separate map so creating the cover never changes the user's viewport.
 export async function createRouteCover({points,geometry,transport}){
@@ -12,7 +13,8 @@ export async function createRouteCover({points,geometry,transport}){
   const payload={place_ids:points.map(p=>p.id),transport,custom_points:points.filter(p=>p.id<0).map(({id,name,lat,lng})=>({id,name,lat,lng})),point_positions:points.map(({id,lat,lng})=>({id,lat,lng}))}
   geometry=(await request('/api/routing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})).geometry
  }
- const config=await request('/api/maps/config')
+ let config={provider:'osm'}
+ if(preferredMap()==='here'){try{config=await request('/api/maps/config')}catch{}}
  const here=config.provider==='here'
  const host=document.createElement('div')
  Object.assign(host.style,{position:'fixed',left:'-10000px',top:'0',width:'960px',height:'600px',pointerEvents:'none'})
@@ -22,7 +24,7 @@ export async function createRouteCover({points,geometry,transport}){
   map=L.map(host,{zoomControl:false,attributionControl:false,zoomAnimation:false,fadeAnimation:false}).setView([points[0].lat,points[0].lng],13)
   const line=geometry?.coordinates?.map(p=>[p[1],p[0]])||[]
   map.fitBounds([...line,...points.map(p=>[p.lat,p.lng])],{padding:[55,65],maxZoom:15,animate:false})
-  const tiles=L.tileLayer(here?'/api/maps/tiles/terrain/{z}/{x}/{y}':'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{crossOrigin:true,maxZoom:here?20:18})
+  const tiles=L.tileLayer(here?'/api/maps/tiles/terrain/{z}/{x}/{y}':osmTileUrl,{crossOrigin:true,maxZoom:here?20:19})
   await new Promise((resolve,reject)=>{
    const timer=setTimeout(()=>{cleanup();reject(new Error('Mapa nie wczytała się do zdjęcia. Spróbuj ponownie.'))},15000)
    const cleanup=()=>{clearTimeout(timer);tiles.off('load',loaded);tiles.off('tileerror',failed)}

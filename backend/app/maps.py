@@ -3,6 +3,8 @@ import json
 import os
 import threading
 import time
+import re
+from collections import OrderedDict
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -14,6 +16,11 @@ STYLES = {'map': 'explore.day', 'satellite': 'explore.satellite.day', 'terrain':
 _slots = threading.BoundedSemaphore(8)
 _copyright_lock = threading.Lock()
 _copyright_cache = None
+_tile_cache = OrderedDict()
+_tile_cache_lock = threading.Lock()
+_tile_cache_bytes = 0
+_TILE_CACHE_MAX_BYTES = 16_000_000
+_TILE_CACHE_MAX_ITEMS = 256
 
 
 def normalize_copyrights(data):
@@ -38,7 +45,7 @@ def here_request(path, params=None, *, service='maps'):
     key = os.environ.get('HERE_API_KEY', '').strip()
     if not key:
         raise HTTPException(503, 'Mapy HERE nie są skonfigurowane.')
-    if not _slots.acquire(blocking=False):
+    if not _slots.acquire(timeout=5):
         raise HTTPException(503, 'Mapa jest chwilowo zajęta.')
     try:
         base = {'maps': 'https://maps.hereapi.com/v3/', 'geocode': 'https://geocode.search.hereapi.com/v1/', 'reverse': 'https://revgeocode.search.hereapi.com/v1/'}[service]
@@ -78,12 +85,35 @@ def map_config():
 
 @router.get('/tiles/{style}/{z}/{x}/{y}')
 def map_tile(style: str, z: int = Path(ge=0, le=20), x: int = Path(ge=0), y: int = Path(ge=0)):
+    global _tile_cache_bytes
     if style not in STYLES or x >= 2**z or y >= 2**z:
         raise HTTPException(422, 'Nieprawidłowy kafelek mapy.')
+    cache_key = (hash(os.environ.get('HERE_API_KEY', '').strip()),style,z,x,y)
+    now = time.monotonic()
+    with _tile_cache_lock:
+        cached = _tile_cache.get(cache_key)
+        if cached and cached[0] > now:
+            _tile_cache.move_to_end(cache_key)
+            _,created,body,content_type,cache_control = cached
+            return Response(body,media_type=content_type,headers={'Cache-Control':cache_control,'Age':str(int(now-created)),'X-Content-Type-Options':'nosniff'})
+        if cached:
+            _tile_cache_bytes-=len(cached[2]);del _tile_cache[cache_key]
     image_format = 'jpeg' if style == 'satellite' else 'png'
     body, content_type, cache_control = here_request(f'base/mc/{z}/{x}/{y}/{image_format}', {'style': STYLES[style], 'size': 256})
-    if content_type not in ('image/png', 'image/jpeg'):
+    if not body or content_type not in ('image/png', 'image/jpeg'):
         raise HTTPException(502, 'Nieprawidłowy format kafelka mapy.')
+    max_age = re.search(r'(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*(\d+)',cache_control,re.I)
+    if max_age and not re.search(r'(?:no-store|private|no-cache)',cache_control,re.I):
+        ttl = min(int(max_age.group(1)),3600)
+        if ttl > 0:
+            created=time.monotonic()
+            with _tile_cache_lock:
+                previous=_tile_cache.pop(cache_key,None)
+                if previous:_tile_cache_bytes-=len(previous[2])
+                _tile_cache[cache_key]=(created+ttl,created,body,content_type,cache_control)
+                _tile_cache_bytes+=len(body)
+                while _tile_cache_bytes>_TILE_CACHE_MAX_BYTES or len(_tile_cache)>_TILE_CACHE_MAX_ITEMS:
+                    _,removed=_tile_cache.popitem(last=False);_tile_cache_bytes-=len(removed[2])
     return Response(body, media_type=content_type, headers={'Cache-Control': cache_control, 'X-Content-Type-Options': 'nosniff'})
 
 

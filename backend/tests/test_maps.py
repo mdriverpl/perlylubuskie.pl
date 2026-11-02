@@ -13,6 +13,12 @@ app.include_router(maps.router)
 client = TestClient(app)
 
 
+@pytest.fixture(autouse=True)
+def clear_tile_cache():
+    maps._tile_cache.clear()
+    maps._tile_cache_bytes=0
+
+
 def test_no_key_and_invalid_tiles(monkeypatch):
     monkeypatch.delenv('HERE_API_KEY', raising=False)
     assert client.get('/api/maps/config').json()['provider'] == 'osm'
@@ -40,9 +46,60 @@ def test_here_tile_proxy_and_credential_redaction(monkeypatch):
     def denied(url, timeout):
         raise HTTPError(url, 403, key, None, BytesIO(key.encode()))
     monkeypatch.setattr(maps, 'urlopen', denied)
+    maps._tile_cache.clear();maps._tile_cache_bytes=0
     response = client.get('/api/maps/tiles/map/8/138/84')
     assert response.status_code == 502
     assert key not in response.text
+
+
+def test_here_tile_burst_queues_instead_of_rejecting(monkeypatch):
+    import threading
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+    monkeypatch.setenv('HERE_API_KEY','test-concurrent-key')
+    lock=threading.Lock()
+    active=peak=0
+    def upstream(url,timeout):
+        nonlocal active,peak
+        with lock:
+            active+=1;peak=max(peak,active)
+        time.sleep(.04)
+        with lock:active-=1
+        result=BytesIO(b'png');result.headers=Message();result.headers['Content-Type']='image/png'
+        return result
+    monkeypatch.setattr(maps,'urlopen',upstream)
+    with ThreadPoolExecutor(max_workers=12) as executor:
+        results=list(executor.map(lambda i:maps.here_request(f'base/mc/12/2221/{1340+i}/png'),range(12)))
+    assert len(results)==12 and all(body==b'png' for body,_,_ in results)
+    assert peak<=8
+
+
+def test_here_tile_cache_reuses_tiles_and_bounds_memory(monkeypatch):
+    calls=[]
+    def request(path,params=None):
+        calls.append(path)
+        return b'image','image/png','max-age=86400'
+    monkeypatch.setattr(maps,'here_request',request)
+    monkeypatch.setattr(maps,'_TILE_CACHE_MAX_BYTES',5)
+    url='/api/maps/tiles/map/8/138/84'
+    assert client.get(url).status_code==200
+    cached=client.get(url)
+    assert cached.status_code==200 and cached.headers['age']=='0'
+    assert len(calls)==1
+    assert client.get('/api/maps/tiles/map/8/139/84').status_code==200
+    assert maps._tile_cache_bytes<=5
+    assert client.get(url).status_code==200
+    assert len(calls)==3
+
+
+@pytest.mark.parametrize('cache_control',['no-store','private, max-age=60','no-cache, max-age=60','max-age=0'])
+def test_tile_cache_respects_upstream_policy(monkeypatch,cache_control):
+    calls=[]
+    def request(path,params=None):
+        calls.append(path);return b'image','image/png',cache_control
+    monkeypatch.setattr(maps,'here_request',request)
+    for _ in range(2):assert client.get('/api/maps/tiles/map/8/138/84').status_code==200
+    assert len(calls)==2
 
 
 def test_supplier_notices_support_live_here_format_and_style(monkeypatch):
