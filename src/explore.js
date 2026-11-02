@@ -14,6 +14,7 @@ export function normalizeRegion(value){return value.trim().toLocaleLowerCase('pl
 export function matchesRegion(value){return ['lubuskie','ziemia lubuska'].includes(normalizeRegion(value))}
 export function provinceSlug(value){
  const name=normalizeRegion(value).replace(/[\s–—-]+/g,'')
+ if(['polska','calapolska','wszystkiewojewodztwa'].includes(name))return 'all'
  return ['dolnoslaskie','kujawsko-pomorskie','lubelskie','lubuskie','lodzkie','malopolskie','mazowieckie','opolskie','podkarpackie','podlaskie','pomorskie','slaskie','swietokrzyskie','warminsko-mazurskie','wielkopolskie','zachodniopomorskie'].find(slug=>slug.replace(/-/g,'')===name)||null
 }
 export function filterPlaces(places,region,query,facets){

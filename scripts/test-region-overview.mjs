@@ -7,6 +7,7 @@ assert.equal(provinceSlug('Kujawsko pomorskie'),'kujawsko-pomorskie')
 assert.equal(provinceSlug('woj. warmińsko-mazurskie'),'warminsko-mazurskie')
 assert.equal(provinceSlug('Łódź'),null,'A city must not be mistaken for a province')
 assert.equal(provinceSlug('Śląska 20, Poznań'),null)
+assert.equal(provinceSlug('Cała Polska'),'all')
 const capitals=[['dolnoslaskie',51.107,17.038],['kujawsko-pomorskie',53.01,18.6],['lubelskie',51.247,22.566],['lubuskie',52.732,15.237],['lodzkie',51.759,19.456],['malopolskie',50.061,19.938],['mazowieckie',52.23,21.01],['opolskie',50.675,17.922],['podkarpackie',50.041,21.999],['podlaskie',53.132,23.168],['pomorskie',54.352,18.646],['slaskie',50.259,19.021],['swietokrzyskie',50.866,20.628],['warminsko-mazurskie',53.778,20.481],['wielkopolskie',52.407,16.925],['zachodniopomorskie',53.429,14.553]]
 assert.equal(contours.length,16);assert.equal(new Set(contours.map(r=>r.slug)).size,16)
 for(const [slug,lat,lng] of capitals)assert.equal(regionAtPoint({lat,lng}),slug)

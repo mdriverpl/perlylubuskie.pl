@@ -61,7 +61,7 @@ const publish=document.querySelector('.admin-publish');assert.equal(publish.text
 await click(publish)
 assert.equal(regions[1].active,true)
 await click([...document.querySelectorAll('.admin-card button')].find(el=>el.textContent==='Otwórz katalog'))
-assert.equal(window.location.pathname,'/miejsca');assert.equal(document.querySelector('#active-region').value,'kujawsko-pomorskie')
+assert.equal(window.location.pathname,'/miejsca');assert.equal(JSON.parse(localStorage.getItem('perly:region')),'kujawsko-pomorskie')
 assert.equal(document.querySelector('.place-title').textContent,'Atrakcja <b>Toruń</b>')
 assert.equal(document.querySelector('.facet-list input[value="stays"]'),null)
 assert.equal(document.querySelector('.facet-list input[value="wineries"]'),null)
