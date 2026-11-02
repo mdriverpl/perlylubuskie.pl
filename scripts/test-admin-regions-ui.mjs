@@ -5,7 +5,7 @@ for(const key of ['window','document','Document','ShadowRoot','Element','HTMLEle
 globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window);globalThis.getComputedStyle=window.getComputedStyle.bind(window)
 window.scrollTo=()=>{};Element.prototype.scrollIntoView=()=>{}
 localStorage.setItem('perly-token','admin-token');localStorage.setItem('perly-user',JSON.stringify({id:7,name:'Administrator',email:'owner@example.com'}))
-let denied=false,regions=[{slug:'lubuskie',name:'Lubuskie',active:true,allowed_types:['castle','palace','lake','nature','heritage','leisure','stay','food','vineyard'],place_count:1}],records=[],id=1000000000
+let denied=false,regions=[{slug:'lubuskie',name:'Lubuskie',active:true,allowed_types:['castle','palace','lake','nature','heritage','leisure','stay','food','vineyard'],place_count:1}],records=[],id=1000000000,autoRequests=0
 const types=['castle','palace','lake','nature','heritage','leisure','stay','food','vineyard'].map(id=>({id,name:id}))
 const options=[{slug:'lubuskie',name:'Lubuskie'},{slug:'kujawsko-pomorskie',name:'Kujawsko-pomorskie'}]
 const oldPlace={id:1,name:'Stare miejsce',category:'nature',region:'lubuskie',lat:52,lng:15,location:'Łagów',image:'/images/lake.webp',subtitle:'Opis',description:'Opis'}
@@ -26,7 +26,9 @@ globalThis.fetch=async(path,request={})=>{
  else if(path.startsWith('/api/admin/')){
   assert.match(request.headers.Authorization,/Bearer admin-token/)
   if(denied)return {ok:false,json:async()=>({detail:'Ta operacja wymaga konta superadministratora.'})}
-  if(path.endsWith('/places'))data=path.includes('kujawsko-pomorskie')?records:[oldPlace]
+  if(path.endsWith('/research')&&request.method==='POST'){autoRequests++;assert.equal(JSON.parse(request.body).max_places,5000);data={id:'job-test',status:'completed'}}
+  else if(path.endsWith('/research'))data={configured:true,job:null}
+  else if(path.endsWith('/places'))data=path.includes('kujawsko-pomorskie')?records:[oldPlace]
   else if(request.method==='PATCH'){regions[1].active=JSON.parse(request.body).active;data=regions}
   else data={regions,options,types}
  }else throw Error('Unexpected '+path)
@@ -43,6 +45,7 @@ assert.ok(document.querySelector('.admin-regions'))
 assert.equal(document.querySelectorAll('.admin-types input:checked').length,6)
 assert.equal(document.querySelector('#admin-new-region').value,'kujawsko-pomorskie')
 await submit(document.querySelector('.admin-card form'))
+assert.equal(autoRequests,1,'Primary region creation launches AI research')
 assert.equal(document.querySelector('#admin-region').value,'kujawsko-pomorskie')
 assert.equal(document.querySelectorAll('#admin-place-type option').length,6)
 for(const [selector,value] of [['#admin-place-name','Atrakcja <b>Toruń</b>'],['#admin-place-location','Toruń'],['#admin-place-description','Opis'],['#admin-place-lat','53.01'],['#admin-place-lng','18.60']]){

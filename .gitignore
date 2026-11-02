@@ -12,3 +12,4 @@ artifacts/
 .pg-test/
 *.dump
 .env.*.local
+backend/media/

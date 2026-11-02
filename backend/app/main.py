@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+from uuid import uuid4
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -11,15 +12,16 @@ import jwt
 from fastapi import FastAPI, Depends, HTTPException, Response, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr, Field
 from pwdlib import PasswordHash
-from sqlalchemy import create_engine, String, Text, Float, Boolean, ForeignKey, JSON, DateTime, select, func, text, or_, cast
+from sqlalchemy import create_engine, String, Text, Float, Boolean, ForeignKey, JSON, DateTime, UniqueConstraint, select, func, text, or_, cast
 from sqlalchemy.dialects.postgresql import insert, JSONB
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, Session
 from .routing import calculate_route, route_gpx
 from .maps import router as maps_router
-from . import ai_routes
+from . import ai_routes, region_research
 
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql+psycopg://perly:perly@localhost:5432/perly')
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
@@ -68,6 +70,39 @@ class Place(Base):
     description: Mapped[str] = mapped_column(String(2000))
     details: Mapped[dict] = mapped_column(JSON, default=dict)
     region: Mapped[str] = mapped_column(String(40), default='lubuskie', index=True)
+    research_key: Mapped[str | None] = mapped_column(String(100),nullable=True)
+
+
+class RegionResearchJob(Base):
+    __tablename__='region_research_jobs'
+    id: Mapped[str] = mapped_column(String(36),primary_key=True,default=lambda:str(uuid4()))
+    region: Mapped[str] = mapped_column(String(40),index=True)
+    active_region: Mapped[str | None] = mapped_column(String(40),nullable=True,unique=True)
+    created_by: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    status: Mapped[str] = mapped_column(String(20),default='queued')
+    phase: Mapped[str] = mapped_column(String(30),default='discovery')
+    max_places: Mapped[int] = mapped_column(default=5000)
+    discovered: Mapped[int] = mapped_column(default=0)
+    discovery_done: Mapped[bool] = mapped_column(Boolean,default=False)
+    cancel_requested: Mapped[bool] = mapped_column(Boolean,default=False)
+    error: Mapped[str] = mapped_column(String(1000),default='')
+    report: Mapped[dict] = mapped_column(JSON,default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
+
+
+class RegionResearchCandidate(Base):
+    __tablename__='region_research_candidates'
+    __table_args__=(UniqueConstraint('job_id','source_key'),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    job_id: Mapped[str] = mapped_column(ForeignKey('region_research_jobs.id',ondelete='CASCADE'),index=True)
+    source_key: Mapped[str] = mapped_column(String(100))
+    payload: Mapped[dict] = mapped_column(JSON)
+    result: Mapped[dict] = mapped_column(JSON,default=dict)
+    status: Mapped[str] = mapped_column(String(20),default='pending')
+    error: Mapped[str] = mapped_column(String(500),default='')
+    place_id: Mapped[int | None] = mapped_column(nullable=True)
+    photo_added: Mapped[bool] = mapped_column(Boolean,default=False)
 
 
 class Favorite(Base):
@@ -159,6 +194,8 @@ async def lifespan(app: FastAPI):
         connection.execute(text('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE'))
         connection.execute(text("ALTER TABLE places ADD COLUMN IF NOT EXISTS region VARCHAR(40) NOT NULL DEFAULT 'lubuskie'"))
         connection.execute(text('CREATE INDEX IF NOT EXISTS ix_places_region ON places(region)'))
+        connection.execute(text('ALTER TABLE places ADD COLUMN IF NOT EXISTS research_key VARCHAR(100)'))
+        connection.execute(text('CREATE UNIQUE INDEX IF NOT EXISTS uq_places_research_key ON places(research_key) WHERE research_key IS NOT NULL'))
         connection.execute(text('CREATE SEQUENCE IF NOT EXISTS submitted_place_ids START WITH 1000000000'))
         connection.execute(text("ALTER TABLE places ADD COLUMN IF NOT EXISTS details JSON NOT NULL DEFAULT '{}'"))
         connection.execute(text('ALTER TABLE places ALTER COLUMN image TYPE TEXT'))
@@ -191,11 +228,17 @@ async def lifespan(app: FastAPI):
             statement = statement.on_conflict_do_update(index_elements=[Place.id], set_={key: getattr(statement.excluded, key) for key in place if key != 'id'},where=Place.details['admin_managed'].as_boolean().is_not(True))
             db.execute(statement)
         db.commit()
-    yield
+    worker=region_research.start_worker()
+    try:
+        yield
+    finally:
+        worker.set()
 
 
 app = FastAPI(title='Perły Ziemi Lubuskiej API', version='1.0.0', lifespan=lifespan)
 app.include_router(maps_router)
+region_research.media_root().mkdir(parents=True,exist_ok=True)
+app.mount('/api/media',StaticFiles(directory=str(region_research.media_root())),name='catalog-media')
 app.add_middleware(CORSMiddleware, allow_origins=os.environ.get('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(','), allow_methods=['GET', 'POST', 'PUT', 'DELETE'], allow_headers=['Authorization', 'Content-Type'])
 
 
@@ -311,6 +354,66 @@ class RegionImport(BaseModel):
     places: list[PlaceInput] = Field(min_length=1,max_length=500)
 
 
+class RegionResearchInput(BaseModel):
+    max_places: int = Field(default=5000,ge=1,le=5000)
+
+
+def research_status(job,db):
+    if not job:return None
+    counts=dict(db.execute(select(RegionResearchCandidate.status,func.count()).where(RegionResearchCandidate.job_id==job.id).group_by(RegionResearchCandidate.status)).all())
+    photos=db.scalar(select(func.count()).select_from(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job.id,RegionResearchCandidate.photo_added.is_(True)))
+    issues=db.execute(select(RegionResearchCandidate.payload,RegionResearchCandidate.error).where(RegionResearchCandidate.job_id==job.id,RegionResearchCandidate.error!='').order_by(RegionResearchCandidate.id).limit(20)).all()
+    saved=sum(counts.get(key,0) for key in ('added','updated','duplicate'))
+    return {'id':job.id,'region':job.region,'status':job.status,'phase':job.phase,'max_places':job.max_places,'discovered':job.discovered,'total':sum(counts.values()),'processed':sum(value for key,value in counts.items() if key!='pending'),'added':counts.get('added',0),'updated':counts.get('updated',0),'duplicates':counts.get('duplicate',0),'review':counts.get('review',0),'photos':photos,'missing_photos':max(0,saved-photos),'cancel_requested':job.cancel_requested,'error':job.error,'report':job.report,'issues':[{'name':payload.get('name',''),'message':error} for payload,error in issues],'updated_at':job.updated_at}
+
+
+def latest_research(slug,db):
+    return db.scalar(select(RegionResearchJob).where(RegionResearchJob.region==slug).order_by(RegionResearchJob.created_at.desc()).limit(1))
+
+
+@app.get('/api/admin/regions/{slug}/research')
+def get_region_research(slug: str,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    if not db.get(Region,slug):raise HTTPException(404,'Nie znaleziono województwa.')
+    return {'configured':ai_routes.configured(),'job':research_status(latest_research(slug,db),db)}
+
+
+@app.post('/api/admin/regions/{slug}/research',status_code=202)
+def start_region_research(slug: str,data: RegionResearchInput,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    region=db.scalar(select(Region).where(Region.slug==slug).with_for_update())
+    if not region:raise HTTPException(404,'Nie znaleziono województwa.')
+    if region.active:raise HTTPException(422,'Automatyczne zbieranie danych uruchom dla województwa w szkicu.')
+    if not ai_routes.configured():raise HTTPException(503,'Wyszukiwanie AI wymaga konfiguracji klucza OpenAI na serwerze.')
+    if not set(region.allowed_types).intersection(CORE_TYPES):raise HTTPException(422,'Wybierz przynajmniej jedną kategorię atrakcji.')
+    job=RegionResearchJob(region=slug,active_region=slug,created_by=user.id,max_places=data.max_places)
+    db.add(job)
+    try:db.commit()
+    except IntegrityError:
+        db.rollback();raise HTTPException(409,'Zbieranie danych dla tego województwa jest już uruchomione.') from None
+    return research_status(job,db)
+
+
+@app.post('/api/admin/regions/{slug}/research/cancel')
+def cancel_region_research(slug: str,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    job=latest_research(slug,db)
+    if not job:raise HTTPException(404,'Nie znaleziono zadania.')
+    if job.status in ('queued','running'):
+        job.cancel_requested=True;db.commit()
+    return research_status(job,db)
+
+
+@app.post('/api/admin/regions/{slug}/research/resume',status_code=202)
+def resume_region_research(slug: str,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    region=db.scalar(select(Region).where(Region.slug==slug).with_for_update());job=latest_research(slug,db)
+    if not job or job.status not in ('failed','cancelled'):raise HTTPException(422,'To zadanie nie wymaga wznowienia.')
+    if not region or region.active:raise HTTPException(422,'Przed wznowieniem województwo musi być szkicem.')
+    if not ai_routes.configured():raise HTTPException(503,'Skonfiguruj klucz OpenAI na serwerze.')
+    job.status='queued';job.active_region=slug;job.cancel_requested=False;job.error=''
+    try:db.commit()
+    except IntegrityError:
+        db.rollback();raise HTTPException(409,'Inne zadanie dla tego województwa jest uruchomione.') from None
+    return research_status(job,db)
+
+
 @app.get('/api/admin/regions')
 def admin_regions(user: User = Depends(superadmin), db: Session = Depends(get_db)):
     return {'regions':region_summaries(db,True),'options':[{'slug':slug,'name':name} for slug,name in REGION_NAMES.items()],'types':[{'id':key,'name':value} for key,value in PLACE_TYPES.items()]}
@@ -333,11 +436,13 @@ def add_region(data: RegionInput,user: User = Depends(superadmin),db: Session = 
 
 @app.patch('/api/admin/regions/{slug}')
 def publish_region(slug: str,data: RegionUpdate,user: User = Depends(superadmin),db: Session = Depends(get_db)):
-    region=db.get(Region,slug)
+    region=db.scalar(select(Region).where(Region.slug==slug).with_for_update())
     if not region:
         raise HTTPException(404,'Nie znaleziono województwa.')
     if slug=='lubuskie' and not data.active:
         raise HTTPException(422,'Podstawowe województwo musi pozostać dostępne.')
+    if db.scalar(select(RegionResearchJob.id).where(RegionResearchJob.active_region==slug)):
+        raise HTTPException(409,'Poczekaj na zakończenie zbierania AI albo zatrzymaj zadanie przed publikacją.')
     if data.active and not db.scalar(select(func.count()).select_from(Place).where(Place.region==slug)):
         raise HTTPException(422,'Dodaj co najmniej jedno miejsce przed publikacją.')
     region.active=data.active

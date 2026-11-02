@@ -39,6 +39,8 @@ services:
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-6-astra}
       SUPERADMIN_EMAILS: ${SUPERADMIN_EMAILS:-}
       SUPERADMIN_INITIAL_PASSWORD: ${SUPERADMIN_INITIAL_PASSWORD:-}
+    volumes:
+      - catalog_media:/app/media
     depends_on:
       db:
         condition: service_healthy
@@ -75,4 +77,5 @@ services:
     logging: *logging
 
 volumes:
+  catalog_media:
   postgres_data:

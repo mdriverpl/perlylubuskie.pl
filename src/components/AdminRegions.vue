@@ -1,5 +1,6 @@
 <script setup>
 import {ref,computed,onMounted,watch} from 'vue'
+import RegionResearch from './RegionResearch.vue'
 import {readApiJson} from '../apiResponse.js'
 const props=defineProps({token:String})
 const emit=defineEmits(['login','changed','catalog'])
@@ -8,7 +9,7 @@ const regions=ref([]),options=ref([]),types=ref([]),slug=ref(''),newSlug=ref('ku
 const core=['castle','palace','lake','nature','heritage','leisure']
 const allowed=ref([...core]),records=ref([]),fileRecords=ref(null),fileName=ref(''),editing=ref(null)
 const blank=()=>({name:'',subtitle:'',location:'',description:'',place_type:'heritage',lat:null,lng:null,image:'',source_url:''})
-const draft=ref(blank())
+const draft=ref(blank()),researchKey=ref(0),researchLimit=ref(5000)
 const region=computed(()=>regions.value.find(r=>r.slug===slug.value))
 const availableOptions=computed(()=>options.value.filter(o=>!regions.value.some(r=>r.slug===o.slug)))
 const placeTypes=computed(()=>types.value.filter(t=>region.value?.allowed_types.includes(t.id)))
@@ -35,9 +36,12 @@ async function act(task){
  busy.value=true;error.value='';message.value=''
  try{await task()}catch(e){error.value=e.message}finally{busy.value=false}
 }
-function createRegion(){return act(async()=>{
+async function researchChanged(){await refresh();records.value=await api('/admin/regions/'+slug.value+'/places');emit('changed')}
+function createRegion(automatic=true){return act(async()=>{
  await api('/admin/regions','POST',{slug:newSlug.value,allowed_types:allowed.value})
- const added=newSlug.value;await refresh();slug.value=added;message.value='Województwo utworzone jako szkic. Dodaj atrakcje przed publikacją.'
+ const added=newSlug.value;await refresh();slug.value=added
+ if(automatic){await api('/admin/regions/'+added+'/research','POST',{max_places:researchLimit.value});researchKey.value++;message.value='AI zbiera dane w tle. Postęp znajdziesz poniżej. Województwo pozostaje szkicem.'}
+ else message.value='Utworzono pusty szkic województwa.'
 })}
 function publish(){return act(async()=>{
  const active=!region.value.active
@@ -79,15 +83,16 @@ function downloadTemplate(){
   <template v-else-if="!verified"><p>Panel jest dostępny wyłącznie dla superadministratora.</p><button v-if="!token" class="button" @click="emit('login')">Zaloguj się</button></template>
   <p v-if="error" class="admin-error" role="alert">{{error}}</p><p v-if="message" class="admin-message" role="status">{{message}}</p>
   <template v-if="verified">
-   <section class="admin-card"><h2>Dodaj województwo</h2><p>Nowy region zaczyna jako szkic. Domyślnie bez noclegów, winiarni i restauracji.</p>
-    <form @submit.prevent="createRegion"><fieldset :disabled="busy"><label>Województwo<select id="admin-new-region" v-model="newSlug" required><option v-for="option in availableOptions" :key="option.slug" :value="option.slug">{{option.name}}</option></select></label><div class="admin-types" role="group" aria-label="Kategorie województwa"><label v-for="type in types" :key="type.id"><input v-model="allowed" type="checkbox" :value="type.id">{{type.name}}</label></div><button class="button" :disabled="!newSlug||!allowed.length" type="submit">Dodaj jako szkic</button></fieldset></form>
+   <section class="admin-card"><h2>Dodaj województwo</h2><p>AI wyszuka atrakcje, sprawdzi informacje i doda opisy oraz dostępne zdjęcia do bazy. Bez noclegów, winiarni i restauracji. Wyniki zapiszą się w szkicu do publikacji. Wyszukiwanie może naliczać opłaty na skonfigurowanym koncie OpenAI.</p>
+    <form @submit.prevent="createRegion(true)"><fieldset :disabled="busy"><label>Województwo<select id="admin-new-region" v-model="newSlug" required><option v-for="option in availableOptions" :key="option.slug" :value="option.slug">{{option.name}}</option></select></label><div class="admin-types" role="group" aria-label="Kategorie województwa"><label v-for="type in types" :key="type.id"><input v-model="allowed" type="checkbox" :value="type.id">{{type.name}}</label></div><label>Limit wyszukiwanych obiektów<select v-model.number="researchLimit"><option :value="100">100</option><option :value="500">500</option><option :value="1000">1000</option><option :value="5000">5000</option></select></label><button class="button" :disabled="!newSlug||!allowed.length" type="submit">Utwórz i uzupełnij AI</button> <button class="text-link" :disabled="!newSlug||!allowed.length" type="button" @click="createRegion(false)">Utwórz pusty szkic</button></fieldset></form>
    </section>
    <section v-if="regions.length" class="admin-card"><div class="admin-heading"><h2>Zarządzaj regionem</h2><button v-if="region?.active" class="text-link" @click="emit('catalog',slug)">Otwórz katalog</button></div>
     <label>Województwo<select id="admin-region" v-model="slug" :disabled="busy"><option v-for="item in regions" :key="item.slug" :value="item.slug">{{item.name}} · {{item.active?'Opublikowane':'Szkic'}} · {{item.place_count}} miejsc</option></select></label>
     <template v-if="region"><p>Dozwolone: {{placeTypes.map(type=>type.name).join(', ')}}.</p><button class="button outline" :disabled="busy||region.slug==='lubuskie'&&region.active" @click="publish">{{region.active?'Przenieś do szkicu':'Opublikuj województwo'}}</button>
+     <RegionResearch :token="token" :region="region" :reload-key="researchKey" @changed="researchChanged"/>
      <form id="admin-place-editor" class="admin-editor" @submit.prevent="savePlace"><fieldset :disabled="busy"><h3>{{editing?'Edytuj miejsce':'Dodaj atrakcję'}}</h3><div class="admin-fields"><label>Nazwa<input id="admin-place-name" v-model="draft.name" required maxlength="200"></label><label>Miejscowość<input id="admin-place-location" v-model="draft.location" required maxlength="200"></label><label>Rodzaj<select id="admin-place-type" v-model="draft.place_type" required><option v-for="type in placeTypes" :key="type.id" :value="type.id">{{type.name}}</option></select></label><label>Krótki opis<input v-model="draft.subtitle" maxlength="250"></label><label>Szerokość geograficzna<input id="admin-place-lat" v-model.number="draft.lat" required type="number" min="-90" max="90" step="any"></label><label>Długość geograficzna<input id="admin-place-lng" v-model.number="draft.lng" required type="number" min="-180" max="180" step="any"></label></div><label>Opis<textarea id="admin-place-description" v-model="draft.description" required maxlength="2000" rows="3"></textarea></label><div class="admin-fields"><label>Zdjęcie (link HTTPS, opcjonalnie)<input v-model="draft.image" type="url" pattern="https://.*" maxlength="2000"></label><label>Źródło informacji (link HTTPS, opcjonalnie)<input v-model="draft.source_url" type="url" pattern="https://.*" maxlength="2000"></label></div><button class="button" type="submit">{{editing?'Zapisz zmiany':'Dodaj miejsce'}}</button><button v-if="editing" type="button" class="text-link" @click="editing=null;draft=blank()">Anuluj edycję</button></fieldset></form>
      <div class="admin-import"><h3>Importuj miejsca z pliku</h3><p>Wybierz plik JSON z tablicą „places”, do 500 pozycji. Duplikaty nazwy i współrzędnych zostaną pominięte. Błędny plik nie zostanie zaimportowany.</p><button class="text-link" @click="downloadTemplate">Pobierz wzór JSON</button><label>Plik JSON<input id="admin-import-file" type="file" accept=".json,application/json" :disabled="busy" @change="readFile"></label><p v-if="fileRecords">{{fileName}} · {{fileRecords.length}} miejsc gotowych do importu</p><button class="button" :disabled="busy||!fileRecords" @click="importFile">Importuj miejsca</button></div>
-     <h3 class="admin-list-title">Atrakcje w regionie ({{records.length}})</h3><p v-if="!records.length">Dodaj pierwszą atrakcję ręcznie lub zaimportuj plik.</p><ul class="admin-place-list"><li v-for="place in records" :key="place.id"><span><strong>{{place.name}}</strong><small>{{place.location}}</small></span><button class="text-link" :disabled="busy" @click="edit(place)">Edytuj</button></li></ul>
+     <h3 class="admin-list-title">Atrakcje w regionie ({{records.length}})</h3><p v-if="!records.length">Uruchom zbieranie AI powyżej, aby automatycznie dodać atrakcje.</p><ul class="admin-place-list"><li v-for="place in records" :key="place.id"><span><strong>{{place.name}}</strong><small>{{place.location}}</small></span><button class="text-link" :disabled="busy" @click="edit(place)">Edytuj</button></li></ul>
     </template>
    </section>
   </template>

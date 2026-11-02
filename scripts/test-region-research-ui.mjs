@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict'
+import {JSDOM} from 'jsdom'
+const dom=new JSDOM('<div id="app"></div>',{url:'https://localhost/admin'})
+for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event'])globalThis[key]=dom.window[key]
+const {createApp,nextTick}=await import('vue')
+const Research=(await import('../artifacts/region-research-test.mjs')).default
+const originalTimeout=globalThis.setTimeout,originalClear=globalThis.clearTimeout
+let scheduled,job=null,events=0,requests=[]
+globalThis.setTimeout=(fn,delay,...args)=>delay===3000?(scheduled=fn,'poll'):originalTimeout(fn,delay,...args)
+globalThis.clearTimeout=id=>id==='poll'?(scheduled=null):originalClear(id)
+globalThis.fetch=async(path,request={})=>{
+ requests.push({path,request});assert.equal(request.headers.Authorization,'Bearer secret-test')
+ if(request.method==='POST'){
+  if(path.endsWith('/cancel'))job={...job,cancel_requested:true}
+  else if(path.endsWith('/resume'))job={...job,status:'queued',cancel_requested:false}
+  else{assert.equal(JSON.parse(request.body).max_places,5000);job={id:'job-1',status:'queued',phase:'discovery',discovered:0,total:0,processed:0,added:0,updated:0,duplicates:0,review:0,photos:0,missing_photos:0,issues:[]}}
+  return {ok:true,json:async()=>structuredClone(job)}
+ }
+ return {ok:true,json:async()=>({configured:true,job:structuredClone(job)})}
+}
+const app=createApp(Research,{token:'secret-test',region:{slug:'kujawsko-pomorskie',active:false},reloadKey:0,onChanged:()=>events++});app.mount('#app')
+const settle=async()=>{await nextTick();await new Promise(r=>originalTimeout(r,0));await nextTick()}
+const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent===text)
+async function click(text){assert.ok(button(text),text);button(text).click();await settle();await settle()}
+await settle();await click('Wyszukaj i dodaj automatycznie')
+assert.match(document.body.textContent,/Oczekuje na rozpoczęcie/)
+assert.ok(scheduled)
+await click('Zatrzymaj zbieranie')
+assert.match(document.body.textContent,/Zatrzymanie nastąpi po bieżącym zapytaniu/)
+assert.equal(button('Zatrzymaj zbieranie').disabled,true)
+job={...job,status:'cancelled'};await scheduled();await settle()
+await click('Wznów zbieranie');assert.ok(requests.some(r=>r.path.endsWith('/resume')))
+job={...job,status:'completed',phase:'completed',total:3,processed:3,added:2,review:1,photos:1,missing_photos:1,issues:[{name:'Obiekt <script>',message:'Brak potwierdzonego zdjęcia'}]}
+await scheduled();await settle()
+assert.match(document.body.textContent,/Zbieranie zakończone/)
+assert.match(document.body.textContent,/Zapisane bez zdjęcia: 1/)
+assert.equal(document.querySelector('script'),null)
+assert.equal(events,2)
+assert.equal(document.querySelector('progress').value,3)
+app.unmount();assert.equal(scheduled,null)
+globalThis.setTimeout=originalTimeout;globalThis.clearTimeout=originalClear;dom.window.close()
+console.log('PASS: region research starts with limit, polls, cancels, resumes, reports missing photos, escapes sources and disposes polling')
