@@ -21,7 +21,7 @@ const fix=(lat=52.33)=>success({coords:{latitude:lat,longitude:15.29,accuracy:12
 await settle();assert.equal(calls,0);assert.match(toggle().textContent,/GPS OFF/)
 await nav('Miejsca')
 assert.equal(document.querySelector('[aria-label="Sortuj miejsca"]').value,'distance')
-assert.ok(document.querySelector('.distance-origin-note'))
+assert.equal(document.querySelector('.distance-origin-note'),null)
 assert.equal(calls,0,'Opening places does not request GPS automatically')
 await nav('Planer')
 await click(toggle());assert.match(toggle().textContent,/GPS?/)
