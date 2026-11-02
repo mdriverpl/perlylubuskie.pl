@@ -31,7 +31,7 @@ import { placeFacets, defaultPlaceFacets, filterPlaces, sortNearby, distanceKm, 
 import { useGeolocation, geolocationKey } from '../useGeolocation.js'
 import { useLocationSearch } from '../useLocationSearch.js'
 import { readAddress, rememberAddress, forgetAddress } from '../rememberedAddress.js'
-const props=defineProps({regionInfo:Object,regions:{type:Array,default:()=>[]},catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
+const props=defineProps({initialFacet:String,regionInfo:Object,regions:{type:Array,default:()=>[]},catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
 const emit=defineEmits(['open','favorite','like','add','remove','move','clear','planner','create-point','create-place','region'])
 const plannedPlaces=computed(()=>props.selected.map(id=>[...props.places,...props.routePoints].find(p=>p.id===id)).filter(Boolean))
 const pointDraft=ref(null)
@@ -50,7 +50,7 @@ const rememberedAddress=readAddress()
 function savedQuery(){try{return (localStorage.getItem(queryStorageKey)||'').slice(0,200)}catch{return ''}}
 const query=ref(rememberedAddress?.query??savedQuery()),chosen=ref([...defaultPlaceFacets]),displayMode=ref(props.catalogOnly?'grid':'map'),sort=ref('distance')
 const radius=ref('')
-watch(availableFacets,value=>{chosen.value=defaultPlaceFacets.filter(id=>value.some(f=>f.id===id));if(!chosen.value.length)chosen.value=value.map(f=>f.id)},{immediate:true})
+watch(availableFacets,value=>{chosen.value=props.initialFacet&&value.some(f=>f.id===props.initialFacet)?[props.initialFacet]:defaultPlaceFacets.filter(id=>value.some(f=>f.id===id));if(!chosen.value.length)chosen.value=value.map(f=>f.id)},{immediate:true})
 const icons={castle:Castle,grape:Grape,sparkles:Sparkles,utensils:Utensils,waves:Waves,trees:Trees,landmark:Landmark,bed:Bed}
 const {position:userLocation,loading:locating,error:locationError,locate}=inject(geolocationKey,null)||useGeolocation()
 const {items:locationMatches,selected:searchedLocation,loading:searchingLocation,error:searchError,search:searchLocation,reverse:reverseLocation,clear:clearLocation}=useLocationSearch()

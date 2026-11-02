@@ -21,7 +21,11 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 let app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 await settle();await settle();await settle()
+assert.equal(document.querySelector('#poland-regions'),null,'Map starts in the second hero tab')
+document.querySelector('#hero-tab-map').click();await settle();await settle();await settle()
 const map=document.querySelector('#poland-regions');assert.ok(map)
+assert.ok(document.querySelector('.hero-ai-panel').contains(map),'Map lives inside the hero panel')
+assert.equal(document.querySelectorAll('#poland-regions').length,1,'No duplicate map below the hero')
 assert.ok(map.compareDocumentPosition(document.querySelector('#places'))&Node.DOCUMENT_POSITION_FOLLOWING,'Map appears before TOP 20')
 assert.equal(map.querySelectorAll('.poland-province>path').length,16)
 assert.equal(map.querySelectorAll('.poland-region-rows button').length,16)
