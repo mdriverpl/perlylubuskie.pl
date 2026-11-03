@@ -2,13 +2,15 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import * as L from 'leaflet/dist/leaflet-src.esm.js'
 import {readApiJson} from '../apiResponse.js'
-import {preferredMap,rememberMap,osmTileUrl} from '../mapPreferences.js'
+import {preferredMap,rememberMap,osmTileUrl,preferredOsmTone,rememberOsmTone} from '../mapPreferences.js'
 import {pointClusters,validMapPoint} from '../mapClusters.js'
 import {routeDirectionArrows} from '../navigationDirections.js'
 const props = defineProps({ places: Array, endpointPlaces:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
 let map, layer, markerLayer, userLayer, arrowLayer, userMarker, accuracyCircle, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
 const provider=ref('osm'), mapStyle=ref('terrain'), mapError=ref(''),switchingMap=ref(false)
+const osmTone=ref(preferredOsmTone())
+function updateOsmTone(){osmTone.value=preferredOsmTone()}
 const osmAttribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 function hereAttribution(){
  const bounds=map.getBounds(),zoom=map.getZoom()
@@ -171,6 +173,7 @@ function draw() {
  }
 }
 onMounted(async () => {
+ window.addEventListener('perly:osm-tone-changed',updateOsmTone)
  map=L.map(mapElement.value,{scrollWheelZoom:false,doubleClickZoom:!props.allowCustomPoints}).setView([52.15,15.16],8)
  map.on('dblclick',event=>{
   if(!props.allowCustomPoints||event.originalEvent?.target?.closest?.('.leaflet-marker-icon,.leaflet-control,.leaflet-popup'))return
@@ -190,12 +193,18 @@ watch(()=>props.trackOnly,setTiles)
 watch(()=>[props.selected,props.places,props.geometry,props.searchLocation,props.draggablePoints,props.distanceArea,props.endpointPlaces],draw,{deep:true})
 watch(()=>[props.userLocation,props.focusLocation],drawPosition,{deep:true})
 watch(()=>[props.geometry,props.routeDirections],drawRouteDirections,{deep:true})
-onBeforeUnmount(()=>{disposed=true;resizeObserver?.disconnect();map?.remove();tiles?.off()})
+onBeforeUnmount(()=>{disposed=true;window.removeEventListener('perly:osm-tone-changed',updateOsmTone);resizeObserver?.disconnect();map?.remove();tiles?.off()})
 </script>
-<template><div class="travel-map" :class="{'track-only':trackOnly}"><div ref="mapElement" class="travel-map-canvas" aria-label="Mapa miejsc i tras w Polsce"></div><div v-if="!minimal&&!trackOnly" class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div><div v-if="provider==='here'&&!minimal&&!trackOnly" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div><p v-if="mapError" class="map-provider-error" role="status">{{mapError}}</p></div></template>
+<template><div class="travel-map" :class="{'track-only':trackOnly,'osm-light':provider==='osm'&&osmTone==='light'}"><div ref="mapElement" class="travel-map-canvas" aria-label="Mapa miejsc i tras w Polsce"></div><div v-if="!minimal&&!trackOnly" class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div><div v-if="provider==='osm'&&!minimal&&!trackOnly" class="osm-style-switch" role="group" aria-label="Wygląd mapy OpenStreetMap"><button :aria-pressed="osmTone==='light'" @click="rememberOsmTone('light')">Jasna</button><button :aria-pressed="osmTone==='standard'" @click="rememberOsmTone('standard')">Standardowa</button></div><div v-if="provider==='here'&&!minimal&&!trackOnly" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div><p v-if="mapError" class="map-provider-error" role="status">{{mapError}}</p></div></template>
 <style scoped>
 .map-provider-switch{position:absolute;top:14px;right:14px;z-index:500;display:flex;gap:3px;padding:4px;background:#fff;border-radius:22px;box-shadow:0 2px 9px #173d2920}.map-provider-switch button{font:600 11px/1.4 system-ui;padding:8px 12px;border:0;border-radius:18px;background:transparent;color:#294b36;cursor:pointer}.map-provider-switch button[aria-pressed=true]{background:#18774f;color:white}.map-provider-switch button:disabled{opacity:.6;cursor:wait}.map-provider-switch button:focus-visible{outline:2px solid #19744f;outline-offset:2px}
 .travel-map{position:relative;width:100%;height:100%;min-height:inherit}.map-style-switch{position:absolute;top:61px;right:14px;z-index:500;display:flex;gap:3px;padding:4px;background:#fff;border-radius:22px;box-shadow:0 2px 9px #173d2920}.map-style-switch button{font:600 11px/1.4 system-ui;padding:8px 12px;border:0;border-radius:18px;background:transparent;color:#294b36;cursor:pointer}.map-style-switch button[aria-pressed=true]{background:#18774f;color:white}.map-provider-error{position:absolute;bottom:36px;left:12px;right:12px;z-index:500;background:#fff8e9ed;padding:9px 12px;border-radius:7px;font:11px/1.5 system-ui;color:#775024;pointer-events:none}
+</style>
+<style>
+.travel-map.osm-light .leaflet-tile-pane{filter:saturate(.4) contrast(.88) brightness(1.08)}
+</style>
+<style scoped>
+.osm-style-switch{position:absolute;top:61px;right:14px;z-index:500;display:flex;gap:3px;padding:4px;background:#fff;border-radius:22px;box-shadow:0 2px 9px #173d2920}.osm-style-switch button{font:600 11px/1.4 system-ui;padding:8px 12px;border:0;border-radius:18px;background:transparent;color:#294b36;cursor:pointer}.osm-style-switch button[aria-pressed=true]{background:#edf3e8;color:#176d4c}.osm-style-switch button:focus-visible{outline:2px solid #19744f;outline-offset:1px}@media(max-width:600px){.osm-style-switch{top:105px;right:12px}}
 </style>
 <style>
 .gps-direction-icon,.route-direction-icon{background:transparent!important;border:0!important;pointer-events:none!important}.gps-direction-pointer{display:block;transform-origin:16px 17px;filter:drop-shadow(0 2px 3px #173d2966)}.gps-direction-pointer.direction-unknown{opacity:.65}.route-direction-arrow{display:block;transform-origin:center;filter:drop-shadow(0 1px 1px #173d2944)}
