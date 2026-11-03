@@ -45,12 +45,12 @@ async function act(suffix='',body){
 </script>
 
 <template>
- <section v-if="!region.active||job" class="region-research" aria-label="Automatyczne uzupełnianie województwa">
+ <section class="region-research" aria-label="Automatyczne uzupełnianie województwa">
   <h3>Atrakcje z AI</h3>
   <p v-if="loading" role="status">Odczytuję postęp…</p>
   <p v-else-if="!configured" role="alert">Na serwerze trzeba skonfigurować klucz OpenAI.</p>
   <p v-if="error" role="alert" class="research-error">{{error}} <button class="text-link" @click="poll">Odśwież</button></p>
-  <p v-if="job?.report?.local_import" role="status">Katalog uzupełniono lokalnie. W bazie: <strong>{{region.place_count||job.report.local_import.total}}</strong> miejsc. Możesz je opublikować.</p>
+  <p v-if="job?.report?.local_import" role="status">Katalog uzupełniono lokalnie. W bazie: <strong>{{region.place_count||job.report.local_import.total}}</strong> miejsc. Są dostępne na stronie.</p>
   <template v-if="job&&!job.report?.local_import">
    <div class="research-status" role="status" aria-live="polite"><strong>{{labels[job.status]||job.status}}</strong><span v-if="job.cancel_requested&&running">Zatrzymanie nastąpi po bieżącym zapytaniu.</span></div>
    <p v-if="job.status==='queued'">Oczekuje w kolejce · {{job.active_jobs||1}} aktywnych zadań.</p>
@@ -75,13 +75,13 @@ async function act(suffix='',body){
     <ul v-if="job.issues?.length"><li v-for="(issue,index) in job.issues" :key="index"><strong>{{issue.name}}</strong>: {{issue.message}}</li></ul>
    </details>
   </template>
-  <p v-if="!running&&!region.active&&!loading">AI dodaje opisy i dostępne zdjęcia. Korzysta z płatnego konta OpenAI.</p>
+  <p v-if="!running&&!loading">AI dodaje opisy i dostępne zdjęcia. Korzysta z płatnego konta OpenAI.</p>
   <div class="research-actions">
    <button v-if="running" class="button outline" :disabled="busy||job.cancel_requested" @click="act('/cancel')">Zatrzymaj</button>
-   <button v-else-if="resumable&&!region.active" class="button" :disabled="busy||!configured" @click="act('/resume')">Wznów</button>
-   <button v-else-if="!region.active&&!loading" class="button" :disabled="busy||!configured" @click="act('',{max_places:limit})">{{job?'Wyszukaj ponownie':'Uruchom AI'}}</button>
+   <button v-else-if="resumable" class="button" :disabled="busy||!configured" @click="act('/resume')">Wznów</button>
+   <button v-else-if="!loading" class="button" :disabled="busy||!configured" @click="act('',{max_places:limit})">{{job?'Wyszukaj ponownie':'Uruchom AI'}}</button>
   </div>
-  <details v-if="!running&&!region.active&&!loading" class="research-settings">
+  <details v-if="!running&&!loading" class="research-settings">
    <summary>Ustawienia wyszukiwania</summary>
    <label>Limit obiektów<select v-model.number="limit" :disabled="busy"><option :value="25">25</option><option :value="50">50</option><option :value="100">100</option></select></label>
    <button v-if="resumable" class="text-link" :disabled="busy||!configured" @click="act('',{max_places:limit})">Zacznij nowe wyszukiwanie</button>

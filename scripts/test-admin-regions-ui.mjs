@@ -21,7 +21,7 @@ globalThis.fetch=async(path,request={})=>{
  else if(path==='/api/routes'||path==='/api/routes/public'||path==='/api/favorites')data=[]
  else if(path==='/api/admin/regions'&&request.method==='POST'){
   const body=JSON.parse(request.body);assert.deepEqual(body.allowed_types,['castle','palace','lake','nature','heritage','leisure']);assert.equal(body.slug,'kujawsko-pomorskie')
-  regions.push({slug:body.slug,name:'Kujawsko-pomorskie',active:false,allowed_types:body.allowed_types,place_count:0});data=regions
+  regions.push({slug:body.slug,name:'Kujawsko-pomorskie',active:true,allowed_types:body.allowed_types,place_count:0});data=regions
  }
  else if(path.startsWith('/api/admin/')){
   assert.match(request.headers.Authorization,/Bearer admin-token/)
@@ -42,32 +42,14 @@ const click=async el=>{assert.ok(el);el.click();await settle();await settle()}
 const submit=async form=>{form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await settle();await settle()}
 await settle();await settle()
 assert.ok(document.querySelector('.admin-regions'))
-assert.equal(document.querySelectorAll('.admin-types input:checked').length,6)
-assert.equal(document.querySelector('.admin-types').closest('details').open,false,'Category controls stay folded by default')
-assert.equal(document.querySelector('#admin-new-region').value,'kujawsko-pomorskie')
-await submit(document.querySelector('.admin-card form'))
-assert.equal(autoRequests,1,'Primary region creation launches AI research')
-assert.equal(document.querySelector('#admin-region').value,'kujawsko-pomorskie')
-assert.equal(document.querySelectorAll('#admin-place-type option').length,6)
-assert.equal(document.querySelector('.admin-manual').open,false,'Manual editing and JSON import stay folded by default')
-await click(document.querySelector('.admin-manual summary'))
-assert.equal(document.querySelector('.admin-manual').open,true)
-for(const [selector,value] of [['#admin-place-name','Atrakcja <b>Toruń</b>'],['#admin-place-location','Toruń'],['#admin-place-description','Opis'],['#admin-place-lat','53.01'],['#admin-place-lng','18.60']]){
- const input=document.querySelector(selector);input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));await settle()
-}
-await submit(document.querySelector('#admin-place-editor'))
-assert.equal(records.length,1);assert.ok(!document.querySelector('.admin-place-list b'),'Catalog titles are escaped')
-const publish=document.querySelector('.admin-publish');assert.equal(publish.textContent,'Zakończ i opublikuj');assert.equal(publish.disabled,false)
-await click(publish)
-assert.equal(regions[1].active,true)
-await click([...document.querySelectorAll('.admin-card button')].find(el=>el.textContent==='Otwórz katalog'))
-assert.equal(window.location.pathname,'/miejsca');assert.equal(JSON.parse(localStorage.getItem('perly:region')),'kujawsko-pomorskie')
-assert.equal(document.querySelector('.place-title').textContent,'Atrakcja <b>Toruń</b>')
-assert.equal(document.querySelector('.facet-list input[value="stays"]'),null)
-assert.equal(document.querySelector('.facet-list input[value="wineries"]'),null)
-assert.equal(document.querySelector('.facet-list input[value="restaurants"]'),null)
+assert.ok(document.querySelector('.prompt-task-form'))
+assert.equal(document.querySelector('#admin-new-region'),null,'Province creation uses the prompt only')
+assert.equal(document.querySelector('#admin-region'),null,'There is no separate region management panel')
+assert.equal(document.querySelector('#admin-place-editor'),null)
+assert.equal(document.querySelector('.region-research'),null)
+assert.equal(autoRequests,0,'Opening the simplified panel must not launch work')
 app.unmount();denied=true;window.history.replaceState(null,'','/admin');app=createApp(App);app.mount('#app');await settle();await settle()
 assert.equal(document.querySelector('.admin-card'),null,'Server rejection hides management forms despite cached identity')
 assert.match(document.querySelector('.admin-error').textContent,/superadministratora/)
 app.unmount();dom.window.close()
-console.log('PASS: admin authorization, draft region creation, six categories, place entry and escaping, publication, region switch and blocked access')
+console.log('PASS: prompt-only admin panel, no redundant region controls, no autostart and protected access')

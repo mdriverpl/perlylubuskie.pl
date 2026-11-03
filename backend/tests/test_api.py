@@ -125,7 +125,7 @@ def test_wineries_seed_and_community(client):
 
 def test_heritage_catalog_sync_preserves_community(client):
     places = client.get('/api/places').json()
-    heritage = [p for p in places if p['category']=='heritage' and p['details'].get('wikidata')]
+    heritage = [p for p in places if p['region']=='lubuskie' and p['category']=='heritage' and p['details'].get('wikidata')]
     assert len(heritage) == 175
     assert sum(p['details']['kind'] == 'palace' for p in heritage) == 151
     majaland=next(p for p in places if p['id']==910005)

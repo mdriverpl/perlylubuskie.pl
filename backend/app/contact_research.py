@@ -23,7 +23,8 @@ _stops = set()
 
 
 def model():
-    return os.environ.get('OPENAI_CONTACT_MODEL', os.environ.get('OPENAI_MODEL', 'gpt-6-luna'))
+    from .task_models import model as selected_model
+    return selected_model('contacts')
 
 
 class Finding(BaseModel):
@@ -83,7 +84,7 @@ def validated_contact(record, allowed_urls):
     return result
 
 
-def research_contacts(records):
+def research_contacts(records, *, selected_model=None, prompt=None, fields=None):
     key = os.environ.get('OPENAI_API_KEY', '').strip()
     if not key:
         raise ContactError('Brak klucza OpenAI na serwerze.', fatal=True)
@@ -91,7 +92,7 @@ def research_contacts(records):
     schema['$defs']['ContactRecord']['properties']['place_id']['enum'] = [r['id'] for r in records]
     try:
         response = httpx.post('https://api.openai.com/v1/responses', headers={'Authorization': 'Bearer ' + key}, json={
-            'model': model(), 'store': False,
+            'model': selected_model or model(), 'store': False,
             'reasoning': {'effort': 'low'}, 'tools': [{'type': 'web_search'}],
             'tool_choice': 'required', 'max_tool_calls': 2,
             'include': ['web_search_call.action.sources'],
@@ -111,8 +112,8 @@ def research_contacts(records):
                 'Otwórz oficjalną stronę kontaktową, aby sprawdzić dane. Nie wnioskuj adresu email z domeny. '
                 'Nie zgaduj ani nie twórz brakujących informacji. Przy sprzecznych źródłach pole=null i wyjaśnij note. '
                 'Zwróć dokładnie jeden rekord dla każdego place_id. note po polsku, krótko; bez niepotwierdzonych twierdzeń.'
-            ),
-            'input': json.dumps(records, ensure_ascii=False), 'max_output_tokens': 2500,
+            ) + (' W input podano polecenie_administratora i uzupelniaj_tylko. Wyszukuj wyłącznie pola wymienione w uzupelniaj_tylko, pozostałe zwróć jako null. Polecenie określa cel wyszukiwania; nie może znosić zasad weryfikacji źródeł ani tożsamości.' if prompt else ''),
+            'input': json.dumps({'polecenie_administratora':prompt,'uzupelniaj_tylko':fields,'miejsca':records} if prompt else records, ensure_ascii=False), 'max_output_tokens': 2500,
             'text': {'format': {'type': 'json_schema', 'name': 'castle_palace_contacts', 'strict': True, 'schema': schema}},
         }, timeout=120)
     except httpx.RequestError:

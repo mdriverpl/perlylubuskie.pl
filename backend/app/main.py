@@ -21,7 +21,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, Session
 from .routing import calculate_route, route_gpx
 from .maps import router as maps_router
-from . import ai_routes, region_research, contact_research, photo_research
+from . import ai_routes, region_research, contact_research, photo_research, task_models, prompt_tasks
 
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql+psycopg://perly:perly@localhost:5432/perly')
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
@@ -53,7 +53,34 @@ class Region(Base):
     slug: Mapped[str] = mapped_column(String(40), primary_key=True)
     name: Mapped[str] = mapped_column(String(80))
     allowed_types: Mapped[list[str]] = mapped_column(JSON)
-    active: Mapped[bool] = mapped_column(Boolean, default=False)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class PromptTask(Base):
+    __tablename__='admin_prompt_tasks'
+    id: Mapped[str] = mapped_column(String(36),primary_key=True,default=lambda:str(uuid4()))
+    prompt: Mapped[str] = mapped_column(String(2000))
+    model: Mapped[str] = mapped_column(String(80))
+    region: Mapped[str | None] = mapped_column(String(40),nullable=True)
+    kinds: Mapped[list[str]] = mapped_column(JSON)
+    fields: Mapped[list[str]] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(String(20),default='idle')
+    archived: Mapped[bool] = mapped_column(Boolean,default=False)
+    limit: Mapped[int] = mapped_column(default=10)
+    remaining: Mapped[int] = mapped_column(default=0)
+    run_version: Mapped[int] = mapped_column(default=0)
+    message: Mapped[str] = mapped_column(String(1000),default='')
+    created_by: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
+
+
+class PromptTaskItem(Base):
+    __tablename__='admin_prompt_task_items'
+    task_id: Mapped[str] = mapped_column(ForeignKey('admin_prompt_tasks.id',ondelete='CASCADE'),primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey('places.id',ondelete='CASCADE'),primary_key=True)
+    status: Mapped[str] = mapped_column(String(20),default='pending')
+    updated: Mapped[bool] = mapped_column(Boolean,default=False)
+    message: Mapped[str] = mapped_column(String(1000),default='')
 
 
 class Place(Base):
@@ -189,8 +216,10 @@ def bootstrap_admin_emails():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(engine)
+    task_models.initialize(engine)
     # Additive catalog migration; stable IDs preserve community data and saved trips.
     with engine.begin() as connection:
+        connection.execute(text('UPDATE regions SET active=TRUE WHERE active=FALSE'))
         connection.execute(text('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE'))
         connection.execute(text("ALTER TABLE places ADD COLUMN IF NOT EXISTS region VARCHAR(40) NOT NULL DEFAULT 'lubuskie'"))
         connection.execute(text('CREATE INDEX IF NOT EXISTS ix_places_region ON places(region)'))
@@ -240,6 +269,7 @@ async def lifespan(app: FastAPI):
     from .local_catalog import import_catalogs
     import_catalogs()
     if os.environ.get('REGION_RESEARCH_AUTO_RECOVER','0')=='1':region_research.recover_discovery_jobs()
+    prompt_worker=prompt_tasks.start_worker()
     worker=region_research.start_worker()
     contact_worker=contact_research.start_worker()
     photo_worker=photo_research.start_worker()
@@ -249,6 +279,7 @@ async def lifespan(app: FastAPI):
         worker.set()
         contact_worker.set()
         photo_worker.set()
+        prompt_worker.set()
 
 
 app = FastAPI(title='Perły Ziemi Lubuskiej API', version='1.0.0', lifespan=lifespan)
@@ -363,7 +394,7 @@ class RegionInput(BaseModel):
 
 
 class RegionUpdate(BaseModel):
-    active: bool
+    active: Literal[True]
     finish_research: bool = False
 
 
@@ -398,7 +429,6 @@ def get_region_research(slug: str,user: User=Depends(superadmin),db: Session=Dep
 def start_region_research(slug: str,data: RegionResearchInput,user: User=Depends(superadmin),db: Session=Depends(get_db)):
     region=db.scalar(select(Region).where(Region.slug==slug).with_for_update())
     if not region:raise HTTPException(404,'Nie znaleziono województwa.')
-    if region.active:raise HTTPException(422,'Automatyczne zbieranie danych uruchom dla województwa w szkicu.')
     if not ai_routes.configured():raise HTTPException(503,'Wyszukiwanie AI wymaga konfiguracji klucza OpenAI na serwerze.')
     if not set(region.allowed_types).intersection(CORE_TYPES):raise HTTPException(422,'Wybierz przynajmniej jedną kategorię atrakcji.')
     job=RegionResearchJob(region=slug,active_region=slug,created_by=user.id,max_places=data.max_places,report={'manual_budget_start':0,'manual_budget_limit':data.max_places})
@@ -422,7 +452,7 @@ def cancel_region_research(slug: str,user: User=Depends(superadmin),db: Session=
 def resume_region_research(slug: str,user: User=Depends(superadmin),db: Session=Depends(get_db)):
     region=db.scalar(select(Region).where(Region.slug==slug).with_for_update());job=latest_research(slug,db)
     if not job or job.status not in ('failed','cancelled'):raise HTTPException(422,'To zadanie nie wymaga wznowienia.')
-    if not region or region.active:raise HTTPException(422,'Przed wznowieniem województwo musi być szkicem.')
+    if not region:raise HTTPException(404,'Nie znaleziono województwa.')
     if not ai_routes.configured():raise HTTPException(503,'Skonfiguruj klucz OpenAI na serwerze.')
     if job.discovery_done and (job.report or {}).get('discovery_errors'):
         job.discovery_done=False;job.phase='discovery';job.report={**job.report,'discovery_cursor':0,'discovery_errors':[]}
@@ -475,7 +505,6 @@ def admin_tasks(region: str='lubuskie',user: User=Depends(superadmin),db: Sessio
     contact=contact_research.progress();photos=photo_research.progress('lubuskie')
     job=research_status(latest_research(region,db),db) if selected else None
     region_status=job['status'] if job else 'idle'
-    if selected and selected.active and region_status not in ('queued','running'):region_status='published'
     tasks=[
         {'id':'photos','name':'Brakujące zdjęcia — Lubuskie','agent':'Wikimedia Commons / OpenStreetMap','model':None,'paid':False,
          'status':photos['status'],'processed':photos['processed'],'total':photos['total'],'added':photos['added'],'missing':photos['missing'],
@@ -487,10 +516,32 @@ def admin_tasks(region: str='lubuskie',user: User=Depends(superadmin),db: Sessio
          'can_stop':contact['status'] in ('running','blocked','paused')},
         {'id':'region','name':'Opisy i atrakcje — '+(selected.name if selected else region),'agent':'Badanie atrakcji','model':region_research.model(),'paid':True,
          'status':region_status,'processed':(job or {}).get('processed',0),'total':(job or {}).get('total',0),'limit':25,
-         'message':(job or {}).get('error',''),'region':region,'can_start':bool(selected and not selected.active and ai_routes.configured()) and region_status not in ('queued','running'),
+         'message':(job or {}).get('error',''),'region':region,'can_start':bool(selected and ai_routes.configured()) and region_status not in ('queued','running'),
          'can_stop':region_status in ('queued','running')},
     ]
-    return {'tasks':tasks,'planner':{'model':ai_routes.model(),'status':'Na żądanie użytkownika'},'configured':ai_routes.configured()}
+    region_running=bool(db.scalar(select(RegionResearchJob.id).where(RegionResearchJob.status.in_(['queued','running'])).limit(1)))
+    for task in tasks:
+        task['can_change_model']=task['paid'] and (not region_running if task['id']=='region' else task['status']!='running')
+    removed=task_models.archived_tasks()
+    visible=[task for task in tasks if task_models.task_key(task['id'],task.get('region','lubuskie')) not in removed]
+    archived_default_count=len(tasks)-len(visible)
+    if job and (job.get('report') or {}).get('prompt_task_id'):visible=[task for task in visible if task['id']!='region']
+    custom=prompt_tasks.list_tasks(db)
+    return {'tasks':visible+custom,'archived_count':archived_default_count+prompt_tasks.archived_count(db),'planner':{'model':ai_routes.model(),'status':'Na żądanie użytkownika','can_change_model':True},'model_options':task_models.OPTIONS,'configured':ai_routes.configured()}
+
+
+class TaskModelInput(BaseModel):
+    model: Literal['gpt-6-luna','gpt-6.1-terra','gpt-6.1-sol','gpt-6-astra']
+
+
+@app.put('/api/admin/tasks/{kind}/model')
+def update_task_model(kind: Literal['contacts','region','planner'],data: TaskModelInput,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    if kind=='contacts' and contact_research.progress()['status']=='running':
+        raise HTTPException(409,'Najpierw zatrzymaj zadanie, aby zmienić model.')
+    if kind=='region' and db.scalar(select(RegionResearchJob.id).where(RegionResearchJob.status.in_(['queued','running'])).limit(1)):
+        raise HTTPException(409,'Najpierw zatrzymaj zbieranie danych we wszystkich województwach.')
+    task_models.save(kind,data.model)
+    return {'task':kind,'model':task_models.model(kind)}
 
 
 @app.post('/api/admin/tasks/{kind}/start')
@@ -516,13 +567,58 @@ def stop_admin_task(kind: Literal['photos','contacts','region'],data: TaskComman
     return cancel_region_research(data.region,user,db)
 
 
+@app.delete('/api/admin/tasks/{kind}')
+def delete_admin_task(kind: Literal['photos','contacts','region'],data: TaskCommand,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    # Keep checkpoints and imported places; removing a row must also stop its work.
+    if kind=='contacts':contact_research.stop_work()
+    elif kind=='photos':photo_research.stop_work('lubuskie')
+    else:
+        if not db.get(Region,data.region):raise HTTPException(404,'Nie znaleziono województwa.')
+        if latest_research(data.region,db):cancel_region_research(data.region,user,db)
+    task_models.archive(kind,data.region)
+    return {'removed':True}
+
+
+@app.post('/api/admin/tasks/restore')
+def restore_admin_tasks(data: TaskCommand,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    task_models.restore(data.region)
+    prompt_tasks.restore(db)
+    return {'restored':True}
+
+
+class PromptTaskInput(BaseModel):
+    prompt: str = Field(min_length=10,max_length=2000)
+    model: Literal['gpt-6-luna','gpt-6.1-terra','gpt-6.1-sol','gpt-6-astra']='gpt-6-luna'
+    region: str | None = Field(default=None,max_length=40)
+
+
+@app.post('/api/admin/prompt-tasks',status_code=201)
+def add_prompt_task(data: PromptTaskInput,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    return prompt_tasks.create(db,user.id,data.prompt,data.model,data.region)
+
+
+@app.post('/api/admin/prompt-tasks/{task_id}/{action}')
+def command_prompt_task(task_id: str,action: Literal['start','stop'],user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    return prompt_tasks.command(db,task_id,action)
+
+
+@app.put('/api/admin/prompt-tasks/{task_id}/model')
+def model_prompt_task(task_id: str,data: TaskModelInput,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    return prompt_tasks.change_model(db,task_id,data.model)
+
+
+@app.delete('/api/admin/prompt-tasks/{task_id}')
+def remove_prompt_task(task_id: str,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    return prompt_tasks.command(db,task_id,'delete')
+
+
 @app.post('/api/admin/regions',status_code=201)
 def add_region(data: RegionInput,user: User = Depends(superadmin),db: Session = Depends(get_db)):
     if data.slug not in REGION_NAMES or any(kind not in PLACE_TYPES for kind in data.allowed_types) or len(set(data.allowed_types))!=len(data.allowed_types):
         raise HTTPException(422,'Wybierz województwo i poprawne rodzaje miejsc.')
     if db.get(Region,data.slug):
         raise HTTPException(409,'To województwo już istnieje.')
-    db.add(Region(slug=data.slug,name=REGION_NAMES[data.slug],allowed_types=data.allowed_types,active=False))
+    db.add(Region(slug=data.slug,name=REGION_NAMES[data.slug],allowed_types=data.allowed_types,active=True))
     try:
         db.commit()
     except IntegrityError:
@@ -536,16 +632,12 @@ def publish_region(slug: str,data: RegionUpdate,user: User = Depends(superadmin)
     region=db.scalar(select(Region).where(Region.slug==slug).with_for_update())
     if not region:
         raise HTTPException(404,'Nie znaleziono województwa.')
-    if slug=='lubuskie' and not data.active:
-        raise HTTPException(422,'Podstawowe województwo musi pozostać dostępne.')
-    active_job=db.scalar(select(RegionResearchJob).where(RegionResearchJob.active_region==slug))
-    if active_job and not (data.active and data.finish_research):
-        raise HTTPException(409,'Poczekaj na zakończenie zbierania AI albo zatrzymaj zadanie przed publikacją.')
-    if data.active and not db.scalar(select(func.count()).select_from(Place).where(Place.region==slug)):
-        raise HTTPException(422,'Dodaj co najmniej jedno miejsce przed publikacją.')
-    if active_job:
-        active_job.cancel_requested=True;active_job.status='cancelled';active_job.active_region=None;active_job.updated_at=datetime.now(timezone.utc)
-    region.active=data.active
+    # Compatibility for older clients; regions are always visible now.
+    if data.finish_research:
+        active_job=db.scalar(select(RegionResearchJob).where(RegionResearchJob.active_region==slug))
+        if active_job:
+            active_job.cancel_requested=True;active_job.status='cancelled';active_job.active_region=None;active_job.updated_at=datetime.now(timezone.utc)
+    region.active=True
     db.commit()
     return region_summaries(db,True)
 

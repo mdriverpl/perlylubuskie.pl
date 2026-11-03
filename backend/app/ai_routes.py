@@ -163,7 +163,8 @@ def catalog_entry(place):
 
 
 def model():
-    return os.environ.get('OPENAI_PLANNER_MODEL',os.environ.get('OPENAI_MODEL','gpt-6.1-terra'))
+    from .task_models import model as selected_model
+    return selected_model('planner')
 
 
 def interpret(prompt, catalog):

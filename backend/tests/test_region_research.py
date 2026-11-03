@@ -160,7 +160,6 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             with SessionLocal() as db:
                 db.scalar(select(User).where(User.email==email)).is_superadmin=True;db.commit()
             assert client.post('/api/admin/regions',headers=headers,json={'slug':slug}).status_code==201
-            assert client.post('/api/admin/regions/lubuskie/research',headers=headers,json={}).status_code==422
             assert client.post(path,headers=headers,json={'max_places':5001}).status_code==422
             created=client.post(path,headers=headers,json={'max_places':100});assert created.status_code==202,created.text
             job_id=created.json()['id'];event=threading.Event()
@@ -173,8 +172,7 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             assert research.recover_discovery_jobs()==1
             assert research.recover_discovery_jobs()==0
             assert client.post(path,headers=headers,json={}).status_code==409
-            assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True}).status_code==409
-            assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True,'finish_research':True}).status_code==422
+            assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True}).status_code==200
             research.process_job_step(job_id,event)
             assert client.get(path,headers=headers).json()['job']['total']==3
             client.post(path+'/cancel',headers=headers)
@@ -184,6 +182,7 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             research.process_job_step(job_id,event)
             partial=client.get(path,headers=headers).json()['job']
             assert partial['added']==2 and partial['discovery_done'] is False
+            assert len(client.get('/api/places',params={'region':slug}).json())==2,'AI results are public immediately, before the job completes'
             for _ in range(8):research.process_job_step(job_id,event)
             report=client.get(path,headers=headers).json()['job']
             assert report['status']=='completed' and report['added']==2 and report['review']==1
@@ -209,10 +208,10 @@ def test_durable_job_permissions_resume_dedupe_and_publication(monkeypatch):
             assert report['duplicates']==2 and report['added']==0
             with SessionLocal() as db:
                 assert db.scalar(select(Place).where(Place.description=='Manual edit')) is not None
-            assert client.get('/api/places',params={'region':slug}).json()==[]
+            assert len(client.get('/api/places',params={'region':slug}).json())==2
             assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True}).status_code==200
             assert len(client.get('/api/places',params={'region':slug}).json())==2
-            assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':False}).status_code==200
+            assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':False}).status_code==422
             early=client.post(path,headers=headers,json={'max_places':100}).json()
             research.process_job_step(early['id'],threading.Event())
             assert client.patch('/api/admin/regions/'+slug,headers=headers,json={'active':True,'finish_research':True}).status_code==200

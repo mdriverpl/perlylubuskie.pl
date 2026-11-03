@@ -1,12 +1,62 @@
 # Zadania administratora
 
+## Zadania z promptu
+
+Panel zawiera formularz promptu i listę zadań, bez oddzielnych sekcji dodawania
+i zarządzania województwem. Można wpisać np. „Dodaj województwo lubelskie —
+atrakcje, opisy i zdjęcia”. Zapis tworzy tylko zadanie. Start dodaje brakujący
+region i wyszukuje atrakcje, opisy oraz dostępne zdjęcia w porcjach do 25 obiektów
+na uruchomienie. Domyślnie pomija noclegi, restauracje i winiarnie. Istniejący
+region jest uzupełniany bez tworzenia duplikatu regionu. Status zadania jest
+powiązany z rzeczywistym zadaniem wyszukiwania; model jest przypisany do zadania.
+Zatrzymanie odrzuca spóźnione wyniki; ponowny Start czeka na zakończenie zatrzymywania.
+Restart zatrzymuje powiązane wyszukiwanie przed uruchomieniem wykonawcy.
+
+Można też zapisać np. „Uzupełnij wszystkie numery telefonów dla zamków”.
+Zapis nie wywołuje OpenAI: rozpoznaje zakres i pola, tworzy kolejkę istniejących
+obiektów z brakującymi danymi i pokazuje jej liczebność. Obsługiwane pola to
+telefon, e-mail, WWW, noclegi i restauracja. Dodawanie województwa ma opisany
+powyżej tryb wyszukiwania nowych atrakcji. Nierozpoznane polecenia są odrzucane.
+Zakres kategorii, województwa i pól jest widoczny przy zapisanym zadaniu.
+
+Każde zadanie ma własny zapisany model, prompt, postęp i przyciski Start,
+Zatrzymaj i Usuń. Jeden Start sprawdza do 10 obiektów w porcjach po 2; pozostałe
+wymagają kolejnego Start. Wyszukiwane są oficjalne źródła, a tylko potwierdzone
+brakujące pola trafiają od razu do bazy. Istniejące wartości, zdjęcia i pozostałe
+pola nie są nadpisywane. Błąd zatrzymuje pracę bez automatycznych płatnych prób.
+Wspólna blokada PostgreSQL zapobiega jednoczesnej pracy z dawnym zadaniem kontaktów.
+
+Kolejka i wyniki są w tabelach `admin_prompt_tasks` i `admin_prompt_task_items`.
+Usunięcie zatrzymuje zadanie i ukrywa je na liście; przywrócenie nie uruchamia
+pracy. Restart serwera także pozostawia zadania zatrzymane. Zmienna
+`PROMPT_TASK_WORKER=0` wyłącza wykonywanie i ręczny Start. Testy ustawiają ją na 0
+i zastępują dostawcę AI, bez wysyłania płatnych zapytań.
+
+## Zadania wbudowane
+
 Panel pokazuje postęp, wykonawcę/model i osobne przyciski Start/Zatrzymaj dla
 fotografii, kontaktów oraz opisów wybranego regionu. Otwarcie panelu nie
 uruchamia płatnych zadań. Domyślnie kontakty pozostają zatrzymane po restarcie.
 Każdy ręczny Start sprawdza najwyżej 10 kontaktów; błędy nie są ponawiane
 automatycznie. Region sprawdza domyślnie 25 obiektów, maksymalnie 100 na Start.
 
-Modele można ustawić niezależnie:
+Nie ma etapu szkicu ani publikacji województwa. Wszystkie regiony są aktywne,
+a zatwierdzone przez zbieranie miejsca trafiają bezpośrednio do publicznego
+katalogu. Starsze szkice stają się aktywne przy uruchomieniu nowej wersji.
+Zbieranie można uruchamiać ponownie również w istniejących województwach.
+Przycisk Usuń zadanie zatrzymuje pracę i usuwa wiersz z listy (trwale zapisane
+ukrycie); zachowuje miejsca, zdjęcia, wyniki i historię. Przywrócenie wierszy
+nie uruchamia ich pracy. Zadanie regionu jest usuwane tylko dla wybranego regionu.
+
+Modele można wybrać niezależnie w panelu Zadania: Luna, Terra, Sol lub Astra.
+Wybór zapisuje się w PostgreSQL, przetrwa restart i ma pierwszeństwo przed
+zmiennymi środowiska. Sam zapis nie uruchamia żadnego zadania. Zmiana kontaktów
+wymaga zatrzymania tego zadania; zmiana opisów wymaga zatrzymania zbierania we
+wszystkich regionach. Planer stosuje nowy model od następnego zapytania.
+Zdjęcia nie korzystają z AI i nie mają wyboru modelu. Dostępność wybranego
+modelu zależy także od uprawnień konta OpenAI.
+
+Domyślne modele przy braku zapisanego wyboru:
 
 - `OPENAI_CONTACT_MODEL=gpt-6-luna` — kontakty i usługi;
 - `OPENAI_RESEARCH_MODEL=gpt-6-luna` — opisy i badanie atrakcji;

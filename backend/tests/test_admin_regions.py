@@ -35,20 +35,19 @@ def test_region_permissions_draft_import_and_publication():
             assert created.status_code==201,created.text
             region=next(r for r in created.json() if r['slug']==slug)
             assert set(region['allowed_types'])==set(CORE_TYPES)
-            assert region['active'] is False
+            assert region['active'] is True
             assert client.post('/api/admin/regions',headers=admin,json={'slug':slug}).status_code==409
-            assert client.patch('/api/admin/regions/'+slug,headers=admin,json={'active':True}).status_code==422
+            assert client.patch('/api/admin/regions/'+slug,headers=admin,json={'active':True}).status_code==200
             record={'name':'Testowa atrakcja','location':'Toruń','description':'Opis','place_type':'heritage','lat':53.01,'lng':18.60,'region':slug,'source_url':'https://example.com/source'}
-            assert client.post('/api/places',headers=ordinary,json=record).status_code==422
+            assert client.post('/api/places',headers=ordinary,json={**record,'place_type':'stay'}).status_code==422
             for kind in ['food','stay','vineyard']:
                 assert client.post('/api/places',headers=admin,json={**record,'place_type':kind}).status_code==422
             result=client.post('/api/places',headers=admin,json=record)
             assert result.status_code==201,result.text
             place=result.json();assert place['region']==slug
-            assert place['id'] not in {p['id'] for p in client.get('/api/places').json()}
-            assert not any(r['slug']==slug for r in client.get('/api/regions').json())
-            assert client.get(f"/api/places/{place['id']}/community").status_code==404
-            assert client.post('/api/routing',json={'transport':'walk','place_ids':[1,place['id']]}).status_code==422
+            assert place['id'] in {p['id'] for p in client.get('/api/places').json()}
+            assert any(r['slug']==slug for r in client.get('/api/regions').json())
+            assert client.get(f"/api/places/{place['id']}/community").status_code==200
             assert client.put(f"/api/admin/places/{place['id']}",headers=ordinary,json=record).status_code==403
             edited=client.put(f"/api/admin/places/{place['id']}",headers=admin,json={**record,'name':'Poprawiona nazwa'})
             assert edited.status_code==200
@@ -66,8 +65,8 @@ def test_region_permissions_draft_import_and_publication():
             with TestClient(app) as restarted:
                 assert len(restarted.get('/api/places',params={'region':slug}).json())==3
                 assert any(p['name']=='Poprawiona nazwa' for p in restarted.get('/api/admin/regions/'+slug+'/places',headers=admin).json())
-            assert client.patch('/api/admin/regions/'+slug,headers=admin,json={'active':False}).status_code==200
-            assert client.get('/api/places',params={'region':slug}).json()==[]
+            assert client.patch('/api/admin/regions/'+slug,headers=admin,json={'active':False}).status_code==422
+            assert len(client.get('/api/places',params={'region':slug}).json())==3
             assert client.patch('/api/admin/regions/lubuskie',headers=admin,json={'active':False}).status_code==422
         finally:
             with SessionLocal() as db:

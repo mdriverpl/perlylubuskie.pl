@@ -141,3 +141,114 @@ def test_region_budget_stops_before_an_extra_paid_batch(monkeypatch):
                     db.execute(delete(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job_id));db.execute(delete(RegionResearchJob).where(RegionResearchJob.id==job_id))
                 if user_id:db.execute(delete(User).where(User.id==user_id))
                 db.commit()
+
+
+@pytest.mark.skipif(not os.environ.get('TEST_DATABASE_URL'),reason='Needs isolated PostgreSQL')
+def test_model_choices_persist_are_authorized_and_do_not_start_work(monkeypatch):
+    os.environ['DATABASE_URL']=os.environ['TEST_DATABASE_URL']
+    os.environ.setdefault('SECRET_KEY','test-only-secret-more-than-32-characters')
+    from fastapi.testclient import TestClient
+    from sqlalchemy import select,delete
+    from app.main import app,SessionLocal,User,Region,RegionResearchJob,engine
+    from app import task_models,ai_routes
+    email='models-'+uuid4().hex+'@example.com'
+    started=[]
+    monkeypatch.setattr(contact_research,'start_worker',lambda **kwargs:(started.append('contacts') or threading.Event()))
+    monkeypatch.setattr(region_research,'start_worker',lambda:threading.Event())
+    monkeypatch.setattr(photo_research,'start_worker',lambda:threading.Event())
+    monkeypatch.setattr(contact_research,'progress',lambda:{'status':'stopped','run':'test','checked':0,'total':1,'failed':0,'error':''})
+    with TestClient(app) as client:
+        started.clear()
+        with engine.connect() as db:old=[dict(row) for row in db.execute(select(task_models.settings)).mappings()]
+        auth=client.post('/api/auth/register',json={'email':email,'password':'test-password-123','name':'Model test'}).json()
+        headers={'Authorization':'Bearer '+auth['access_token']}
+        url='/api/admin/tasks/contacts/model'
+        assert client.put(url,json={'model':'gpt-6-luna'}).status_code in (401,403)
+        assert client.put(url,headers=headers,json={'model':'gpt-6-luna'}).status_code==403
+        with SessionLocal() as db:
+            user=db.scalar(select(User).where(User.email==email));user.is_superadmin=True;user_id=user.id;db.commit()
+        job_id=None
+        try:
+            assert client.put(url,headers=headers,json={'model':'unknown-model'}).status_code==422
+            assert client.put('/api/admin/tasks/photos/model',headers=headers,json={'model':'gpt-6-luna'}).status_code==422
+            for kind,selected in [('contacts','gpt-6.1-sol'),('region','gpt-6.1-terra'),('planner','gpt-6-luna')]:
+                result=client.put(f'/api/admin/tasks/{kind}/model',headers=headers,json={'model':selected})
+                assert result.status_code==200,result.text
+            task_models.initialize(engine) # Simulate a fresh settings reader after restart.
+            assert contact_research.model()=='gpt-6.1-sol'
+            assert region_research.model()=='gpt-6.1-terra'
+            assert ai_routes.model()=='gpt-6-luna'
+            data=client.get('/api/admin/tasks',headers=headers).json()
+            assert len(data['model_options'])==4 and data['planner']['model']=='gpt-6-luna'
+            monkeypatch.setattr(contact_research,'progress',lambda:{'status':'running'})
+            assert client.put(url,headers=headers,json={'model':'gpt-6-astra'}).status_code==409
+            assert contact_research.model()=='gpt-6.1-sol'
+            with SessionLocal() as db:
+                job=RegionResearchJob(region='lubuskie',active_region='lubuskie',created_by=user_id,status='queued',max_places=25)
+                db.add(job);db.flush();job_id=job.id;db.commit()
+            assert client.put('/api/admin/tasks/region/model',headers=headers,json={'model':'gpt-6-astra'}).status_code==409
+            assert region_research.model()=='gpt-6.1-terra'
+            assert started==[],'Saving or reading model choices must never start a paid worker'
+        finally:
+            with engine.begin() as db:
+                db.execute(delete(task_models.settings))
+                if old:db.execute(task_models.settings.insert(),old)
+            with SessionLocal() as db:
+                if job_id:db.execute(delete(RegionResearchJob).where(RegionResearchJob.id==job_id))
+                db.execute(delete(User).where(User.email==email));db.commit()
+
+
+@pytest.mark.skipif(not os.environ.get('TEST_DATABASE_URL'),reason='Needs isolated PostgreSQL')
+def test_published_region_restart_remove_restore_and_preserve_places(monkeypatch):
+    os.environ['DATABASE_URL']=os.environ['TEST_DATABASE_URL']
+    os.environ.setdefault('SECRET_KEY','test-only-secret-more-than-32-characters')
+    from fastapi.testclient import TestClient
+    from sqlalchemy import select,delete,func
+    from app.main import app,SessionLocal,User,Place,RegionResearchJob,RegionResearchCandidate,engine
+    from app import task_models
+    email='task-remove-'+uuid4().hex+'@example.com';slug='dolnoslaskie'
+    monkeypatch.setenv('OPENAI_API_KEY','test-only-key')
+    job_id=None
+    with TestClient(app) as client:
+        with engine.connect() as db:old=[dict(row) for row in db.execute(select(task_models.archived)).mappings()]
+        auth=client.post('/api/auth/register',json={'email':email,'password':'test-password-123','name':'Tasks'}).json()
+        headers={'Authorization':'Bearer '+auth['access_token']};payload={'region':slug}
+        url='/api/admin/tasks/region'
+        assert client.request('DELETE',url,json=payload).status_code in (401,403)
+        assert client.request('DELETE',url,headers=headers,json=payload).status_code==403
+        assert client.post('/api/admin/tasks/restore',headers=headers,json=payload).status_code==403
+        with SessionLocal() as db:
+            db.scalar(select(User).where(User.email==email)).is_superadmin=True
+            count=db.scalar(select(func.count()).select_from(Place));db.commit()
+        try:
+            client.post('/api/admin/tasks/restore',headers=headers,json=payload)
+            row=next(t for t in client.get('/api/admin/tasks',headers=headers,params={'region':slug}).json()['tasks'] if t['id']=='region')
+            assert row['can_start'] and row['status']!='published'
+            result=client.post(url+'/start',headers=headers,json=payload)
+            assert result.status_code==200,result.text
+            job_id=result.json()['id']
+            assert client.post(url+'/start',headers=headers,json=payload).status_code==409
+            assert client.request('DELETE',url,headers=headers,json=payload).status_code==200
+            region_research.process_job_step(job_id,threading.Event())
+            task_models.initialize(engine)
+            data=client.get('/api/admin/tasks',headers=headers,params={'region':slug}).json()
+            assert not any(t['id']=='region' for t in data['tasks']) and data['archived_count']==1
+            assert client.post('/api/admin/tasks/restore',headers=headers,json=payload).status_code==200
+            data=client.get('/api/admin/tasks',headers=headers,params={'region':slug}).json()
+            row=next(t for t in data['tasks'] if t['id']=='region')
+            assert row['status']=='cancelled' and row['can_start']
+            with SessionLocal() as db:
+                assert db.scalar(select(func.count()).select_from(Place))==count
+                assert db.get(RegionResearchJob,job_id).cancel_requested
+            assert client.post(url+'/start',headers=headers,json=payload).status_code==200
+            assert client.post(url+'/stop',headers=headers,json=payload).status_code==200
+            region_research.process_job_step(job_id,threading.Event())
+        finally:
+            with engine.begin() as db:
+                db.execute(delete(task_models.archived))
+                if old:db.execute(task_models.archived.insert(),old)
+            with SessionLocal() as db:
+                if job_id:
+                    db.execute(delete(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job_id))
+                    db.execute(delete(RegionResearchJob).where(RegionResearchJob.id==job_id))
+                db.execute(delete(User).where(User.email==email));db.commit()
