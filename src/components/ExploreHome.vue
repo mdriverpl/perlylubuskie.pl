@@ -33,7 +33,7 @@ import { placeFacets, defaultPlaceFacets, filterPlaces, sortNearby, distanceKm, 
 import { useGeolocation, geolocationKey } from '../useGeolocation.js'
 import { useLocationSearch } from '../useLocationSearch.js'
 import { readAddress, rememberAddress, forgetAddress } from '../rememberedAddress.js'
-const props=defineProps({geometry:Object,routeLoading:Boolean,routeError:String,transport:String,initialFacet:String,regionInfo:Object,regions:{type:Array,default:()=>[]},catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
+const props=defineProps({routeDistance:String,routeDuration:String,geometry:Object,routeLoading:Boolean,routeError:String,transport:String,initialFacet:String,regionInfo:Object,regions:{type:Array,default:()=>[]},catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
 const emit=defineEmits(['preview','route-start','transport','retry-route','open','favorite','like','add','remove','move','clear','planner','create-point','create-place','region'])
 const plannedPlaces=computed(()=>props.selected.map(id=>[...props.places,...props.routePoints].find(p=>p.id===id)).filter(Boolean))
 const pointDraft=ref(null)
@@ -163,6 +163,7 @@ function openMarker(id){const place=[...props.places,...props.routePoints].find(
      </article></div>
      <div v-else class="planned-empty"><List :size="28"/><p>Wybierz miejsce na mapie lub w katalogu i kliknij „Dodaj do listy”.</p></div>
      <p class="planned-note">Kolejność miejsc jest wspólna z planerem tras. Lista zapisuje się na tym urządzeniu.</p>
+     <div v-if="plannedPlaces.length>=2" class="planned-route-stats" aria-label="Dystans i czas wycieczki" role="status"><div><strong>{{routeLoading?'…':routeDistance||'—'}} <small>km</small></strong><span>Dystans trasy</span></div><div><strong>{{routeLoading?'…':routeDuration||'—'}}</strong><span>Czas bez postojów</span></div></div>
      <button class="button full-width" :disabled="!plannedPlaces.length" @click="emit('planner')"><Route :size="17"/>Zapisz wycieczkę<ArrowRight :size="16"/></button>
     </aside>
     </div>
@@ -301,3 +302,5 @@ function openMarker(id){const place=[...props.places,...props.routePoints].find(
 </style>
 
 <style scoped>.planned-route-mode{display:flex;gap:6px;margin:14px 0}.planned-route-mode button{display:flex;align-items:center;gap:6px;flex:1;justify-content:center;padding:9px;border:1px solid #d5e2ca;border-radius:7px;color:#46683d;font-size:11px}.planned-route-mode button[aria-pressed=true]{background:#19744f;color:#fff;border-color:#19744f}.planned-route-status{font-size:11px;line-height:1.7;color:#607c53;margin-bottom:12px}.planned-route-status button{color:#19744f;text-decoration:underline}</style>
+
+<style scoped>.planned-route-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;padding:17px 0;border-top:1px solid #e0e7d9;border-bottom:1px solid #e0e7d9}.planned-route-stats>div{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0}.planned-route-stats strong{font-size:22px;font-weight:700;line-height:1.3;color:#19744f}.planned-route-stats strong small{font-size:13px;font-weight:500}.planned-route-stats span{font-size:10px;color:#7d8e70}</style>
