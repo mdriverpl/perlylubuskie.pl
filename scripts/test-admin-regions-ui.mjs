@@ -26,7 +26,7 @@ globalThis.fetch=async(path,request={})=>{
  else if(path.startsWith('/api/admin/')){
   assert.match(request.headers.Authorization,/Bearer admin-token/)
   if(denied)return {ok:false,json:async()=>({detail:'Ta operacja wymaga konta superadministratora.'})}
-  if(path.endsWith('/research')&&request.method==='POST'){autoRequests++;assert.equal(JSON.parse(request.body).max_places,5000);researchJob={id:'job-test',status:'queued',phase:'discovery',total:0,processed:0,added:0,updated:0};data=researchJob}
+  if(path.endsWith('/research')&&request.method==='POST'){autoRequests++;assert.equal(JSON.parse(request.body).max_places,25);researchJob={id:'job-test',status:'queued',phase:'discovery',total:0,processed:0,added:0,updated:0};data=researchJob}
   else if(path.endsWith('/research'))data={configured:true,job:path.includes('kujawsko-pomorskie')?researchJob:null}
   else if(path.endsWith('/places'))data=path.includes('kujawsko-pomorskie')?records:[oldPlace]
   else if(request.method==='PATCH'){const body=JSON.parse(request.body);assert.equal(body.finish_research,true);regions[1].active=body.active;researchJob={...researchJob,status:'cancelled',cancel_requested:true};data=regions}

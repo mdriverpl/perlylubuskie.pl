@@ -91,18 +91,6 @@ Obrazy obejmują bieżące funkcje i dane demonstracyjne opisane w README. Dla t
 Router nie wystawia portu do internetu. Ma limit pamięci 768 MB i obejmuje Polskę za pomocą pięciu segmentów danych BRouter. Przy budowaniu obrazu dane są pobierane z `brouter.de`; zmiana `MAP_DATA_VERSION` w `routing/Dockerfile` odświeża snapshot. Nie usuwaj wolumenu PostgreSQL przy dodawaniu usługi `router` do istniejącego wdrożenia.
 
 Dane trasowania: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL. Silnik [BRouter](https://github.com/abrensch/brouter) ma licencję MIT. Snapshot danych w obrazie pochodzi z [segmentów BRouter](https://brouter.de/brouter/segments4/), przetworzonych z OSM; obowiązuje atrybucja i warunki ODbL.
-# Sprawdzanie usług i kontaktów zamków oraz pałaców
+# Zadania administratora
 
-Opcjonalne `CONTACT_RESEARCH_RUN` w środowisku API uruchamia jednorazowe sprawdzanie
-istniejących zamków i pałaców z opublikowanych regionów. Wartość jest identyfikatorem
-zadania, np. `castle-palace-20261103`. Nie zmieniaj jej przy zwykłym wdrożeniu:
-ten sam identyfikator wznawia kolejkę i pomija zakończone rekordy. Zmieniony
-identyfikator oznacza ponowne płatne wyszukanie całego zbioru.
-
-Zadanie korzysta z `OPENAI_API_KEY` i `OPENAI_MODEL`. Po każdej porcji zapisuje
-wyniki oraz postęp w PostgreSQL; nie używa lokalnego katalogu danych. Wymaga
-potwierdzenia źródła dla każdego pola. Niepotwierdzone usługi mają wartość `null`.
-Kolejne wdrożenia zachowują sprawdzone kontakty. Panel administratora pokazuje
-postęp i umożliwia wznowienie nieudanych lub wstrzymanych porcji. Wyłączenie
-zmiennej zatrzymuje automatyczne uruchamianie przy kolejnym restarcie API.
-
+[Konfiguracja modeli, limity i Start/Zatrzymaj](ADMIN_TASKS.md).

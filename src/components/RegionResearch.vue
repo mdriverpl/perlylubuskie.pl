@@ -3,7 +3,7 @@ import {ref,computed,watch,onBeforeUnmount} from 'vue'
 import {readApiJson} from '../apiResponse.js'
 const props=defineProps({token:String,region:Object,reloadKey:Number})
 const emit=defineEmits(['changed','status'])
-const job=ref(null),configured=ref(false),loading=ref(true),busy=ref(false),error=ref(''),limit=ref(5000)
+const job=ref(null),configured=ref(false),loading=ref(true),busy=ref(false),error=ref(''),limit=ref(25)
 let timer,version=0,controller
 const running=computed(()=>['queued','running'].includes(job.value?.status))
 watch(running,value=>emit('status',value),{immediate:true})
@@ -83,7 +83,7 @@ async function act(suffix='',body){
   </div>
   <details v-if="!running&&!region.active&&!loading" class="research-settings">
    <summary>Ustawienia wyszukiwania</summary>
-   <label>Limit obiektów<select v-model.number="limit" :disabled="busy"><option :value="100">100</option><option :value="500">500</option><option :value="1000">1000</option><option :value="5000">5000</option></select></label>
+   <label>Limit obiektów<select v-model.number="limit" :disabled="busy"><option :value="25">25</option><option :value="50">50</option><option :value="100">100</option></select></label>
    <button v-if="resumable" class="text-link" :disabled="busy||!configured" @click="act('',{max_places:limit})">Zacznij nowe wyszukiwanie</button>
    <p>Źródła: Wikimedia Commons, Wikidata i OpenStreetMap. Brakujące zdjęcia i niepotwierdzone informacje trafiają do raportu. Katalog nie gwarantuje kompletności.</p>
   </details>

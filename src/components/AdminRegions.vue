@@ -1,7 +1,7 @@
 <script setup>
 import {ref,computed,onMounted,watch,nextTick} from 'vue'
 import RegionResearch from './RegionResearch.vue'
-import ContactResearchStatus from './ContactResearchStatus.vue'
+import AdminTasks from './AdminTasks.vue'
 import {readApiJson} from '../apiResponse.js'
 const props=defineProps({token:String})
 const emit=defineEmits(['login','changed','catalog'])
@@ -10,7 +10,7 @@ const regions=ref([]),options=ref([]),types=ref([]),slug=ref(''),newSlug=ref('ku
 const core=['castle','palace','lake','nature','heritage','leisure']
 const allowed=ref([...core]),records=ref([]),fileRecords=ref(null),fileName=ref(''),editing=ref(null)
 const blank=()=>({name:'',subtitle:'',location:'',description:'',place_type:'heritage',lat:null,lng:null,image:'',source_url:''})
-const draft=ref(blank()),researchKey=ref(0),researchLimit=ref(5000),manualOptions=ref(false),researchRunning=ref(false)
+const draft=ref(blank()),researchKey=ref(0),researchLimit=ref(25),manualOptions=ref(false),researchRunning=ref(false)
 const region=computed(()=>regions.value.find(r=>r.slug===slug.value))
 const availableOptions=computed(()=>options.value.filter(o=>!regions.value.some(r=>r.slug===o.slug)))
 const placeTypes=computed(()=>types.value.filter(t=>region.value?.allowed_types.includes(t.id)))
@@ -90,9 +90,9 @@ function downloadTemplate(){
   <template v-else-if="!verified"><p>Panel jest dostępny wyłącznie dla superadministratora.</p><button v-if="!token" class="button" @click="emit('login')">Zaloguj się</button></template>
   <p v-if="error" class="admin-error" role="alert">{{error}}</p><p v-if="message" class="admin-message" role="status">{{message}}</p>
   <template v-if="verified">
-   <ContactResearchStatus :token="token"/>
+   <AdminTasks :token="token" :region="region" @changed="researchKey++;researchChanged()"/>
    <section class="admin-card"><h2>Dodaj województwo</h2><p>AI doda opisy i zdjęcia. Bez noclegów, winiarni i restauracji. Korzysta z płatnego konta OpenAI.</p>
-    <form @submit.prevent="createRegion(true)"><fieldset :disabled="busy"><label>Województwo<select id="admin-new-region" v-model="newSlug" required><option v-for="option in availableOptions" :key="option.slug" :value="option.slug">{{option.name}}</option></select></label><details class="admin-options"><summary>Ustawienia</summary><div class="admin-types" role="group" aria-label="Kategorie województwa"><label v-for="type in types" :key="type.id"><input v-model="allowed" type="checkbox" :value="type.id">{{type.name}}</label></div><label>Limit wyszukiwanych obiektów<select v-model.number="researchLimit"><option :value="100">100</option><option :value="500">500</option><option :value="1000">1000</option><option :value="5000">5000</option></select></label><button class="text-link" :disabled="!newSlug||!allowed.length" type="button" @click="createRegion(false)">Utwórz pusty szkic</button></details><button class="button" :disabled="!newSlug||!allowed.length" type="submit">Dodaj i uruchom AI</button></fieldset></form>
+    <form @submit.prevent="createRegion(true)"><fieldset :disabled="busy"><label>Województwo<select id="admin-new-region" v-model="newSlug" required><option v-for="option in availableOptions" :key="option.slug" :value="option.slug">{{option.name}}</option></select></label><details class="admin-options"><summary>Ustawienia</summary><div class="admin-types" role="group" aria-label="Kategorie województwa"><label v-for="type in types" :key="type.id"><input v-model="allowed" type="checkbox" :value="type.id">{{type.name}}</label></div><label>Limit wyszukiwanych obiektów<select v-model.number="researchLimit"><option :value="25">25</option><option :value="50">50</option><option :value="100">100</option></select></label><button class="text-link" :disabled="!newSlug||!allowed.length" type="button" @click="createRegion(false)">Utwórz pusty szkic</button></details><button class="button" :disabled="!newSlug||!allowed.length" type="submit">Dodaj i uruchom AI</button></fieldset></form>
    </section>
    <section v-if="regions.length" class="admin-card"><div class="admin-heading"><h2>Zarządzaj regionem</h2><button v-if="region?.active" class="text-link" @click="emit('catalog',slug)">Otwórz katalog</button></div>
     <label>Województwo<select id="admin-region" v-model="slug" :disabled="busy"><option v-for="item in regions" :key="item.slug" :value="item.slug">{{item.name}} · {{item.active?'Opublikowane':'Szkic'}} · {{item.place_count}} miejsc</option></select></label>

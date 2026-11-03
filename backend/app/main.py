@@ -21,7 +21,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, Session
 from .routing import calculate_route, route_gpx
 from .maps import router as maps_router
-from . import ai_routes, region_research, contact_research
+from . import ai_routes, region_research, contact_research, photo_research
 
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql+psycopg://perly:perly@localhost:5432/perly')
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
@@ -231,19 +231,24 @@ async def lifespan(app: FastAPI):
                 case((cast(Place.details, JSONB).has_key('contact'),
                       func.jsonb_build_object('contact', Place.details['contact'])),
                      else_=cast(text("'{}'"), JSONB)))
+            keep_photo=statement.excluded.image.like('%placeholder.svg') & Place.details['photo']['source_url'].as_string().is_not(None) & ~Place.image.like('%placeholder.svg')
+            updates['image']=case((keep_photo,Place.image),else_=statement.excluded.image)
+            updates['details']=updates['details'].op('||')(case((keep_photo,func.jsonb_build_object('photo',Place.details['photo'])),else_=cast(text("'{}'"),JSONB)))
             statement = statement.on_conflict_do_update(index_elements=[Place.id], set_=updates,where=Place.details['admin_managed'].as_boolean().is_not(True))
             db.execute(statement)
         db.commit()
     from .local_catalog import import_catalogs
     import_catalogs()
-    region_research.recover_discovery_jobs()
+    if os.environ.get('REGION_RESEARCH_AUTO_RECOVER','0')=='1':region_research.recover_discovery_jobs()
     worker=region_research.start_worker()
     contact_worker=contact_research.start_worker()
+    photo_worker=photo_research.start_worker()
     try:
         yield
     finally:
         worker.set()
         contact_worker.set()
+        photo_worker.set()
 
 
 app = FastAPI(title='Perły Ziemi Lubuskiej API', version='1.0.0', lifespan=lifespan)
@@ -367,7 +372,7 @@ class RegionImport(BaseModel):
 
 
 class RegionResearchInput(BaseModel):
-    max_places: int = Field(default=5000,ge=1,le=5000)
+    max_places: int = Field(default=25,ge=1,le=100)
 
 
 def research_status(job,db):
@@ -396,7 +401,7 @@ def start_region_research(slug: str,data: RegionResearchInput,user: User=Depends
     if region.active:raise HTTPException(422,'Automatyczne zbieranie danych uruchom dla województwa w szkicu.')
     if not ai_routes.configured():raise HTTPException(503,'Wyszukiwanie AI wymaga konfiguracji klucza OpenAI na serwerze.')
     if not set(region.allowed_types).intersection(CORE_TYPES):raise HTTPException(422,'Wybierz przynajmniej jedną kategorię atrakcji.')
-    job=RegionResearchJob(region=slug,active_region=slug,created_by=user.id,max_places=data.max_places)
+    job=RegionResearchJob(region=slug,active_region=slug,created_by=user.id,max_places=data.max_places,report={'manual_budget_start':0,'manual_budget_limit':data.max_places})
     db.add(job)
     try:db.commit()
     except IntegrityError:
@@ -422,6 +427,8 @@ def resume_region_research(slug: str,user: User=Depends(superadmin),db: Session=
     if job.discovery_done and (job.report or {}).get('discovery_errors'):
         job.discovery_done=False;job.phase='discovery';job.report={**job.report,'discovery_cursor':0,'discovery_errors':[]}
     job.status='queued';job.active_region=slug;job.cancel_requested=False;job.error=''
+    processed=db.scalar(select(func.count()).select_from(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job.id,RegionResearchCandidate.status!='pending'))
+    job.report={**(job.report or {}),'manual_budget_start':processed,'manual_budget_limit':min(100,job.max_places)}
     try:db.commit()
     except IntegrityError:
         db.rollback();raise HTTPException(409,'Inne zadanie dla tego województwa jest uruchomione.') from None
@@ -443,10 +450,70 @@ def resume_contact_research(user: User = Depends(superadmin)):
     run = os.environ.get('CONTACT_RESEARCH_RUN', '').strip()
     if not run:
         raise HTTPException(409, 'Nie skonfigurowano zadania sprawdzania kontaktów.')
+    if os.environ.get('CONTACT_RESEARCH_WORKER','1')=='0':raise HTTPException(409,'Sprawdzanie kontaktów jest wyłączone w konfiguracji serwera.')
+    if not ai_routes.configured():raise HTTPException(503,'Brakuje klucza OpenAI.')
+    if contact_research.progress()['status']=='running':raise HTTPException(409,'Sprawdzanie kontaktów już trwa.')
     with engine.begin() as db:
-        db.execute(text("UPDATE place_contact_tasks SET status='pending',attempts=0,error='' WHERE run_id=:run AND status IN ('blocked','failed')"), {'run': run})
-    contact_research.start_worker()
+        db.execute(text("UPDATE place_contact_tasks SET status='pending',attempts=0,error='' WHERE run_id=:run AND status IN ('blocked','failed','cancelled','paused')"), {'run': run})
+    contact_research.start_worker(manual=True)
     return contact_research.progress()
+
+
+@app.post('/api/admin/contact-research/stop')
+def stop_contact_research(user: User = Depends(superadmin)):
+    return contact_research.stop_work()
+
+
+class TaskCommand(BaseModel):
+    region: str = Field(default='lubuskie',max_length=40)
+    max_places: int = Field(default=25,ge=1,le=100)
+
+
+@app.get('/api/admin/tasks')
+def admin_tasks(region: str='lubuskie',user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    selected=db.get(Region,region)
+    contact=contact_research.progress();photos=photo_research.progress('lubuskie')
+    job=research_status(latest_research(region,db),db) if selected else None
+    region_status=job['status'] if job else 'idle'
+    if selected and selected.active and region_status not in ('queued','running'):region_status='published'
+    tasks=[
+        {'id':'photos','name':'Brakujące zdjęcia — Lubuskie','agent':'Wikimedia Commons / OpenStreetMap','model':None,'paid':False,
+         'status':photos['status'],'processed':photos['processed'],'total':photos['total'],'added':photos['added'],'missing':photos['missing'],
+         'message':photos.get('current_name') or photos.get('error',''),'region':'lubuskie','can_start':photos['status']!='running','can_stop':photos['status']=='running'},
+        {'id':'contacts','name':'Zamki i pałace — usługi i kontakt','agent':'Weryfikacja źródeł','model':contact_research.model(),'paid':True,
+         'status':contact['status'],'processed':contact['checked'],'total':contact['total'],'failed':contact['failed'],
+         'message':contact['error'] if contact['status'] not in ('stopped','completed') else '',
+         'limit':contact_research.MAX_PER_START,'can_start':bool(contact['run']) and ai_routes.configured() and os.environ.get('CONTACT_RESEARCH_WORKER','1')!='0' and contact['status']!='running',
+         'can_stop':contact['status'] in ('running','blocked','paused')},
+        {'id':'region','name':'Opisy i atrakcje — '+(selected.name if selected else region),'agent':'Badanie atrakcji','model':region_research.model(),'paid':True,
+         'status':region_status,'processed':(job or {}).get('processed',0),'total':(job or {}).get('total',0),'limit':25,
+         'message':(job or {}).get('error',''),'region':region,'can_start':bool(selected and not selected.active and ai_routes.configured()) and region_status not in ('queued','running'),
+         'can_stop':region_status in ('queued','running')},
+    ]
+    return {'tasks':tasks,'planner':{'model':ai_routes.model(),'status':'Na żądanie użytkownika'},'configured':ai_routes.configured()}
+
+
+@app.post('/api/admin/tasks/{kind}/start')
+def start_admin_task(kind: Literal['photos','contacts','region'],data: TaskCommand,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    if kind=='contacts':return resume_contact_research(user)
+    if not db.get(Region,data.region):raise HTTPException(404,'Nie znaleziono województwa.')
+    if kind=='photos':
+        if photo_research.progress(data.region)['status']=='running':raise HTTPException(409,'Pobieranie zdjęć już trwa.')
+        run_id=os.environ.get('PHOTO_RESEARCH_RUN') if data.region==os.environ.get('PHOTO_RESEARCH_REGION','lubuskie') else None
+        photo_research.create_run(data.region,run_id=run_id);photo_research.start_worker()
+        return photo_research.progress(data.region)
+    previous=latest_research(data.region,db)
+    if previous and previous.status in ('failed','cancelled') and not (previous.report or {}).get('local_import'):
+        previous.max_places=min(previous.max_places,data.max_places);db.commit()
+        return resume_region_research(data.region,user,db)
+    return start_region_research(data.region,RegionResearchInput(max_places=data.max_places),user,db)
+
+
+@app.post('/api/admin/tasks/{kind}/stop')
+def stop_admin_task(kind: Literal['photos','contacts','region'],data: TaskCommand,user: User=Depends(superadmin),db: Session=Depends(get_db)):
+    if kind=='contacts':return contact_research.stop_work()
+    if kind=='photos':return photo_research.stop_work(data.region)
+    return cancel_region_research(data.region,user,db)
 
 
 @app.post('/api/admin/regions',status_code=201)

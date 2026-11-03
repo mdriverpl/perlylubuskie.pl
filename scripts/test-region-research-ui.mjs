@@ -13,7 +13,7 @@ globalThis.fetch=async(path,request={})=>{
  if(request.method==='POST'){
   if(path.endsWith('/cancel'))job={...job,cancel_requested:true}
   else if(path.endsWith('/resume'))job={...job,status:'queued',cancel_requested:false}
-  else{assert.equal(JSON.parse(request.body).max_places,5000);job={id:'job-1',status:'queued',phase:'discovery',discovered:0,total:0,processed:0,added:0,updated:0,duplicates:0,review:0,photos:0,missing_photos:0,issues:[]}}
+  else{assert.equal(JSON.parse(request.body).max_places,25);job={id:'job-1',status:'queued',phase:'discovery',discovered:0,total:0,processed:0,added:0,updated:0,duplicates:0,review:0,photos:0,missing_photos:0,issues:[]}}
   return {ok:true,json:async()=>structuredClone(job)}
  }
  return {ok:true,json:async()=>({configured:true,job:structuredClone(job)})}

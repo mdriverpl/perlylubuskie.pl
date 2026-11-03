@@ -21,12 +21,12 @@ const poland=parse(await readFile('src/components/PolandRegions.vue','utf8')).de
 await writeFile('artifacts/poland-regions-test.mjs',compileScript(poland,{id:'test-poland',inlineTemplate:true}).content.replace("from '../regionOverview.js'","from '../src/regionOverview.js'"))
 const research=parse(await readFile('src/components/RegionResearch.vue','utf8')).descriptor
 await writeFile('artifacts/region-research-test.mjs',compileScript(research,{id:'test-research',inlineTemplate:true}).content.replace("from '../apiResponse.js'","from '../src/apiResponse.js'"))
-for(const [file,id,out] of [['PlaceContact','contact','place-contact'],['ContactResearchStatus','contact-status','contact-status']]){
+for(const [file,id,out] of [['PlaceContact','contact','place-contact'],['ContactResearchStatus','contact-status','contact-status'],['AdminTasks','admin-tasks','admin-tasks']]){
  const descriptor=parse(await readFile('src/components/'+file+'.vue','utf8')).descriptor
  await writeFile('artifacts/'+out+'-test.mjs',compileScript(descriptor,{id:'test-'+id,inlineTemplate:true}).content.replace("from '../apiResponse.js'","from '../src/apiResponse.js'"))
 }
 const adminRegions=parse(await readFile('src/components/AdminRegions.vue','utf8')).descriptor
-await writeFile('artifacts/admin-regions-test.mjs',compileScript(adminRegions,{id:'test-admin-regions',inlineTemplate:true}).content.replace("from './RegionResearch.vue'","from './region-research-test.mjs'").replace("from './ContactResearchStatus.vue'","from './contact-status-test.mjs'").replace("from '../apiResponse.js'","from '../src/apiResponse.js'"))
+await writeFile('artifacts/admin-regions-test.mjs',compileScript(adminRegions,{id:'test-admin-regions',inlineTemplate:true}).content.replace("from './RegionResearch.vue'","from './region-research-test.mjs'").replace("from './ContactResearchStatus.vue'","from './contact-status-test.mjs'").replace("from './AdminTasks.vue'","from './admin-tasks-test.mjs'").replace("from '../apiResponse.js'","from '../src/apiResponse.js'"))
 const homeAddress=parse(await readFile('src/components/HomeAddressSearch.vue','utf8')).descriptor
 await writeFile('artifacts/home-address-test.mjs',compileScript(homeAddress,{id:'test-home-address',inlineTemplate:true}).content.replaceAll("from '../useGeolocation.js'","from '../src/useGeolocation.js'").replaceAll("from '../useLocationSearch.js'","from '../src/useLocationSearch.js'").replaceAll("from '../rememberedAddress.js'","from '../src/rememberedAddress.js'"))
 const pwa=parse(await readFile('src/components/PwaControls.vue','utf8')).descriptor

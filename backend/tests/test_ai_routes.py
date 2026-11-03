@@ -33,8 +33,9 @@ def test_structured_request_and_secret_boundary(monkeypatch):
         payload=kwargs['json']
         assert payload['store'] is False
         assert payload['model']=='gpt-6-astra'
-        assert payload['reasoning']=={'effort':'medium'}
-        assert payload['max_output_tokens']==4000
+        assert payload['reasoning']=={'effort':'low'}
+        assert payload['max_output_tokens']<=2000
+        assert payload['max_output_tokens']==2000
         assert 'test-only-api-key' not in json.dumps(payload)
         assert payload['text']['format']['strict'] is True
         assert payload['text']['format']['schema']['properties']['place_ids']['items']['enum']==[1,5]

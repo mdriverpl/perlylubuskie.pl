@@ -17,7 +17,13 @@ from sqlalchemy import select, text
 from .region_research import strict_schema, source_urls
 
 logger = logging.getLogger('uvicorn.error')
-BATCH_SIZE = 4
+BATCH_SIZE = 2
+MAX_PER_START = 10
+_stops = set()
+
+
+def model():
+    return os.environ.get('OPENAI_CONTACT_MODEL', os.environ.get('OPENAI_MODEL', 'gpt-6-luna'))
 
 
 class Finding(BaseModel):
@@ -85,9 +91,9 @@ def research_contacts(records):
     schema['$defs']['ContactRecord']['properties']['place_id']['enum'] = [r['id'] for r in records]
     try:
         response = httpx.post('https://api.openai.com/v1/responses', headers={'Authorization': 'Bearer ' + key}, json={
-            'model': os.environ.get('OPENAI_MODEL', 'gpt-6-astra'), 'store': False,
+            'model': model(), 'store': False,
             'reasoning': {'effort': 'low'}, 'tools': [{'type': 'web_search'}],
-            'tool_choice': 'required', 'max_tool_calls': 8,
+            'tool_choice': 'required', 'max_tool_calls': 2,
             'include': ['web_search_call.action.sources'],
             'instructions': (
                 'Sprawdź aktualne usługi i kontakt KAŻDEGO istniejącego zamku/pałacu. Wyszukaj każdy obiekt osobno. '
@@ -106,9 +112,9 @@ def research_contacts(records):
                 'Nie zgaduj ani nie twórz brakujących informacji. Przy sprzecznych źródłach pole=null i wyjaśnij note. '
                 'Zwróć dokładnie jeden rekord dla każdego place_id. note po polsku, krótko; bez niepotwierdzonych twierdzeń.'
             ),
-            'input': json.dumps(records, ensure_ascii=False), 'max_output_tokens': 9000,
+            'input': json.dumps(records, ensure_ascii=False), 'max_output_tokens': 2500,
             'text': {'format': {'type': 'json_schema', 'name': 'castle_palace_contacts', 'strict': True, 'schema': schema}},
-        }, timeout=240)
+        }, timeout=120)
     except httpx.RequestError:
         raise ContactError('Przekroczono czas wyszukiwania. Próba zostanie ponowiona.') from None
     if response.status_code == 400:
@@ -159,10 +165,23 @@ def progress():
         latest = db.execute(text("SELECT error FROM place_contact_tasks WHERE run_id=:run AND error<>'' ORDER BY updated_at DESC LIMIT 1"), {'run': run}).scalar()
     total = sum(counts.values())
     done = counts.get('done', 0)
+    status = ('running' if counts.get('pending',0)+counts.get('running',0) else
+              'stopped' if counts.get('cancelled',0) else 'paused' if counts.get('paused',0) else
+              'blocked' if counts.get('blocked',0) else 'completed' if total else 'idle')
     return {'run': run, 'total': total, 'checked': done, 'failed': counts.get('failed', 0),
             'pending': counts.get('pending', 0), 'running': counts.get('running', 0),
             'blocked': counts.get('blocked', 0), 'finished': bool(total) and done + counts.get('failed', 0) == total,
-            'error': latest or ''}
+            'error': latest or '', 'status':status, 'model':model(), 'max_per_start':MAX_PER_START,
+            'cancelled':counts.get('cancelled',0), 'paused':counts.get('paused',0)}
+
+
+def stop_work():
+    from .main import engine
+    for event in list(_stops):event.set()
+    run=os.environ.get('CONTACT_RESEARCH_RUN','').strip()
+    with engine.begin() as db:
+        db.execute(text("UPDATE place_contact_tasks SET status='cancelled',error='',updated_at=now() WHERE run_id=:run AND status NOT IN ('done','failed')"),{'run':run})
+    return progress()
 
 
 def process_batch(run, stop):
@@ -179,9 +198,13 @@ def process_batch(run, stop):
             db.execute(text("UPDATE place_contact_tasks SET status='running', attempts=attempts+1,updated_at=now() WHERE run_id=:run AND place_id=:id"), {'run': run, 'id': place_id})
         db.commit()
     try:
+        if stop.is_set():return False
         results = research_contacts(records)
+        if stop.is_set():return False
         with SessionLocal() as db:
             for place_id, contact in results.items():
+                state=db.scalar(text('SELECT status FROM place_contact_tasks WHERE run_id=:run AND place_id=:id FOR UPDATE'),{'run':run,'id':place_id})
+                if state!='running':continue
                 place = db.scalar(select(Place).where(Place.id == place_id).with_for_update())
                 if place:
                     place.details = {**(place.details or {}), 'contact': contact}
@@ -191,12 +214,12 @@ def process_batch(run, stop):
     except ContactError as error:
         with SessionLocal() as db:
             for place_id in tasks:
-                db.execute(text("UPDATE place_contact_tasks SET status=CASE WHEN :fatal THEN 'blocked' WHEN attempts>=2 THEN 'failed' ELSE 'pending' END,error=:error,updated_at=now() WHERE run_id=:run AND place_id=:id"), {'run': run, 'id': place_id, 'fatal': error.fatal, 'error': str(error)[:500]})
+                db.execute(text("UPDATE place_contact_tasks SET status=CASE WHEN :fatal THEN 'blocked' ELSE 'failed' END,error=:error,updated_at=now() WHERE run_id=:run AND place_id=:id AND status='running'"), {'run': run, 'id': place_id, 'fatal': error.fatal, 'error': str(error)[:500]})
             if error.fatal:
                 db.execute(text("UPDATE place_contact_tasks SET status='blocked',error=:error,updated_at=now() WHERE run_id=:run AND status='pending'"), {'run': run, 'error': str(error)[:500]})
             db.commit()
         logger.warning('Contact research paused/failed run=%s reason=%s', run, str(error))
-        stop.wait(10)
+        stop.set()
     return True
 
 
@@ -205,12 +228,17 @@ def worker_loop(stop, run):
     # Session lock prevents duplicate paid research across workers/replicas.
     with engine.connect() as lock:
         if not lock.scalar(text('SELECT pg_try_advisory_lock(673059382)')):
+            _stops.discard(stop)
             return
         try:
             with engine.begin() as db:
                 db.execute(text("UPDATE place_contact_tasks SET status='pending' WHERE run_id=:run AND status='running'"), {'run': run})
-            while not stop.is_set() and process_batch(run, stop):
+            handled=0
+            while not stop.is_set() and handled<MAX_PER_START and process_batch(run, stop):
+                handled+=BATCH_SIZE
                 stop.wait(2)
+            with engine.begin() as db:
+                db.execute(text("UPDATE place_contact_tasks SET status='paused',error='Zadanie wymaga ręcznego uruchomienia kolejnej porcji.',updated_at=now() WHERE run_id=:run AND status IN ('pending','running')"),{'run':run})
         except Exception as error:
             # Log type only: provider errors may contain credentials or response data.
             logger.error('Contact research stopped unexpectedly type=%s', type(error).__name__)
@@ -219,12 +247,18 @@ def worker_loop(stop, run):
         finally:
             lock.execute(text('SELECT pg_advisory_unlock(673059382)'))
             lock.commit()
+            _stops.discard(stop)
 
 
-def start_worker():
+def start_worker(manual=False):
     stop = threading.Event()
     run = os.environ.get('CONTACT_RESEARCH_RUN', '').strip()
     ensure_run(run)
+    if not manual and os.environ.get('CONTACT_RESEARCH_AUTOSTART','0')!='1':
+        stop_work()
+        logger.info('Contact research stopped; paid autostart disabled.')
+        return stop
     if run and os.environ.get('CONTACT_RESEARCH_WORKER', '1') != '0':
+        _stops.add(stop)
         threading.Thread(target=worker_loop, args=(stop, run), daemon=True, name='contact-research').start()
     return stop

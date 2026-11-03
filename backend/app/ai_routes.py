@@ -162,12 +162,16 @@ def catalog_entry(place):
             'lat': place.lat, 'lng': place.lng}
 
 
+def model():
+    return os.environ.get('OPENAI_PLANNER_MODEL',os.environ.get('OPENAI_MODEL','gpt-6.1-terra'))
+
+
 def interpret(prompt, catalog):
     catalog = planning_catalog(prompt, catalog)
     if len(catalog)<2:
         raise HTTPException(422, 'Brakuje miejsc do ułożenia trasy. Podaj miejscowość lub inne atrakcje.')
-    model = os.environ.get('OPENAI_MODEL', 'gpt-6-astra')
-    cache_key = hashlib.sha256(json.dumps([model,normalized(' '.join(prompt.split())),catalog],ensure_ascii=False,sort_keys=True).encode()).hexdigest()
+    selected_model = model()
+    cache_key = hashlib.sha256(json.dumps([selected_model,normalized(' '.join(prompt.split())),catalog],ensure_ascii=False,sort_keys=True).encode()).hexdigest()
     with _lock:
         cached = _intent_cache.get(cache_key)
         if cached and cached[0]>time.monotonic():
@@ -194,10 +198,10 @@ def interpret(prompt, catalog):
     )
     try:
         response = httpx.post('https://api.openai.com/v1/responses', headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY']}, json={
-            'model': model, 'store': False,
-            'reasoning': {'effort': 'medium'},
+            'model': selected_model, 'store': False,
+            'reasoning': {'effort': 'low'},
             'instructions': instructions, 'input': json.dumps({'catalog': catalog, 'request': prompt}, ensure_ascii=False, separators=(',',':')),
-            'max_output_tokens': 4000, 'text': {'format': {'type': 'json_schema', 'name': 'lubuskie_trip', 'strict': True, 'schema': schema}},
+            'max_output_tokens': 2000, 'text': {'format': {'type': 'json_schema', 'name': 'lubuskie_trip', 'strict': True, 'schema': schema}},
         }, timeout=60)
     except (httpx.TimeoutException, httpx.RequestError):
         raise HTTPException(504, 'AI nie odpowiada. Spróbuj ponownie za chwilę.') from None

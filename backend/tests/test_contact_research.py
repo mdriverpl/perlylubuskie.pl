@@ -37,6 +37,8 @@ def test_research_requires_exact_batch_ids_and_provider_citations(monkeypatch):
         assert payload['store'] is False
         assert payload['tool_choice']=='required'
         assert payload['tools']==[{'type':'web_search'}]
+        assert payload['max_tool_calls']==2
+        assert payload['max_output_tokens']==2500
         return httpx.Response(200,json={'status':'completed','output':[
             {'type':'web_search_call','action':{'sources':[{'url':'https://palace.example/kontakt'}]}},
             {'type':'message','content':[{'type':'output_text','text':json.dumps({'records':[data]})}]}]})
