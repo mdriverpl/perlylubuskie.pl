@@ -25,14 +25,16 @@ import Plus from 'lucide-vue-next/dist/esm/icons/plus.js'
 import ChevronUp from 'lucide-vue-next/dist/esm/icons/chevron-up.js'
 import ChevronDown from 'lucide-vue-next/dist/esm/icons/chevron-down.js'
 import Route from 'lucide-vue-next/dist/esm/icons/route.js'
+import Bike from 'lucide-vue-next/dist/esm/icons/bike.js'
+import Footprints from 'lucide-vue-next/dist/esm/icons/footprints.js'
 import X from 'lucide-vue-next/dist/esm/icons/x.js'
 import TravelMap from './TravelMap.vue'
 import { placeFacets, defaultPlaceFacets, filterPlaces, sortNearby, distanceKm, normalizeRegion, provinceSlug } from '../explore.js'
 import { useGeolocation, geolocationKey } from '../useGeolocation.js'
 import { useLocationSearch } from '../useLocationSearch.js'
 import { readAddress, rememberAddress, forgetAddress } from '../rememberedAddress.js'
-const props=defineProps({initialFacet:String,regionInfo:Object,regions:{type:Array,default:()=>[]},catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
-const emit=defineEmits(['open','favorite','like','add','remove','move','clear','planner','create-point','create-place','region'])
+const props=defineProps({geometry:Object,routeLoading:Boolean,routeError:String,transport:String,initialFacet:String,regionInfo:Object,regions:{type:Array,default:()=>[]},catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
+const emit=defineEmits(['transport','retry-route','open','favorite','like','add','remove','move','clear','planner','create-point','create-place','region'])
 const plannedPlaces=computed(()=>props.selected.map(id=>[...props.places,...props.routePoints].find(p=>p.id===id)).filter(Boolean))
 const pointDraft=ref(null)
 const pointDialog=ref(null)
@@ -41,7 +43,7 @@ const customPoints=computed(()=>props.routePoints.filter(p=>props.selected.inclu
 const catalogPlaces=computed(()=>props.places.filter(p=>p.details?.kind!=='custom'))
 const facetTypes={castles:'castle',palaces:'palace',family:'leisure',lakes:'lake',nature:'nature',history:'heritage',stays:'stay',wineries:'vineyard',restaurants:'food'}
 const availableFacets=computed(()=>props.regionInfo?placeFacets.filter(f=>props.regionInfo.allowed_types.includes(facetTypes[f.id])):placeFacets)
-const mapPlaces=computed(()=>[...results.value,...customPoints.value])
+const mapPlaces=computed(()=>[...new globalThis.Map([...results.value,...(props.catalogOnly?[]:plannedPlaces.value),...customPoints.value].map(p=>[p.id,p])).values()])
 function draftCustomPoint(point){pointDraft.value={...point,name:'Własny punkt '+(customPoints.value.length+1)}}
 function saveCustomPoint(){if(!pointDraft.value?.name.trim())return;emit('create-point',{...pointDraft.value,name:pointDraft.value.name.trim()});pointDraft.value=null}
 const region='Lubuskie'
@@ -146,12 +148,14 @@ function openMarker(id){const place=[...props.places,...props.routePoints].find(
     </section>
     <section v-else aria-label="Mapa miejsc">
 
-     <div class="explore-map"><TravelMap :focus-location="mapFocus||townFocus" :allow-custom-points="!catalogOnly" @create-point="draftCustomPoint" :places="mapPlaces" :distance-area="distanceArea" :selected="selected" :user-location="userLocation" :search-location="searchedLocation" fit-places @select="openMarker"/><button class="locate-button map-locate-button" :aria-label="locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'" :title="locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'" :disabled="locating" @click.stop="locate()" @dblclick.stop><LocateFixed :size="17"/><span>{{locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'}}</span></button><div class="explore-map-caption"><MapPin :size="14"/>Miejsca z katalogu: {{results.length}}</div><div v-if="!results.length&&!searchedLocation" class="map-no-results">Brak miejsc dla tych filtrów. Zmień wybór po lewej lub wyszukaj miejscowość przyciskiem „Znajdź na mapie”.</div></div>
+     <div class="explore-map"><TravelMap :focus-location="mapFocus||townFocus" :allow-custom-points="!catalogOnly" @create-point="draftCustomPoint" :places="mapPlaces" :geometry="geometry" :distance-area="distanceArea" :selected="selected" :user-location="userLocation" :search-location="searchedLocation" fit-places @select="openMarker"/><button class="locate-button map-locate-button" :aria-label="locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'" :title="locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'" :disabled="locating" @click.stop="locate()" @dblclick.stop><LocateFixed :size="17"/><span>{{locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'}}</span></button><div class="explore-map-caption"><MapPin :size="14"/>Miejsca z katalogu: {{results.length}}</div><div v-if="!results.length&&!searchedLocation" class="map-no-results">Brak miejsc dla tych filtrów. Zmień wybór po lewej lub wyszukaj miejscowość przyciskiem „Znajdź na mapie”.</div></div>
      <p v-if="!catalogOnly" class="custom-point-hint">Dwukrotnie kliknij mapę, aby dodać własny punkt trasy.</p><div class="explore-map-legend"><span v-if="customPoints.length"><i class="custom-point-dot"></i>Punkty trasy: {{customPoints.length}}</span><span><i class="place-dot"></i>Miejsca z Twoich filtrów</span><span v-if="userLocation"><i class="user-dot"></i>Tu jesteś <small v-if="userLocation.accuracy!==null">(dokładność ok. {{Math.round(userLocation.accuracy)}} m)</small></span><span v-else>Użyj „Pokaż, gdzie jestem”, aby zaznaczyć swoją pozycję.</span></div>
     </section>
     </div>
     <aside v-if="!catalogOnly" class="planned-places-panel" aria-label="Zaplanowane miejsca">
      <div class="planned-heading"><h2>Zaplanowane miejsca <span>{{plannedPlaces.length}}</span></h2><button :disabled="!plannedPlaces.length" @click="emit('clear')">Wyczyść listę</button></div>
+     <div class="planned-route-mode" role="group" aria-label="Tryb trasy"><button :aria-pressed="transport==='bike'" @click="emit('transport','bike')"><Bike :size="15"/>Rowerem</button><button :aria-pressed="transport==='walk'" @click="emit('transport','walk')"><Footprints :size="15"/>Pieszo</button></div>
+     <div v-if="selected.length>=2" class="planned-route-status" role="status"><span v-if="routeLoading">Wyznaczam trasę…</span><span v-else-if="routeError">{{routeError}} <button @click="emit('retry-route')">Spróbuj ponownie</button></span><span v-else-if="geometry">Punkty połączone trasą {{transport==='walk'?'pieszą':'rowerową'}}.</span></div>
      <div v-if="plannedPlaces.length" class="planned-places-list"><article v-for="(place,index) in plannedPlaces" :key="place.id" class="planned-stop">
       <span class="planned-number">{{index+1}}</span><button class="planned-open" @click="emit('open',place)" :aria-label="`Podgląd: ${place.name}`"><img :src="place.image" :alt="place.name" loading="lazy" @error="imageFallback"><span><strong>{{place.name}}</strong><small>{{place.location}}</small></span></button>
       <div class="planned-actions"><button :disabled="index===0" @click="emit('move',index,-1)" :aria-label="`Przesuń ${place.name} wyżej`"><ChevronUp :size="15"/></button><button :disabled="index===plannedPlaces.length-1" @click="emit('move',index,1)" :aria-label="`Przesuń ${place.name} niżej`"><ChevronDown :size="15"/></button><button @click="emit('remove',place.id)" :aria-label="`Usuń ${place.name} z listy`"><X :size="15"/></button></div>
@@ -294,3 +298,5 @@ function openMarker(id){const place=[...props.places,...props.routePoints].find(
 @media(max-width:850px){.catalog-content-layout .explore-content-main .explore-grid.explore-small-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:520px){.catalog-content-layout .explore-content-main .explore-grid.explore-small-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.explore-small-grid .explore-place .place-image{height:90px}}
 </style>
+
+<style scoped>.planned-route-mode{display:flex;gap:6px;margin:14px 0}.planned-route-mode button{display:flex;align-items:center;gap:6px;flex:1;justify-content:center;padding:9px;border:1px solid #d5e2ca;border-radius:7px;color:#46683d;font-size:11px}.planned-route-mode button[aria-pressed=true]{background:#19744f;color:#fff;border-color:#19744f}.planned-route-status{font-size:11px;line-height:1.7;color:#607c53;margin-bottom:12px}.planned-route-status button{color:#19744f;text-decoration:underline}</style>

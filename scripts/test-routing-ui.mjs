@@ -22,7 +22,16 @@ const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent.includes(text))
 const waitRoute=async()=>{for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,10));await nextTick();if(!document.querySelector('.routing-status')?.textContent.includes('Wyznaczam'))return}throw Error('Routing did not settle')}
-await settle();button('Wycieczki rowerowe').click();await settle()
+await settle()
+const waitDraftRoute=async()=>{for(let i=0;i<100;i++){await new Promise(r=>setTimeout(r,10));await nextTick();if(document.querySelector('.planned-route-status')?.textContent.includes('Punkty'))return}throw Error('Draft route did not settle')}
+await waitDraftRoute()
+assert.equal(requests.at(-1).transport,'bike')
+assert.equal(JSON.parse(document.querySelector('.explore-map .test-explore-map').dataset.geometry).coordinates.length,3,'Draft planner connects selected points before saving')
+document.querySelector('.planned-route-mode button:nth-child(2)').click();await nextTick();await waitDraftRoute()
+assert.equal(requests.at(-1).transport,'walk','Draft planner switches the real route profile')
+document.querySelector('.planned-actions button:nth-child(2)').click();await nextTick();await waitDraftRoute()
+assert.deepEqual(requests.at(-1).place_ids,JSON.parse(localStorage.getItem('perly-route')),'Reordering draft points recalculates their connections')
+button('Wycieczki rowerowe').click();await settle()
 assert.ok(document.querySelector('.route-library'))
 assert.equal(document.querySelector('.planner-layout'),null)
 document.querySelector('.route-library-open').click();await nextTick()
