@@ -17,8 +17,8 @@ await mkdir('artifacts',{recursive:true});await writeFile('artifacts/map-dom-tes
 const Component=(await import('../artifacts/map-dom-test.mjs')).default
 const selected=[]
 const places=[{id:1,name:'Punkt trasy',lat:52.3347,lng:15.2922},{id:2,name:'Zamek <b>Joannitów</b>',lat:52.33471,lng:15.29221},{id:3,name:'Drugie miejsce',lat:52.33472,lng:15.29222}]
-const userLocation=ref(null),visiblePlaces=ref(places),distanceArea=ref(null),trackOnly=ref(false),geometry=ref(null),focusLocation=ref(null)
-const app=createApp({render:()=>h(Component,{places:visiblePlaces.value,trackOnly:trackOnly.value,geometry:geometry.value,focusLocation:focusLocation.value,distanceArea:distanceArea.value,userLocation:userLocation.value,selected:[1],fitPlaces:true,onSelect:id=>selected.push(id)})});app.mount('#app')
+const userLocation=ref(null),visiblePlaces=ref(places),distanceArea=ref(null),trackOnly=ref(false),geometry=ref(null),focusLocation=ref(null),routeSelected=ref([1]),draggable=ref(false),searchLocation=ref(null)
+const app=createApp({render:()=>h(Component,{places:visiblePlaces.value,trackOnly:trackOnly.value,geometry:geometry.value,focusLocation:focusLocation.value,distanceArea:distanceArea.value,userLocation:userLocation.value,selected:routeSelected.value,draggablePoints:draggable.value,searchLocation:searchLocation.value,fitPlaces:true,onSelect:id=>selected.push(id)})});app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,30));await nextTick()}
 await settle();assert.equal(requests,0)
 assert.ok(document.querySelector('img.leaflet-tile').src.startsWith('https://tile.openstreetmap.org/'))
@@ -43,12 +43,24 @@ assert.equal(document.querySelector('path[stroke="#19744f"]'),null,'Removing the
 geometry.value={type:'LineString',coordinates:[[15.2922,52.3347],[15.3,52.34]]}
 focusLocation.value={lat:52.3347,lng:15.2922,zoom:15};await settle()
 assert.ok(document.querySelector('path[stroke="#1685d2"]'),'Following the GPS position keeps the route line visible')
+routeSelected.value=[1,2,3];draggable.value=true;await settle()
+assert.ok(document.querySelector('.route-flag-start'),'A start flag replaces the first numbered stop')
+assert.ok(document.querySelector('.route-flag-end'),'A finish flag replaces the last numbered stop')
+assert.ok(document.querySelector('.route-flag-start').parentElement.classList.contains('leaflet-marker-draggable'),'The start flag can be dragged')
+assert.ok(document.querySelector('.route-flag-end').parentElement.classList.contains('leaflet-marker-draggable'),'The finish flag can be dragged')
 trackOnly.value=true;await settle()
 assert.equal(document.querySelector('img.leaflet-tile'),null,'Track-only mode removes the basemap')
 assert.equal(document.querySelector('.map-provider-switch'),null)
 assert.ok(document.querySelector('path[stroke="#1685d2"]'),'Track-only mode retains the route')
 trackOnly.value=false;await settle()
 assert.ok(document.querySelector('img.leaflet-tile'),'The basemap can be restored')
+const savedGeometry=geometry.value
+geometry.value=null;routeSelected.value=[];searchLocation.value={name:'Selected address',lat:52.3347,lng:15.2922};await settle()
+assert.ok(document.querySelector('.route-flag-start'))
+assert.equal(document.querySelector('.leaflet-tooltip-pane .leaflet-tooltip'),null,'The searched address no longer has a permanent bubble')
+document.querySelector('.route-flag-start').parentElement.dispatchEvent(new MouseEvent('click',{bubbles:true}));await settle()
+assert.match(document.querySelector('.leaflet-popup-content').textContent,/Selected address/,'Clicking Start explains the selected location')
+geometry.value=savedGeometry;routeSelected.value=[1,2,3];searchLocation.value=null;await settle()
 document.querySelectorAll('.map-provider-switch button')[1].click();await settle()
 assert.equal(requests,1);assert.equal(document.querySelectorAll('.map-provider-switch button')[1].getAttribute('aria-pressed'),'true')
 const tiles=[...document.querySelectorAll('img.leaflet-tile')].filter(tile=>tile.src.includes('/api/maps/tiles/'))

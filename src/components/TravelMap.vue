@@ -4,7 +4,7 @@ import * as L from 'leaflet/dist/leaflet-src.esm.js'
 import {readApiJson} from '../apiResponse.js'
 import {preferredMap,rememberMap,osmTileUrl} from '../mapPreferences.js'
 import {pointClusters,validMapPoint} from '../mapClusters.js'
-const props = defineProps({ places: Array, trackOnly:Boolean, minimal:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
+const props = defineProps({ places: Array, endpointPlaces:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
 let map, layer, markerLayer, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
 const provider=ref('osm'), mapStyle=ref('terrain'), mapError=ref(''),switchingMap=ref(false)
@@ -48,6 +48,7 @@ async function selectProvider(value){
  }catch(error){if(!disposed){mapError.value=error.message+' Dostępna jest mapa OpenStreetMap.';provider.value='osm';setTiles()}}
  finally{if(!disposed)switchingMap.value=false}
 }
+function isEndpoint(p){return props.selected.length>1&&(p.id===props.selected[0]||p.id===props.selected.at(-1))}
 function drawPlace(p){
  const index=props.selected.indexOf(p.id)
  const label=document.createElement('span');label.textContent=p.name
@@ -75,14 +76,27 @@ function drawMarkers(){
    marker.bindPopup(list,{autoPan:false}).openPopup()
   })
  }
- props.places.filter(p=>validMapPoint(p)&&(props.selected.includes(p.id)||p.details?.kind==='custom')).forEach(drawPlace)
+ props.places.filter(p=>validMapPoint(p)&&!isEndpoint(p)&&(props.selected.includes(p.id)||p.details?.kind==='custom')).forEach(drawPlace)
+}
+function drawFlag(point,kind,place){
+ const title=kind==='start'?'Start':'Meta'
+ const html='<span class="route-flag route-flag-'+kind+'"><span>'+title+'</span></span>'
+ const marker=L.marker([point.lat,point.lng],{title:title+(place?.name?': '+place.name:''),draggable:!!(props.draggablePoints&&place&&props.selected.includes(place.id)),zIndexOffset:1600,icon:L.divIcon({className:'',html,iconSize:[58,42],iconAnchor:[8,40]})}).addTo(layer)
+ if(place&&place.details?.kind!=='custom'&&props.selected.includes(place.id))marker.on('click',()=>emit('select',place.id))
+ else{
+  const content=document.createElement('div'),heading=document.createElement('strong'),description=document.createElement('p')
+  heading.textContent=title+(point.name?': '+point.name:'')
+  description.textContent=kind==='start'?'Początek wycieczki. Od tego punktu wyznaczamy trasę.':'Koniec wyznaczonej trasy.'
+  content.append(heading,description);marker.bindPopup(content,{maxWidth:260})
+ }
+ if(place)marker.on('dragend',()=>{const {lat,lng}=marker.getLatLng();emit('move-point',{id:place.id,lat:+lat.toFixed(6),lng:+lng.toFixed(6)})})
 }
 const mapElement=ref(null)
 function draw() {
  if (!map) return
  const catalogPoints=props.places.filter(p=>p.details?.kind!=='custom')
- const viewportKey=JSON.stringify([catalogPoints.map(p=>[p.id,p.lat,p.lng]).sort((a,b)=>a[0]-b[0]),props.searchLocation?.lat,props.searchLocation?.lng,props.distanceArea])
- const refit=viewportKey!==lastViewportKey||props.geometry!==lastGeometry
+ const viewportKey=JSON.stringify([catalogPoints.map(p=>props.draggablePoints&&props.selected.includes(p.id)?[p.id]:[p.id,p.lat,p.lng]).sort((a,b)=>a[0]-b[0]),props.searchLocation?.lat,props.searchLocation?.lng,props.distanceArea])
+ const refit=viewportKey!==lastViewportKey||!!props.geometry&&props.geometry!==lastGeometry
  lastViewportKey=viewportKey;lastGeometry=props.geometry
  layer.clearLayers()
  const nextClusterKey=JSON.stringify([props.places.map(p=>[p.id,p.lat,p.lng,p.details?.kind,p.name]).sort((a,b)=>a[0]-b[0]),props.selected,props.draggablePoints])
@@ -92,11 +106,6 @@ function draw() {
   if(accuracy)L.circle([lat,lng],{radius:accuracy,color:'#1876d2',weight:1,fillOpacity:.08}).addTo(layer)
   L.circleMarker([lat,lng],{radius:8,color:'#fff',weight:3,fillColor:'#1876d2',fillOpacity:1}).addTo(layer).bindTooltip('Tu jesteś')
  }
- if(props.searchLocation){
-  const point=props.searchLocation
-  const label=document.createElement('span');label.textContent=point.name
-  L.circleMarker([point.lat,point.lng],{radius:9,color:'#fff',weight:3,fillColor:'#ce7b28',fillOpacity:1}).addTo(layer).bindTooltip(label,{permanent:true,direction:'top'})
- }
  const area=props.distanceArea
  let distanceCircle
  if(validMapPoint(area)&&Number.isFinite(area.radiusKm)&&area.radiusKm>0){
@@ -104,6 +113,14 @@ function draw() {
  }
  const points=props.geometry?.coordinates?.map(p=>[p[1],p[0]])||[]
  const routeLine=points.length>1?L.polyline(points,{color:'#1685d2',weight:5,dashArray:props.geometryApproximate?'8 8':undefined}).addTo(layer):null
+ const stops=[...props.endpointPlaces,...props.places]
+ const first=props.selected.length>1?stops.find(p=>p.id===props.selected[0]):null
+ const last=props.selected.length>1?stops.find(p=>p.id===props.selected.at(-1)):null
+ const firstPoint=first||(points.length>1?{lat:points[0][0],lng:points[0][1]}:null)
+ const lastPoint=last||(points.length>1?{lat:points.at(-1)[0],lng:points.at(-1)[1]}:null)
+ if(validMapPoint(firstPoint))drawFlag(firstPoint,'start',first)
+ else if(validMapPoint(props.searchLocation))drawFlag(props.searchLocation,'start',null)
+ if(validMapPoint(lastPoint))drawFlag(lastPoint,'end',last)
  const focus=props.focusLocation
  const focusChanged=focus!==lastFocus;lastFocus=focus
  if(!distanceCircle&&Number.isFinite(focus?.lat)&&Math.abs(focus.lat)<=90&&Number.isFinite(focus?.lng)&&Math.abs(focus.lng)<=180){
@@ -136,7 +153,7 @@ onMounted(async () => {
 })
 watch(mapStyle,setTiles)
 watch(()=>props.trackOnly,setTiles)
-watch(()=>[props.selected,props.places,props.geometry,props.userLocation,props.searchLocation,props.draggablePoints,props.focusLocation,props.distanceArea],draw,{deep:true})
+watch(()=>[props.selected,props.places,props.geometry,props.userLocation,props.searchLocation,props.draggablePoints,props.focusLocation,props.distanceArea,props.endpointPlaces],draw,{deep:true})
 onBeforeUnmount(()=>{disposed=true;resizeObserver?.disconnect();map?.remove();tiles?.off()})
 </script>
 <template><div class="travel-map" :class="{'track-only':trackOnly}"><div ref="mapElement" class="travel-map-canvas" aria-label="Mapa miejsc i tras w Polsce"></div><div v-if="!minimal&&!trackOnly" class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div><div v-if="provider==='here'&&!minimal&&!trackOnly" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div><p v-if="mapError" class="map-provider-error" role="status">{{mapError}}</p></div></template>
@@ -152,3 +169,5 @@ onBeforeUnmount(()=>{disposed=true;resizeObserver?.disconnect();map?.remove();ti
 </style>
 
 <style scoped>.travel-map.track-only .travel-map-canvas{background:#f6f8f2}</style>
+
+<style>.route-flag{position:relative;display:block;width:58px;height:42px;filter:drop-shadow(0 2px 2px #173d2940)}.route-flag:before{content:'';position:absolute;left:7px;top:2px;width:3px;height:38px;background:#365340;border-radius:2px}.route-flag>span{position:absolute;left:10px;top:3px;width:44px;height:25px;display:flex;align-items:center;justify-content:center;padding-right:4px;clip-path:polygon(0 0,100% 0,84% 50%,100% 100%,0 100%);color:#fff;font:700 10px/1 system-ui,sans-serif}.route-flag-start>span{background:#19744f}.route-flag-end>span{background:#ba5846}.route-flag p{margin:6px 0 0}</style>

@@ -103,7 +103,9 @@ async function savePlace(data){
 const onlyMyTrips=ref(false),editingRoute=ref(null)
 const routePreview=ref(false),previewRoute=ref(null),copyingTrip=ref(null)
 const plannerFocus=ref(null)
-const pointPositions=ref([])
+const storedRoutePositions=read('perly:route-positions',[])
+const pointPositions=ref(Array.isArray(storedRoutePositions)?storedRoutePositions.filter(p=>p&&selected.value.includes(p.id)&&Number.isFinite(p.lat)&&Math.abs(p.lat)<=90&&Number.isFinite(p.lng)&&Math.abs(p.lng)<=180):[])
+const startPositionLocked=ref(pointPositions.value.some(p=>p.id===-9000000000001))
 const navigating=ref(false),navigationReturnView=ref(null),navigationDestination=ref(null),navigationOrigin=ref(null),directTransport=ref('walk')
 watch(userLocation,point=>{if(navigating.value&&navigationDestination.value&&point)navigationOrigin.value={...point}})
 function openPlaceNavigation(place){detail.value=place;directTransport.value=transport.value==='bike'?'bike':'walk';modal.value='navigate-place'}
@@ -123,8 +125,8 @@ const plannerAddNotice=ref(false),plannerNoticeVersion=ref(0)
 const gpsStartId=-9000000000001
 const plannerPlaceCount=computed(()=>selected.value.filter(id=>id!==gpsStartId).length)
 const plannerCountLabel=computed(()=>{const n=plannerPlaceCount.value;return n===1?'miejsce':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'miejsca':'miejsc'})
-watch([()=>plannerStartPoint.value||userLocation.value,()=>view.value,()=>selected.value[0]],([point,current])=>{
- if(current!=='explore'||editingRoute.value)return
+watch([()=>plannerStartPoint.value||userLocation.value,()=>view.value,()=>selected.value[0],startPositionLocked],([point,current])=>{
+ if(current!=='explore'||editingRoute.value||startPositionLocked.value)return
  if(!point){
   if(selected.value.includes(gpsStartId)){selected.value=selected.value.filter(id=>id!==gpsStartId);routePoints.value=routePoints.value.filter(p=>p.id!==gpsStartId)}
   return
@@ -136,10 +138,16 @@ watch([()=>plannerStartPoint.value||userLocation.value,()=>view.value,()=>select
  pointPositions.value=pointPositions.value.filter(p=>p.id!==gpsStartId)
 },{immediate:true})
 
+function setPlannerStart(point){if(point?.name&&point!==plannerStartPoint.value)startPositionLocked.value=false;plannerStartPoint.value=point}
+watch(()=>selected.value.includes(gpsStartId),exists=>{if(!exists)startPositionLocked.value=false})
+watch(pointPositions,value=>{try{localStorage.setItem('perly:route-positions',JSON.stringify(value))}catch{}},{deep:true})
 function moveRoutePoint(point){
- if(!editingRoute.value||!isOwnRoute(editingRoute.value)||!selected.value.includes(point.id)||!Number.isFinite(point.lat)||!Number.isFinite(point.lng)||Math.abs(point.lat)>90||Math.abs(point.lng)>180)return
+ const allowed=view.value==='explore'&&!editingRoute.value||editingRoute.value&&isOwnRoute(editingRoute.value)
+ if(!allowed||!selected.value.includes(point.id)||!Number.isFinite(point.lat)||!Number.isFinite(point.lng)||Math.abs(point.lat)>90||Math.abs(point.lng)>180)return
+ if(point.id===gpsStartId){startPositionLocked.value=true;routePoints.value=routePoints.value.map(p=>p.id===gpsStartId?{...p,name:'Własny punkt startowy'}:p)}
  pointPositions.value=[...pointPositions.value.filter(p=>p.id!==point.id),{id:point.id,lat:point.lat,lng:point.lng}]
 }
+
 function isOwnRoute(route){return route.local?(!route.owner_id||route.owner_id===user.value?.id):!!user.value&&serverSaved.value.some(r=>r.id===route.id)}
 function editSavedRoute(route){
  if(!isOwnRoute(route))return
@@ -160,7 +168,7 @@ async function copySavedRoute(route){
  }catch(error){notify(error.message)}
  finally{copyingTrip.value=null}
 }
-function openAddRoute(){if(!selected.value.length)return;if(editingRoute.value){modal.value='save';return}routeDraft.value={name:shortRouteName(selectedPlaces.value),description:'',is_public:false,transport:transport.value==='walk'?'walk':'bike',place_ids:[...selected.value]};routeSaveError.value='';modal.value='add-route'}
+function openAddRoute(){if(!selected.value.length)return;if(editingRoute.value){modal.value='save';return}routeDraft.value={name:shortRouteName(selectedPlaces.value),description:'',is_public:false,transport:transport.value==='walk'?'walk':'bike',place_ids:[...selected.value],point_positions:pointPositions.value.filter(p=>selected.value.includes(p.id)).map(p=>({...p}))};routeSaveError.value='';modal.value='add-route'}
 function snapshotRoutePoints(ids){return routePoints.value.filter(p=>ids.includes(p.id)).map(({id,name,lat,lng})=>({id,name,lat,lng}))}
 async function persistRoute(route){
  if(route.place_ids.some(id=>id<0))route={...route,custom_points:route.custom_points??snapshotRoutePoints(route.place_ids)}
@@ -173,7 +181,7 @@ async function saveNewRoute(){
  const draft=routeDraft.value;if(!draft||routeSaving.value||!draft.name.trim())return
  routeSaving.value=true;routeSaveError.value=''
  try{
-  const route={...draft,name:draft.name.trim(),description:draft.description.trim()};route.cover_image=await createRouteCover({points:route.place_ids.map(id=>(id<0?routePoints.value:places.value).find(p=>p.id===id)).filter(Boolean),transport:route.transport});await persistRoute(route)
+  const route={...draft,name:draft.name.trim(),description:draft.description.trim()};route.cover_image=await createRouteCover({points:route.place_ids.map(id=>(id<0?routePoints.value:places.value).find(p=>p.id===id)).filter(Boolean).map(p=>{const position=route.point_positions?.find(item=>item.id===p.id);return position?{...p,lat:position.lat,lng:position.lng}:p}),geometry:route.transport===transport.value?computedRoute.value?.geometry:null,transport:route.transport});await persistRoute(route)
   routeName.value=route.name;routeDescription.value=route.description;transport.value=route.transport;selected.value=[...route.place_ids]
   routeDraft.value=null;modal.value=null;navigate(route.transport==='walk'?'walking':'cycling');notify('Trasa została zapisana.')
  }catch(e){routeSaveError.value=e.message}
@@ -244,12 +252,12 @@ function retryNavigation(){navigationDestination.value?directRoute.refresh():ref
 const distance=computed(()=>computedRoute.value?new Intl.NumberFormat('pl',{maximumFractionDigits:2}).format(computedRoute.value.distance_m/1000):transport.value==='car'?new Intl.NumberFormat('pl',{maximumFractionDigits:2}).format(straightDistance.value):'—')
 const travelTime=computed(()=>{if(computedRoute.value){const minutes=Math.max(1,Math.round(computedRoute.value.duration_s/60));return minutes<60?minutes+' min':Math.floor(minutes/60)+' h '+minutes%60+' min'}return '—'})
 
-watch(selected,v=>{localStorage.setItem('perly-route',JSON.stringify(v));routePoints.value=routePoints.value.filter(p=>v.includes(p.id))},{deep:true})
+watch(selected,v=>{localStorage.setItem('perly-route',JSON.stringify(v));routePoints.value=routePoints.value.filter(p=>v.includes(p.id));pointPositions.value=pointPositions.value.filter(p=>v.includes(p.id))},{deep:true})
 watch(favorites,v=>localStorage.setItem('perly-favorites',JSON.stringify(v)),{deep:true})
 watch(saved,v=>localStorage.setItem('perly-saved',JSON.stringify(v)),{deep:true})
 async function api(path,options={}) {const response=await fetch(`/api${path}`,{signal:AbortSignal.timeout(8000),...options, headers:{'Content-Type':'application/json',...(token.value?{Authorization:`Bearer ${token.value}`} :{}),...options.headers}});return readApiJson(response)}
 function notify(message){toast.value=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.value='',4000)}
-function navigate(target){catalogFacet.value='';plannerFocus.value=null;routeIsPublic.value=false;routePreview.value=false;previewRoute.value=null;pointPositions.value=[];editingRoute.value=null;view.value=target;menu.value=false;onlyFavorites.value=false;category.value='all';query.value='';window.scrollTo({top:0,behavior:'smooth'})}
+function navigate(target){catalogFacet.value='';plannerFocus.value=null;routeIsPublic.value=false;routePreview.value=false;previewRoute.value=null;editingRoute.value=null;view.value=target;menu.value=false;onlyFavorites.value=false;category.value='all';query.value='';window.scrollTo({top:0,behavior:'smooth'})}
 function openProvince(slug){selectedRegion.value=slug;navigate('places')}
 function focusSearch(){navigate('places');nextTick(()=>document.getElementById('explore-query')?.focus())}
 function chooseCategory(id){if(id==='bike'||id==='walk'){transport.value=id;trailFilter.value=trailFilter.value===id?'all':id;document.querySelector('#trails')?.scrollIntoView({behavior:'smooth'});return}category.value=category.value===id?'all':id;document.querySelector('#places')?.scrollIntoView({behavior:'smooth',block:'start'})}
@@ -267,7 +275,7 @@ function planTrail(trail){selected.value=[...trail.ids];transport.value=trail.ty
 function showFavorites(){navigate('discover');onlyFavorites.value=true;setTimeout(()=>document.querySelector('#places')?.scrollIntoView({behavior:'smooth'}),50)}
 const heroTab=ref('ai'),catalogFacet=ref('')
 const heroCategories=computed(()=>placeFacets.map(f=>({...f,count:regionalPlaces.value.filter(f.match).length})))
-function moveHeroTab(direction){const tabs=['ai','address','map','categories'];heroTab.value=direction===-99?tabs[0]:direction===99?tabs.at(-1):tabs[(tabs.indexOf(heroTab.value)+direction+tabs.length)%tabs.length];nextTick(()=>document.getElementById('hero-tab-'+heroTab.value)?.focus())}
+function moveHeroTab(direction){const tabs=['ai','address','regions','categories'];heroTab.value=direction===-99?tabs[0]:direction===99?tabs.at(-1):tabs[(tabs.indexOf(heroTab.value)+direction+tabs.length)%tabs.length];nextTick(()=>document.getElementById('hero-tab-'+heroTab.value)?.focus())}
 function openHomeCategory(id){navigate('places');catalogFacet.value=id}
 const heroAiPrompt=ref(''),initialAiPrompt=ref('')
 function openAi(prompt=''){if(!prompt.trim()){document.querySelector('.hero-search input')?.focus();document.querySelector('.hero-search')?.scrollIntoView({behavior:'smooth',block:'center'});return}initialAiPrompt.value=prompt.trim();modal.value='ai'}
@@ -332,14 +340,14 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
  </div>
 
  <AdminRegions v-if="view==='admin'" :key="token" :token="token" @login="modal='auth'" @changed="refreshCatalog" @catalog="selectedRegion=$event;navigate('places')"/>
- <ExploreHome @navigate-place="openPlaceNavigation" :point-positions="pointPositions" :editing="!!editingRoute" :editable="!!editingRoute&&isOwnRoute(editingRoute)" @move-point="moveRoutePoint" @navigate="startNavigation()" :route-distance="distance" :route-duration="travelTime" @preview="openPlannerPlace" @route-start="plannerStartPoint=$event" :geometry="view==='explore'?plannerGeometry:null" :route-loading="routeLoading" :route-error="routeError" :transport="transport" @transport="transport=$event" @retry-route="refreshRoute" :initial-facet="catalogFacet" :regions="regions" @region="selectedRegion=$event" :focus-location="view==='explore'?plannerFocus:null" @create-point="createCustomPoint" :selected="view==='places'?[]:selected" @add="addToList" @remove="togglePlace" @move="move" @clear="selected=[]" @planner="openAddRoute" v-if="view==='explore'||view==='places'" :key="view+selectedRegion" :catalog-only="view==='places'" @create-place="openCreatePlace" :places="view==='explore'&&editingRoute?places:regionalPlaces" :region-info="regionInfo" :route-points="view==='places'?[]:routePoints.filter(p=>selected.includes(p.id))" :favorites="favorites" :online="apiOnline" :liking="liking" @like="toggleLike" @open="openDetail" @favorite="toggleFavorite"/>
+ <ExploreHome @navigate-place="openPlaceNavigation" :point-positions="pointPositions" :editing="!!editingRoute" :editable="view==='explore'&&(!editingRoute||isOwnRoute(editingRoute))" @move-point="moveRoutePoint" @navigate="startNavigation()" :route-distance="distance" :route-duration="travelTime" @preview="openPlannerPlace" @route-start="setPlannerStart" :geometry="view==='explore'?plannerGeometry:null" :route-loading="routeLoading" :route-error="routeError" :transport="transport" @transport="transport=$event" @retry-route="refreshRoute" :initial-facet="catalogFacet" :regions="regions" @region="selectedRegion=$event" :focus-location="view==='explore'?plannerFocus:null" @create-point="createCustomPoint" :selected="view==='places'?[]:selected" @add="addToList" @remove="togglePlace" @move="move" @clear="selected=[]" @planner="openAddRoute" v-if="view==='explore'||view==='places'" :key="view+selectedRegion" :catalog-only="view==='places'" @create-place="openCreatePlace" :places="view==='explore'&&editingRoute?places:regionalPlaces" :region-info="regionInfo" :route-points="view==='places'?[]:routePoints.filter(p=>selected.includes(p.id))" :favorites="favorites" :online="apiOnline" :liking="liking" @like="toggleLike" @open="openDetail" @favorite="toggleFavorite"/>
  <main v-else-if="view==='discover'" class="start-page" :data-home-view="homeView" :data-tile-size="homeTileSize">
   <section class="hero">
    <div class="hero-shade"></div>
    <div class="hero-inner content-width">
     <div class="hero-copy"><div class="eyebrow"><span></span> BLISKO NATURY. DALEKO OD NUDY.</div><h1>Od pomysłu<br><em>do przygody.</em></h1><p>Odkryj ciekawe miejsca, ułóż własną trasę<br>i ruszaj po nowe wspomnienia.</p><div class="hero-hint"><MapPin :size="15"/><span>Łagów · tu zaczyna się przygoda</span></div></div>
     <div class="hero-ai-panel">
-     <div class="hero-tabs" role="tablist" aria-label="Odkrywaj i planuj"><button v-for="tab in [{id:'ai',label:'Planer AI',icon:Sparkles},{id:'address',label:'Szukaj po adresie',icon:MapPin},{id:'map',label:'Mapa Polski',icon:Navigation},{id:'categories',label:'Kategorie',icon:Compass}]" :key="tab.id" :id="'hero-tab-'+tab.id" role="tab" :aria-selected="heroTab===tab.id" :aria-controls="'hero-panel-'+tab.id" :tabindex="heroTab===tab.id?0:-1" @click="heroTab=tab.id" @keydown.right.prevent="moveHeroTab(1)" @keydown.left.prevent="moveHeroTab(-1)" @keydown.home.prevent="moveHeroTab(-99)" @keydown.end.prevent="moveHeroTab(99)"><component :is="tab.icon" :size="19" aria-hidden="true"/><span>{{tab.label}}</span></button></div>
+     <div class="hero-tabs" role="tablist" aria-label="Odkrywaj i planuj"><button v-for="tab in [{id:'ai',label:'Planer AI',icon:Sparkles},{id:'address',label:'Szukaj po adresie',icon:MapPin},{id:'regions',label:'Województwa',icon:Navigation},{id:'categories',label:'Kategorie',icon:Compass}]" :key="tab.id" :id="'hero-tab-'+tab.id" role="tab" :aria-selected="heroTab===tab.id" :aria-controls="'hero-panel-'+tab.id" :tabindex="heroTab===tab.id?0:-1" @click="heroTab=tab.id" @keydown.right.prevent="moveHeroTab(1)" @keydown.left.prevent="moveHeroTab(-1)" @keydown.home.prevent="moveHeroTab(-99)" @keydown.end.prevent="moveHeroTab(99)"><component :is="tab.icon" :size="19" aria-hidden="true"/><span>{{tab.label}}</span></button></div>
      <div v-show="heroTab==='ai'" id="hero-panel-ai" role="tabpanel" aria-labelledby="hero-tab-ai">
      <div class="hero-ai-top"><span class="hero-ai-badge"><Sparkles :size="17"/>PLANER AI</span><span class="hero-ai-caption">Twój pomysł → Twoja trasa</span></div>
      <h2 id="hero-ai-title">Na co masz dziś ochotę?</h2><p>Opisz swój idealny dzień. AI dobierze miejsca i ułoży trasę na mapie.</p>
@@ -347,12 +355,13 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
      <div class="hero-ai-examples" aria-label="Pomysły na polecenie AI"><span>Spróbuj na przykład</span><div><button type="button" @click="heroAiPrompt='Zaplanuj dzień w Łagowie';$nextTick(()=>searchInput?.focus())"><Castle :size="14"/>Dzień w Łagowie</button><button type="button" @click="heroAiPrompt='Zaplanuj spacer dookoła Jeziora Łagowskiego';$nextTick(()=>searchInput?.focus())"><Footprints :size="14"/>Spacer wokół jeziora</button><button type="button" @click="heroAiPrompt='Zaplanuj trasę rowerową po pałacach w okolicy Zaboru';$nextTick(()=>searchInput?.focus())"><Bike :size="14"/>Rowerem po pałacach</button></div></div>
      </div>
      <div v-show="heroTab==='address'" id="hero-panel-address" class="hero-address-panel" role="tabpanel" aria-labelledby="hero-tab-address"><HomeAddressSearch @found="navigate('places')"/></div>
-     <div v-if="heroTab==='map'" id="hero-panel-map" class="hero-map-panel" role="tabpanel" aria-labelledby="hero-tab-map"><PolandRegions :regions="regions" :places="places" :routes="publicSaved" @select="openProvince"/></div>
+     <div v-if="heroTab==='regions'" id="hero-panel-regions" class="hero-regions-panel" role="tabpanel" aria-labelledby="hero-tab-regions"><PolandRegions list-only :regions="regions" :places="places" :routes="publicSaved" @select="openProvince"/></div>
      <div v-if="heroTab==='categories'" id="hero-panel-categories" class="hero-categories-panel" role="tabpanel" aria-labelledby="hero-tab-categories"><h2>Odkrywaj według kategorii</h2><div class="hero-category-grid"><button v-for="item in heroCategories" :key="item.id" :data-facet="item.id" :disabled="!item.count" @click="openHomeCategory(item.id)"><strong>{{item.name}}</strong><span>{{item.count}} miejsc <ArrowRight :size="15"/></span></button></div></div>
     </div>
    </div><div class="photo-credit">Wizualizacja krajobrazu Ziemi Lubuskiej</div>
   </section>
   <div class="content-width">
+   <PolandRegions :regions="regions" :places="places" :routes="publicSaved" @select="openProvince"/>
    <div class="home-display-toolbar" aria-label="Wygląd strony głównej">
     <div class="home-display-group home-display-icons" role="group" aria-label="Widok strony głównej"><span>Widok</span><button aria-label="Widok listy" title="Widok listy" :aria-pressed="homeView==='list'" @click="homeView='list'"><List :size="22" aria-hidden="true"/></button><button v-for="size in [{id:'large',label:'Duże kafelki',cells:2},{id:'medium',label:'Średnie kafelki',cells:3},{id:'small',label:'Małe kafelki',cells:4}]" :key="size.id" :aria-label="size.label" :title="size.label" :aria-pressed="homeView==='tiles'&&homeTileSize===size.id" @click="homeView='tiles';homeTileSize=size.id"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true" focusable="false"><rect v-for="cell in size.cells*size.cells" :key="cell" :x="3+((cell-1)%size.cells)*(20/size.cells)" :y="3+Math.floor((cell-1)/size.cells)*(20/size.cells)" :width="20/size.cells-2" :height="20/size.cells-2" :rx="size.cells===2?1.4:.6"/></svg></button></div>
    </div>

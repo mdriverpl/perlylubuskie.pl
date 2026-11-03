@@ -36,7 +36,7 @@ import { useLocationSearch } from '../useLocationSearch.js'
 import { readAddress, rememberAddress, forgetAddress } from '../rememberedAddress.js'
 const props=defineProps({pointPositions:{type:Array,default:()=>[]},editing:Boolean,editable:Boolean,routeDistance:String,routeDuration:String,geometry:Object,routeLoading:Boolean,routeError:String,transport:String,initialFacet:String,regionInfo:Object,regions:{type:Array,default:()=>[]},catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
 const emit=defineEmits(['navigate-place','move-point','navigate','preview','route-start','transport','retry-route','open','favorite','like','add','remove','move','clear','planner','create-point','create-place','region'])
-function withRoutePosition(place){const position=props.pointPositions.find(p=>p.id===place.id);return position?{...place,lat:position.lat,lng:position.lng}:place}
+function withRoutePosition(place){if(props.catalogOnly)return place;const position=props.pointPositions.find(p=>p.id===place.id);return position?{...place,lat:position.lat,lng:position.lng}:place}
 const plannedPlaces=computed(()=>props.selected.map(id=>[...props.places,...props.routePoints].find(p=>p.id===id)).filter(Boolean).map(withRoutePosition))
 const pointDraft=ref(null)
 const pointDialog=ref(null)
@@ -63,7 +63,7 @@ const gpsAddressPending=ref(false)
 let searchTimer
 const mapFocus=ref(props.focusLocation)
 watch(()=>props.focusLocation,value=>{mapFocus.value=value;if(value)displayMode.value='map'})
-watch([query,chosen,userLocation,searchedLocation],()=>{mapFocus.value=null},{deep:true})
+watch([query,chosen,userLocation,searchedLocation,()=>props.pointPositions],()=>{mapFocus.value=null},{deep:true})
 watch(query,()=>{clearTimeout(searchTimer);clearLocation();forgetAddress()},{flush:'sync'})
 onBeforeUnmount(()=>clearTimeout(searchTimer))
 // Address takes priority over GPS for sorting and radius in both views.
@@ -151,7 +151,7 @@ function openMarker(id){const place=[...props.places,...props.routePoints].find(
     </section>
     <section v-else aria-label="Mapa miejsc">
 
-     <div class="explore-map"><TravelMap :focus-location="mapFocus||townFocus" :allow-custom-points="!catalogOnly" @create-point="draftCustomPoint" :places="mapPlaces" :draggable-points="editable" @move-point="emit('move-point',$event)" :geometry="geometry" :distance-area="distanceArea" :selected="selected" :user-location="userLocation" :search-location="searchedLocation" fit-places @select="openMarker"/><button class="locate-button map-locate-button" :aria-label="locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'" :title="locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'" :disabled="locating" @click.stop="locate()" @dblclick.stop><LocateFixed :size="17"/><span>{{locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'}}</span></button><div class="explore-map-caption"><MapPin :size="14"/>Miejsca z katalogu: {{results.length}}</div><div v-if="!results.length&&!searchedLocation" class="map-no-results">Brak miejsc dla tych filtrów. Zmień wybór po lewej lub wyszukaj miejscowość przyciskiem „Znajdź na mapie”.</div></div>
+     <div class="explore-map"><TravelMap :focus-location="mapFocus||townFocus" :allow-custom-points="!catalogOnly" @create-point="draftCustomPoint" :places="mapPlaces" :endpoint-places="plannedPlaces" :draggable-points="editable" @move-point="emit('move-point',$event)" :geometry="geometry" :distance-area="distanceArea" :selected="selected" :user-location="userLocation" :search-location="searchedLocation" fit-places @select="openMarker"/><button class="locate-button map-locate-button" :aria-label="locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'" :title="locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'" :disabled="locating" @click.stop="locate()" @dblclick.stop><LocateFixed :size="17"/><span>{{locating?'Ustalam lokalizację…':userLocation?'Odśwież moją lokalizację':'Pokaż, gdzie jestem'}}</span></button><div class="explore-map-caption"><MapPin :size="14"/>Miejsca z katalogu: {{results.length}}</div><div v-if="!results.length&&!searchedLocation" class="map-no-results">Brak miejsc dla tych filtrów. Zmień wybór po lewej lub wyszukaj miejscowość przyciskiem „Znajdź na mapie”.</div></div>
      <p v-if="!catalogOnly" class="custom-point-hint">Dwukrotnie kliknij mapę, aby dodać własny punkt trasy.</p><div class="explore-map-legend"><span v-if="customPoints.length"><i class="custom-point-dot"></i>Punkty trasy: {{customPoints.length}}</span><span><i class="place-dot"></i>Miejsca z Twoich filtrów</span><span v-if="userLocation"><i class="user-dot"></i>Tu jesteś <small v-if="userLocation.accuracy!==null">(dokładność ok. {{Math.round(userLocation.accuracy)}} m)</small></span><span v-else>Użyj „Pokaż, gdzie jestem”, aby zaznaczyć swoją pozycję.</span></div>
     </section>
     </div>
