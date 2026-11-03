@@ -5,7 +5,9 @@ import Mail from 'lucide-vue-next/dist/esm/icons/mail.js'
 import Globe from 'lucide-vue-next/dist/esm/icons/globe.js'
 import Bed from 'lucide-vue-next/dist/esm/icons/bed.js'
 import Utensils from 'lucide-vue-next/dist/esm/icons/utensils.js'
-const props=defineProps({contact:Object})
+const props=defineProps({contact:Object,lakeInfo:Object})
+const lakeFacts=computed(()=>[{key:'swimming',label:'Kąpiel'},{key:'motorboats',label:'Motorówki'},{key:'beach',label:'Plaża'}].map(f=>({...f,...props.lakeInfo?.[f.key]})))
+function safeSource(url){try{return new URL(url).protocol==='https:'}catch{return false}}
 const services=computed(()=>[
  {key:'accommodation',label:'Nocleg',icon:Bed},
  {key:'restaurant',label:'Restauracja',icon:Utensils},
@@ -26,9 +28,13 @@ const date=computed(()=>props.contact?.checked_at?new Date(props.contact.checked
   <p v-if="!links.length" class="contact-note">Nie znaleziono potwierdzonych danych kontaktowych.</p>
   <p class="contact-note">Sprawdzono: {{date}}. Aktualną dostępność potwierdź w obiekcie.</p>
  </section>
+ <section v-if="lakeInfo" class="place-contact lake-info" aria-label="Informacje o jeziorze">
+  <h3>Informacje o jeziorze</h3>
+  <div v-for="fact in lakeFacts" :key="fact.key" class="lake-fact"><strong>{{fact.label}}</strong><span>{{fact.status==='yes'?'Tak':fact.status==='no'?'Nie':'Brak potwierdzonych informacji'}}</span><p v-if="fact.explanation" class="contact-note">{{fact.explanation}}</p><a v-if="safeSource(fact.source_url)" :href="fact.source_url" target="_blank" rel="noopener noreferrer">Źródło informacji</a><small v-if="fact.checked_at">Sprawdzono: {{new Date(fact.checked_at).toLocaleDateString('pl-PL')}}</small></div>
+ </section>
 </template>
 
 <style scoped>
-.place-contact{margin:20px 0;padding:16px;border:1px solid #dce5d4;border-radius:12px}.place-contact h3{font-size:17px;margin:0 0 14px}.place-services{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.place-service,.place-contact-link{display:flex;align-items:flex-start;gap:9px}.place-service svg,.place-contact-link svg{flex-shrink:0;margin-top:3px;color:#18734f}.place-contact small{display:block;color:#718369;font-size:12px;line-height:1.5}.place-contact-link{padding:8px 0;color:#176e4f;text-decoration:none;overflow-wrap:anywhere}.place-contact-link span{min-width:0}.contact-note{font-size:12px;color:#718369;line-height:1.6;margin:10px 0 0}
+.lake-fact{display:flex;flex-direction:column;gap:5px;padding:12px 0;border-bottom:1px solid #e3eadd;font-size:13px}.lake-fact:last-child{border-bottom:0;padding-bottom:0}.lake-fact .contact-note{margin:0}.lake-fact a{font-size:12px;color:#176e4f}.place-contact{margin:20px 0;padding:16px;border:1px solid #dce5d4;border-radius:12px}.place-contact h3{font-size:17px;margin:0 0 14px}.place-services{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.place-service,.place-contact-link{display:flex;align-items:flex-start;gap:9px}.place-service svg,.place-contact-link svg{flex-shrink:0;margin-top:3px;color:#18734f}.place-contact small{display:block;color:#718369;font-size:12px;line-height:1.5}.place-contact-link{padding:8px 0;color:#176e4f;text-decoration:none;overflow-wrap:anywhere}.place-contact-link span{min-width:0}.contact-note{font-size:12px;color:#718369;line-height:1.6;margin:10px 0 0}
 @media(max-width:380px){.place-services{grid-template-columns:1fr}}
 </style>

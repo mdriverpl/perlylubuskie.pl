@@ -30,5 +30,17 @@ assert.equal(contact.querySelector('a[href^="mailto:"]').getAttribute('href'),'m
 assert.equal(contact.querySelector('a[target="_blank"]').href,'https://palace.example/')
 assert.ok(disclosure.querySelector('a[href="'+source+'"]'),'Contact evidence stays available in sources')
 assert.ok(!disclosure.contains(contact),'Practical contact stays outside collapsed provenance')
-app.unmount();dom.window.close()
+app.unmount()
+const Contact=(await import('../artifacts/place-contact-test.mjs')).default
+const lakeApp=createApp(Contact,{lakeInfo:{
+ swimming:{status:'unknown',explanation:'Brak aktualnych danych.'},
+ motorboats:{status:'no',explanation:'Zakaz silników spalinowych.',source_url:'https://official.example/regulamin'},
+ beach:{status:'yes',explanation:'<b>Wyznaczona plaża</b>',source_url:'javascript:alert(1)'}
+}});lakeApp.mount('#app');await settle()
+const lake=document.querySelector('.lake-info')
+assert.ok(lake.textContent.includes('KąpielBrak potwierdzonych informacji'))
+assert.ok(lake.textContent.includes('MotorówkiNie'))
+assert.equal(lake.querySelectorAll('a').length,1,'Only HTTPS evidence links are shown')
+assert.equal(lake.querySelector('b'),null,'Lake explanations are escaped')
+lakeApp.unmount();dom.window.close()
 console.log('PASS: collapsed sources, source toggle, photo attribution, visible contact links and unknown services')

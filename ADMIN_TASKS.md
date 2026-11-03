@@ -34,6 +34,20 @@ i zastępują dostawcę AI, bez wysyłania płatnych zapytań.
 
 ## Zadania wbudowane
 
+Prompt „Dodaj jeziora w województwie lubuskim, opisz czy można tam pływać,
+czy mogą pływać motorówki, czy jezioro ma plaże” rozpoznaje jako cel jeziora,
+a pytania po „opisz” jako szczegóły. Dodaje do kolejki również istniejące jeziora,
+zanim spróbuje pobrać nowe. Wyszukiwanie jezior korzysta najpierw z Wikidata
+(typ jezioro, relacja administracyjna do kodu ISO województwa, współrzędne),
+następnie z Commons i OSM. Awaria odkrywania nie cofa zapisanych uzupełnień.
+
+Informacje `lake_info` zawierają osobne odpowiedzi swimming/motorboats/beach,
+źródło, wyjaśnienie zakresu i datę sprawdzenia. Yes/no wymaga źródła rzeczywiście
+zwróconego przez wyszukiwanie; pozostałe odpowiedzi są unknown. Karta jeziora
+pokazuje te pola i odnośniki. Uzupełnienie zachowuje opis, zdjęcia i kontakt;
+odświeżenie katalogu przy wdrożeniu zachowuje lake_info. Szczegółowe pytania o
+jeziora są sprawdzane porcjami po 2, nadal do 25 obiektów na Start.
+
 Panel pokazuje postęp, wykonawcę/model i osobne przyciski Start/Zatrzymaj dla
 fotografii, kontaktów oraz opisów wybranego regionu. Otwarcie panelu nie
 uruchamia płatnych zadań. Domyślnie kontakty pozostają zatrzymane po restarcie.

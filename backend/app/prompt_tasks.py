@@ -29,7 +29,7 @@ def region_instruction(prompt,region):
     if named and region and named[0]!=region:raise HTTPException(422,'Województwo w poleceniu nie zgadza się z wybranym zakresem.')
     slug=named[0] if named else region
     if slug not in REGION_NAMES:raise HTTPException(422,'Nie rozpoznano województwa.')
-    positive=re.split(r'\b(?:bez|oprocz)\b',value)[0]
+    positive=re.split(r'\b(?:opisz|sprawdz|czy|podaj)\b',re.split(r'\b(?:bez|oprocz)\b',value)[0])[0]
     patterns={'castle':r'\bzam(?:ek|k)','palace':r'\bpalac','lake':r'\bjezior','beach':r'\bplaz',
               'nature':r'\bpark|\bprzyrod','heritage':r'\bzabyt|\bhistor','leisure':r'\brodzinn'}
     kinds=[kind for kind,pattern in patterns.items() if re.search(pattern,positive)] or list(CORE_TYPES)
@@ -91,7 +91,7 @@ def summary(task,db):
     if 'region_import' in task.fields:
         job=region_job(task,db)
         data=research_status(job,db) if job else None
-        status=('stopping' if job.cancel_requested and job.status in ('queued','running') else {'cancelled':'stopped'}.get(job.status,job.status)) if job else task.status
+        status=('stopping' if job.cancel_requested and job.status in ('queued','running') else 'paused' if job.status=='cancelled' and not job.cancel_requested else {'cancelled':'stopped'}.get(job.status,job.status)) if job else task.status
         result.update(status=status,total=(data or {}).get('total',0),processed=(data or {}).get('processed',0),
                       updated=(data or {}).get('added',0)+(data or {}).get('updated',0),
                       message=(data or {}).get('error') or ((data or {}).get('report') or {}).get('message') or task.message,
@@ -161,7 +161,7 @@ def change_model(db,task_id,model):
 
 
 def command_region(db,task,action):
-    from .main import Region,REGION_NAMES,RegionResearchJob,RegionResearchCandidate
+    from .main import Region,REGION_NAMES,RegionResearchJob,RegionResearchCandidate,Place
     from sqlalchemy.exc import IntegrityError
     job=region_job(task,db)
     if action=='start':
@@ -183,10 +183,22 @@ def command_region(db,task,action):
         report=job.report or {}
         if job.discovery_done and report.get('discovery_errors'):
             job.discovery_done=False;report={**report,'discovery_cursor':0,'discovery_errors':[]}
-        processed=db.scalar(select(func.count()).select_from(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job.id,RegionResearchCandidate.status!='pending')) if job.id else 0
+        lake_questions='lake' in task.kinds and bool(re.search(r'plyw|motorow|plaz|kapiel',normalized(task.prompt)))
+        db.flush()
+        if lake_questions:
+            from .region_research import catalog_candidate
+            queued={row.source_key:row for row in db.scalars(select(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job.id))}
+            for place in db.scalars(select(Place).where(Place.region==task.region,Place.details['kind'].as_string()=='lake')):
+                payload=catalog_candidate(place)
+                if payload['source_key'] not in queued:
+                    db.add(RegionResearchCandidate(job_id=job.id,source_key=payload['source_key'],payload=payload))
+                elif not report.get('lake_questions'):
+                    queued[payload['source_key']].status='pending';queued[payload['source_key']].result={}
+            db.flush()
+        processed=db.scalar(select(func.count()).select_from(RegionResearchCandidate).where(RegionResearchCandidate.job_id==job.id,RegionResearchCandidate.status!='pending'))
         job.status='queued';job.active_region=task.region;job.cancel_requested=False;job.error=''
         job.report={**report,'prompt_task_id':task.id,'prompt_model':task.model,'admin_prompt':task.prompt,'prompt_kinds':list(task.kinds),
-                    'manual_budget_start':processed,'manual_budget_limit':task.limit,'message':'Wyszukiwanie atrakcji oczekuje na rozpoczęcie.'}
+                    'manual_budget_start':processed,'manual_budget_limit':task.limit,'lake_questions':lake_questions,'message':'Wyszukiwanie atrakcji oczekuje na rozpoczęcie.'}
         task.status='idle';task.message='Zbieranie danych zlecono. Postęp jest zapisywany na bieżąco.'
     else:
         if job and job.status in ('queued','running'):job.cancel_requested=True
