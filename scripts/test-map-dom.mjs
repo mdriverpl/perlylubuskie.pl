@@ -12,7 +12,7 @@ globalThis.fetch=async()=>{requests++;return {ok:true,json:async()=>({provider:'
 const {createApp,nextTick,ref,h}=await import('vue')
 const descriptor=parse(await readFile('src/components/TravelMap.vue','utf8')).descriptor
 let source=compileScript(descriptor,{id:'map-dom-test',inlineTemplate:true}).content
-for(const name of ['apiResponse','mapPreferences','mapClusters'])source=source.replace(`from '../${name}.js'`,`from '../src/${name}.js'`)
+for(const name of ['apiResponse','mapPreferences','mapClusters','navigationDirections'])source=source.replace(`from '../${name}.js'`,`from '../src/${name}.js'`)
 await mkdir('artifacts',{recursive:true});await writeFile('artifacts/map-dom-test.mjs',source)
 const Component=(await import('../artifacts/map-dom-test.mjs')).default
 const selected=[]
@@ -78,5 +78,24 @@ assert.equal(document.querySelectorAll('.map-provider-switch button')[1].getAttr
 tiles[1].dispatchEvent(new Event('error'));tiles[2].dispatchEvent(new Event('error'));await settle()
 assert.equal(document.querySelectorAll('.map-provider-switch button')[0].getAttribute('aria-pressed'),'true')
 assert.ok(document.querySelector('.map-pin.chosen'),'Provider changes preserve route markers')
-app.unmount();dom.window.close()
+app.unmount()
+const navigationPosition=ref({lat:52.3347,lng:15.2922,accuracy:6,heading:0})
+const navigationPlaces=[]
+const navigationApp=createApp({render:()=>h(Component,{places:navigationPlaces,geometry:savedGeometry,userLocation:navigationPosition.value,directionalPosition:true,routeDirections:true})})
+navigationApp.mount('#app');await settle()
+const line=document.querySelector('path[stroke="#1685d2"]')
+const linePath=line.getAttribute('d')
+const paneTransform=document.querySelector('.leaflet-map-pane').style.transform
+const pointer=document.querySelector('.gps-direction-pointer')
+const pointerLocation=pointer.parentElement.style.cssText
+assert.equal(pointer.style.transform,'rotate(0deg)')
+assert.ok(document.querySelectorAll('.route-direction-arrow').length>0,'Navigation shows direction triangles on its route')
+navigationPosition.value={lat:52.336,lng:15.294,accuracy:6,heading:90};await settle()
+assert.equal(document.querySelector('.gps-direction-pointer'),pointer,'The triangle is moved and rotated in place')
+assert.equal(pointer.style.transform,'rotate(90deg)')
+assert.notEqual(pointer.parentElement.style.cssText,pointerLocation,'GPS moves the triangle within the fixed viewport')
+assert.equal(document.querySelector('.leaflet-map-pane').style.transform,paneTransform,'GPS does not pan the map')
+assert.equal(document.querySelector('path[stroke="#1685d2"]'),line)
+assert.equal(line.getAttribute('d'),linePath,'GPS does not recenter, zoom or rebuild the route')
+navigationApp.unmount();dom.window.close()
 console.log('PASS: real Leaflet DOM renders OSM tiles, clusters, safe popup selection and numbered stops, switches HERE and tolerates a single tile error')

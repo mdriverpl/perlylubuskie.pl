@@ -1,5 +1,5 @@
 <script setup>
-import {computed,ref,watch,onMounted,onBeforeUnmount} from 'vue'
+import {ref,watch,onMounted,onBeforeUnmount} from 'vue'
 import TravelMap from './TravelMap.vue'
 import ArrowLeft from 'lucide-vue-next/dist/esm/icons/arrow-left.js'
 import LocateFixed from 'lucide-vue-next/dist/esm/icons/locate-fixed.js'
@@ -9,11 +9,11 @@ import Clock3 from 'lucide-vue-next/dist/esm/icons/clock-3.js'
 const props=defineProps({geometry:Object,distance:String,duration:String,position:Object,locating:Boolean,loading:Boolean,error:String,locationError:String})
 const emit=defineEmits(['back','refresh','retry'])
 const host=ref(null),backButton=ref(null),options=ref(false)
+const emptyPlaces=[]
 let initialTrackOnly=false
 try{initialTrackOnly=localStorage.getItem('perly:navigation-track-only')==='true'}catch{}
 const trackOnly=ref(initialTrackOnly)
 watch(trackOnly,value=>{try{localStorage.setItem('perly:navigation-track-only',String(value))}catch{}})
-const focus=computed(()=>props.position?{lat:props.position.lat,lng:props.position.lng,zoom:15}:null)
 const previousFocus=document.activeElement,previousOverflow=document.body.style.overflow
 onMounted(()=>{document.body.style.overflow='hidden';backButton.value?.focus()})
 onBeforeUnmount(()=>{document.body.style.overflow=previousOverflow;previousFocus?.focus?.()})
@@ -27,7 +27,7 @@ function trap(event){
 </script>
 <template>
  <section ref="host" class="trip-navigation" role="dialog" aria-modal="true" aria-label="Nawigacja wycieczki" @keydown="trap" @keydown.esc.stop="emit('back')">
-  <TravelMap :places="[]" :geometry="geometry" :user-location="position" :focus-location="focus" :track-only="trackOnly" minimal/>
+  <TravelMap :places="emptyPlaces" :geometry="geometry" :user-location="position" :track-only="trackOnly" directional-position route-directions minimal/>
   <div class="navigation-toolbar"><button ref="backButton" class="navigation-back" @click="emit('back')"><ArrowLeft :size="19"/>Cofnij</button><button :aria-expanded="options" aria-controls="navigation-options" @click="options=!options"><SlidersHorizontal :size="19"/>Opcje</button></div>
   <div v-if="options" id="navigation-options" class="navigation-options"><label><input v-model="trackOnly" type="checkbox">Tylko ślad, bez mapy</label></div>
   <div v-if="loading||error||locationError" class="navigation-status" role="status"><span v-if="loading">Wyznaczam trasę…</span><span v-else-if="error">{{error}} <button @click="emit('retry')">Spróbuj ponownie</button></span><span v-if="locationError">{{locationError}}</span></div>

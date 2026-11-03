@@ -4,9 +4,10 @@ import * as L from 'leaflet/dist/leaflet-src.esm.js'
 import {readApiJson} from '../apiResponse.js'
 import {preferredMap,rememberMap,osmTileUrl} from '../mapPreferences.js'
 import {pointClusters,validMapPoint} from '../mapClusters.js'
-const props = defineProps({ places: Array, endpointPlaces:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
+import {routeDirectionArrows} from '../navigationDirections.js'
+const props = defineProps({ places: Array, endpointPlaces:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
-let map, layer, markerLayer, userLayer, userMarker, accuracyCircle, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
+let map, layer, markerLayer, userLayer, arrowLayer, userMarker, accuracyCircle, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
 const provider=ref('osm'), mapStyle=ref('terrain'), mapError=ref(''),switchingMap=ref(false)
 const osmAttribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 function hereAttribution(){
@@ -92,17 +93,37 @@ function drawFlag(point,kind,place){
  if(place)marker.on('dragend',()=>{const {lat,lng}=marker.getLatLng();emit('move-point',{id:place.id,lat:+lat.toFixed(6),lng:+lng.toFixed(6)})})
 }
 const mapElement=ref(null)
+function drawRouteDirections(){
+ if(!map||!arrowLayer)return
+ arrowLayer.clearLayers()
+ if(!props.routeDirections)return
+ const size=map.getSize()
+ const arrows=routeDirectionArrows(props.geometry?.coordinates,coordinate=>map.latLngToContainerPoint([coordinate[1],coordinate[0]]),{width:size.x,height:size.y})
+ for(const point of arrows){
+  L.marker(map.containerPointToLatLng([point.x,point.y]),{interactive:false,keyboard:false,zIndexOffset:500,icon:L.divIcon({className:'route-direction-icon',html:`<svg class="route-direction-arrow" style="transform:rotate(${point.heading}deg)" width="13" height="15" viewBox="0 0 13 15" aria-hidden="true"><path d="M6.5 1 L12 13 L6.5 10 L1 13 Z" fill="white" stroke="#1685d2" stroke-width="1.5" stroke-linejoin="round"/></svg>`,iconSize:[13,15],iconAnchor:[6.5,7.5]})}).addTo(arrowLayer)
+ }
+}
 function drawPosition(){
  if(!map||!userLayer)return
  const point=props.userLocation
  if(validMapPoint(point)){
   const latlng=[point.lat,point.lng]
   if(userMarker)userMarker.setLatLng(latlng)
+  else if(props.directionalPosition)userMarker=L.marker(latlng,{interactive:false,keyboard:false,zIndexOffset:2200,icon:L.divIcon({className:'gps-direction-icon',html:'<svg class="gps-direction-pointer" width="32" height="34" viewBox="0 0 32 34" role="img" aria-label="Pozycja GPS"><path d="M16 2 L29 30 L16 24 L3 30 Z" fill="#1876d2" stroke="white" stroke-width="2.5" stroke-linejoin="round"/></svg>',iconSize:[32,34],iconAnchor:[16,17]})}).addTo(userLayer)
   else userMarker=L.circleMarker(latlng,{radius:8,color:'#fff',weight:3,fillColor:'#1876d2',fillOpacity:1}).addTo(userLayer).bindTooltip('Tu jesteś')
+  if(props.directionalPosition){
+   const pointer=userMarker.getElement()?.querySelector('.gps-direction-pointer')
+   if(pointer){
+    const known=Number.isFinite(point.heading)
+    pointer.style.transform=`rotate(${known?point.heading:0}deg)`
+    pointer.classList.toggle('direction-unknown',!known)
+    pointer.setAttribute('aria-label',known?'Pozycja GPS i kierunek ruchu':'Pozycja GPS — kierunek zostanie ustalony podczas ruchu')
+   }
+  }
   if(Number.isFinite(point.accuracy)&&point.accuracy>0){
    if(accuracyCircle)accuracyCircle.setLatLng(latlng).setRadius(point.accuracy)
    else accuracyCircle=L.circle(latlng,{radius:point.accuracy,color:'#1876d2',weight:1,fillOpacity:.08}).addTo(userLayer)
-   userMarker.bringToFront()
+   userMarker.bringToFront?.()
   }else if(accuracyCircle){userLayer.removeLayer(accuracyCircle);accuracyCircle=null}
  }else{userLayer.clearLayers();userMarker=null;accuracyCircle=null}
  const focus=props.focusLocation
@@ -156,8 +177,8 @@ onMounted(async () => {
   const {lat,lng}=event.latlng||{}
   if(Number.isFinite(lat)&&Number.isFinite(lng)&&lat>=-90&&lat<=90&&lng>=-180&&lng<=180)emit('create-point',{lat:+lat.toFixed(6),lng:+lng.toFixed(6)})
  })
- setTiles();map.on('moveend zoomend',()=>{updateAttribution();drawMarkers()})
- layer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map);userLayer=L.layerGroup().addTo(map);draw();drawPosition()
+ setTiles();map.on('moveend zoomend',()=>{updateAttribution();drawMarkers();drawRouteDirections()})
+ layer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map);userLayer=L.layerGroup().addTo(map);arrowLayer=L.layerGroup().addTo(map);draw();drawPosition();drawRouteDirections()
  if(typeof ResizeObserver!=='undefined'){
   resizeObserver=new ResizeObserver(()=>{if(!disposed){map.invalidateSize({pan:false});lastViewportKey=undefined;draw()}})
   resizeObserver.observe(mapElement.value)
@@ -168,12 +189,16 @@ watch(mapStyle,setTiles)
 watch(()=>props.trackOnly,setTiles)
 watch(()=>[props.selected,props.places,props.geometry,props.searchLocation,props.draggablePoints,props.distanceArea,props.endpointPlaces],draw,{deep:true})
 watch(()=>[props.userLocation,props.focusLocation],drawPosition,{deep:true})
+watch(()=>[props.geometry,props.routeDirections],drawRouteDirections,{deep:true})
 onBeforeUnmount(()=>{disposed=true;resizeObserver?.disconnect();map?.remove();tiles?.off()})
 </script>
 <template><div class="travel-map" :class="{'track-only':trackOnly}"><div ref="mapElement" class="travel-map-canvas" aria-label="Mapa miejsc i tras w Polsce"></div><div v-if="!minimal&&!trackOnly" class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div><div v-if="provider==='here'&&!minimal&&!trackOnly" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div><p v-if="mapError" class="map-provider-error" role="status">{{mapError}}</p></div></template>
 <style scoped>
 .map-provider-switch{position:absolute;top:14px;right:14px;z-index:500;display:flex;gap:3px;padding:4px;background:#fff;border-radius:22px;box-shadow:0 2px 9px #173d2920}.map-provider-switch button{font:600 11px/1.4 system-ui;padding:8px 12px;border:0;border-radius:18px;background:transparent;color:#294b36;cursor:pointer}.map-provider-switch button[aria-pressed=true]{background:#18774f;color:white}.map-provider-switch button:disabled{opacity:.6;cursor:wait}.map-provider-switch button:focus-visible{outline:2px solid #19744f;outline-offset:2px}
 .travel-map{position:relative;width:100%;height:100%;min-height:inherit}.map-style-switch{position:absolute;top:61px;right:14px;z-index:500;display:flex;gap:3px;padding:4px;background:#fff;border-radius:22px;box-shadow:0 2px 9px #173d2920}.map-style-switch button{font:600 11px/1.4 system-ui;padding:8px 12px;border:0;border-radius:18px;background:transparent;color:#294b36;cursor:pointer}.map-style-switch button[aria-pressed=true]{background:#18774f;color:white}.map-provider-error{position:absolute;bottom:36px;left:12px;right:12px;z-index:500;background:#fff8e9ed;padding:9px 12px;border-radius:7px;font:11px/1.5 system-ui;color:#775024;pointer-events:none}
+</style>
+<style>
+.gps-direction-icon,.route-direction-icon{background:transparent!important;border:0!important;pointer-events:none!important}.gps-direction-pointer{display:block;transform-origin:16px 17px;filter:drop-shadow(0 2px 3px #173d2966)}.gps-direction-pointer.direction-unknown{opacity:.65}.route-direction-arrow{display:block;transform-origin:center;filter:drop-shadow(0 1px 1px #173d2944)}
 </style>
 <style>
 .map-cluster{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;border:5px solid #c9e6b5;background:#19744f;color:#fff;font:700 13px/1 system-ui;box-shadow:0 2px 9px #173d2938}.map-cluster-list{max-height:240px;overflow:auto;display:grid;gap:5px;min-width:180px}.map-cluster-list button{text-align:left;white-space:normal;border:1px solid #dce7d3;border-radius:6px;padding:9px;color:#1e5436;background:#f5f9ef;font:12px/1.6 system-ui;cursor:pointer}.map-cluster-list button:focus-visible{outline:2px solid #19744f;outline-offset:1px}

@@ -1,12 +1,13 @@
 import { ref, onBeforeUnmount } from 'vue'
+import {movementDirection} from './navigationDirections.js'
 
 export const geolocationKey=Symbol('geolocation')
 
 export function useGeolocation(){
  const position=ref(null),loading=ref(false),error=ref('')
- let generation=0,watchId=null
+ let generation=0,watchId=null,headingAnchor=null
  function clearWatch(){if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}}
- function stop(){generation++;clearWatch();position.value=null;loading.value=false;error.value=''}
+ function stop(){generation++;clearWatch();position.value=null;headingAnchor=null;loading.value=false;error.value=''}
  function locate(){
   if(loading.value)return
   clearWatch()
@@ -18,7 +19,12 @@ export function useGeolocation(){
    if(current!==generation)return
    const {latitude:lat,longitude:lng,accuracy}=result.coords
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180){position.value=null;error.value='Nie udało się ustalić poprawnej lokalizacji.'}
-   else {error.value='';position.value={lat,lng,accuracy:Number.isFinite(accuracy)&&accuracy>=0?accuracy:null}}
+   else {
+    error.value=''
+    const point={lat,lng,accuracy:Number.isFinite(accuracy)&&accuracy>=0?accuracy:null}
+    const direction=movementDirection(headingAnchor,point,result.coords.heading,result.coords.speed)
+    headingAnchor=direction.anchor;position.value={...point,heading:direction.heading}
+   }
    loading.value=false
   }
   const failure=reason=>{

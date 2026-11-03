@@ -23,6 +23,7 @@ let nav=document.querySelector('.trip-navigation');assert.ok(nav)
 assert.equal(gpsCalls,1,'Starting navigation explicitly requests the current position')
 deliver();await waitFor(()=>JSON.parse(document.querySelector('.trip-navigation .test-explore-map').dataset.geometry||'null')?.coordinates.length===2)
 assert.equal(nav.querySelector('.test-explore-map').dataset.userLat,'52.3347')
+assert.equal(nav.querySelector('.test-explore-map').dataset.focusLat,undefined,'Navigation does not follow/center the GPS position')
 assert.match(nav.querySelector('.navigation-metrics').textContent,/2,5 km/)
 assert.match(nav.querySelector('.navigation-metrics').textContent,/30 min/)
 const callsAfterRoute=routingCalls
