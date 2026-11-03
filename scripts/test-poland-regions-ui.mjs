@@ -23,6 +23,8 @@ const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));aw
 await settle();await settle();await settle()
 document.querySelector('#hero-tab-regions').click();await settle();await settle();await settle()
 const map=document.querySelector('#poland-regions');assert.ok(map)
+assert.equal(document.querySelector('.region-switcher'),null,'The global province bar is removed from the home page')
+assert.equal(document.querySelector('#active-region'),null)
 assert.ok(!document.querySelector('.hero-ai-panel').contains(map),'The full map sits above TOP 20 outside the hero')
 const summary=document.querySelector('#hero-province-list');assert.ok(summary)
 assert.equal(summary.querySelectorAll('.province-summary-row').length,16)
