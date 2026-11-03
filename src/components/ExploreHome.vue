@@ -34,7 +34,7 @@ import { useGeolocation, geolocationKey } from '../useGeolocation.js'
 import { useLocationSearch } from '../useLocationSearch.js'
 import { readAddress, rememberAddress, forgetAddress } from '../rememberedAddress.js'
 const props=defineProps({geometry:Object,routeLoading:Boolean,routeError:String,transport:String,initialFacet:String,regionInfo:Object,regions:{type:Array,default:()=>[]},catalogOnly:Boolean,focusLocation:Object,places:{type:Array,required:true},routePoints:{type:Array,default:()=>[]},favorites:{type:Array,default:()=>[]},online:Boolean,liking:{type:Array,default:()=>[]},selected:{type:Array,default:()=>[]}})
-const emit=defineEmits(['transport','retry-route','open','favorite','like','add','remove','move','clear','planner','create-point','create-place','region'])
+const emit=defineEmits(['preview','route-start','transport','retry-route','open','favorite','like','add','remove','move','clear','planner','create-point','create-place','region'])
 const plannedPlaces=computed(()=>props.selected.map(id=>[...props.places,...props.routePoints].find(p=>p.id===id)).filter(Boolean))
 const pointDraft=ref(null)
 const pointDialog=ref(null)
@@ -66,6 +66,7 @@ watch(query,()=>{clearTimeout(searchTimer);clearLocation();forgetAddress()},{flu
 onBeforeUnmount(()=>clearTimeout(searchTimer))
 // Address takes priority over GPS for sorting and radius in both views.
 const distanceOrigin=computed(()=>searchedLocation.value||userLocation.value)
+watch(distanceOrigin,point=>{if(!props.catalogOnly)emit('route-start',point)},{immediate:true,deep:true})
 const sortOrigin=distanceOrigin
 const distanceArea=computed(()=>radius.value&&distanceOrigin.value?{lat:distanceOrigin.value.lat,lng:distanceOrigin.value.lng,radiusKm:Number(radius.value)}:null)
 const townFocus=computed(()=>{
@@ -126,7 +127,7 @@ const base=computed(()=>withinRadius(filterPlaces(catalogPlaces.value,region,cat
 const results=computed(()=>{const found=withinRadius(filterPlaces(catalogPlaces.value,region,catalogQuery.value,chosen.value));if(sort.value==='nearby')return sortNearby(found,distanceOrigin.value);if(sort.value==='local'&&distanceOrigin.value)return [...found].sort((a,b)=>(b.popularity??0)-(a.popularity??0)||distanceKm(distanceOrigin.value,a)-distanceKm(distanceOrigin.value,b));if(sort.value==='distance'&&sortOrigin.value)return [...found].sort((a,b)=>distanceKm(sortOrigin.value,a)-distanceKm(sortOrigin.value,b)||a.name.localeCompare(b.name,'pl'));return [...found].sort((a,b)=>sort.value==='name'?a.name.localeCompare(b.name,'pl'):(sort.value==='likes'?(b.like_count??0)-(a.like_count??0):sort.value==='comments'?(b.comment_count??0)-(a.comment_count??0):(b.popularity??0)-(a.popularity??0)))})
 const viewModes=computed(()=>[{id:'list',name:'Lista',label:'Widok listy',icon:List},{id:'grid',name:'Kafelki',label:'Widok kafelków',icon:Grid2X2},...(props.catalogOnly?[{id:'small',name:'Małe kafelki',label:'Widok małych kafelków',icon:Grid3X3}]:[]),{id:'map',name:'Mapa',label:'Widok mapy',icon:Map}])
 function reset(){query.value='';clearLocation();forgetAddress();chosen.value=[];radius.value='';mapFocus.value=null;sort.value='distance'}
-function openMarker(id){const place=[...props.places,...props.routePoints].find(p=>p.id===id);if(place)emit('open',place)}
+function openMarker(id){const place=[...props.places,...props.routePoints].find(p=>p.id===id);if(place)emit(!props.catalogOnly&&place.details?.kind!=='custom'?'preview':'open',place)}
 </script>
 
 <template>

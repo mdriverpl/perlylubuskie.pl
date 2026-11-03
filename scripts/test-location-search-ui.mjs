@@ -21,6 +21,10 @@ const input=document.querySelector('#explore-query');input.value='Łaz';input.di
 assert.equal(calls,0)
 assert.equal(document.querySelector('.find-map-location'),null);input.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));await settle()
 assert.equal(calls,1)
+assert.equal(JSON.parse(localStorage.getItem('perly-route'))[0],-9000000000001,'The searched address becomes route point 1 without requiring GPS')
+assert.match(document.querySelector('.planned-open strong').textContent,/^Start:/)
+assert.equal(JSON.parse(localStorage.getItem('perly-route-points'))[0].lat,51.94944)
+
 assert.equal(document.querySelector('.searched-location'),null)
 assert.equal(document.querySelector('.test-explore-map').getAttribute('data-search-lat'),'51.94944')
 assert.equal(document.querySelector('.map-no-results'),null)
