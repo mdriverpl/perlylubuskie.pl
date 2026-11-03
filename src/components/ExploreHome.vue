@@ -43,7 +43,7 @@ const customPoints=computed(()=>props.routePoints.filter(p=>props.selected.inclu
 const catalogPlaces=computed(()=>props.places.filter(p=>p.details?.kind!=='custom'))
 const facetTypes={castles:'castle',palaces:'palace',family:'leisure',lakes:'lake',nature:'nature',history:'heritage',stays:'stay',wineries:'vineyard',restaurants:'food'}
 const availableFacets=computed(()=>props.regionInfo?placeFacets.filter(f=>props.regionInfo.allowed_types.includes(facetTypes[f.id])):placeFacets)
-const mapPlaces=computed(()=>[...new globalThis.Map([...results.value,...(props.catalogOnly?[]:plannedPlaces.value),...customPoints.value].map(p=>[p.id,p])).values()])
+const mapPlaces=computed(()=>[...results.value,...customPoints.value])
 function draftCustomPoint(point){pointDraft.value={...point,name:'Własny punkt '+(customPoints.value.length+1)}}
 function saveCustomPoint(){if(!pointDraft.value?.name.trim())return;emit('create-point',{...pointDraft.value,name:pointDraft.value.name.trim()});pointDraft.value=null}
 const region='Lubuskie'
