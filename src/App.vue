@@ -100,6 +100,7 @@ const onlyMyTrips=ref(false),editingRoute=ref(null)
 const routePreview=ref(false)
 const plannerFocus=ref(null)
 const pointPositions=ref([])
+const plannerAddNotice=ref(false),plannerNoticeVersion=ref(0)
 const gpsStartId=-9000000000001
 const plannerPlaceCount=computed(()=>selected.value.filter(id=>id!==gpsStartId).length)
 const plannerCountLabel=computed(()=>{const n=plannerPlaceCount.value;return n===1?'miejsce':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'miejsca':'miejsc'})
@@ -150,8 +151,9 @@ async function toggleLike(id){
  catch(e){notify(e.message)}
  finally{liking.value=liking.value.filter(value=>value!==id)}
 }
-let toastTimer
-onBeforeUnmount(()=>clearTimeout(toastTimer))
+let toastTimer,plannerNoticeTimer
+function showPlannerAdded(){plannerAddNotice.value=true;plannerNoticeVersion.value++;clearTimeout(plannerNoticeTimer);plannerNoticeTimer=setTimeout(()=>plannerAddNotice.value=false,3200)}
+onBeforeUnmount(()=>{clearTimeout(toastTimer);clearTimeout(plannerNoticeTimer)})
 const publicSaved=ref([])
 async function loadPublicRoutes(){try{const routes=await api('/routes/public');if(Array.isArray(routes))publicSaved.value=routes}catch{}}
 function syncPublicRoute(route){publicSaved.value=publicSaved.value.filter(r=>r.id!==route.id);if(route.is_public)publicSaved.value.unshift(route)}
@@ -201,7 +203,7 @@ function openProvince(slug){selectedRegion.value=slug;navigate('places')}
 function focusSearch(){navigate('places');nextTick(()=>document.getElementById('explore-query')?.focus())}
 function chooseCategory(id){if(id==='bike'||id==='walk'){transport.value=id;trailFilter.value=trailFilter.value===id?'all':id;document.querySelector('#trails')?.scrollIntoView({behavior:'smooth'});return}category.value=category.value===id?'all':id;document.querySelector('#places')?.scrollIntoView({behavior:'smooth',block:'start'})}
 async function toggleFavorite(id){const exists=favorites.value.includes(id);favorites.value=exists?favorites.value.filter(x=>x!==id):[...favorites.value,id];if(user.value&&apiOnline.value&&id>0){try{await api(`/favorites/${id}`,{method:exists?'DELETE':'PUT'})}catch(e){favorites.value=exists?[...favorites.value,id]:favorites.value.filter(x=>x!==id);notify(e.message)}}}
-function addToList(place){const exists=selected.value.includes(place.id);if(!exists)selected.value.push(place.id);modal.value=null;if(view.value!=='explore'&&view.value!=='places'){navigate('explore');plannerFocus.value={lat:place.lat,lng:place.lng}}notify(exists?'To miejsce jest już w planerze.':'Dodano miejsce do planera.')}
+function addToList(place){const exists=selected.value.includes(place.id);if(!exists){selected.value.push(place.id);showPlannerAdded()}modal.value=null;if(view.value!=='explore'&&view.value!=='places'){navigate('explore');plannerFocus.value={lat:place.lat,lng:place.lng}}notify(exists?'To miejsce jest już w planerze.':'Dodano miejsce do planera.')}
 function togglePlace(id){selected.value=selected.value.includes(id)?selected.value.filter(x=>x!==id):[...selected.value,id]}
 function move(index,delta){const list=[...selected.value];[list[index],list[index+delta]]=[list[index+delta],list[index]];selected.value=list}
 function openDetail(place){detail.value=place;modal.value=place.details?.kind==='custom'?'route-point':'detail'}
@@ -263,7 +265,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
   <nav :class="{open:menu}" class="main-navigation" aria-label="Nawigacja główna">
    <button :class="{active:view==='discover'&&!onlyFavorites}" :aria-current="view==='discover'&&!onlyFavorites?'page':undefined" @click="navigate('discover')"><House :size="19" aria-hidden="true"/>Start</button>
    <button :class="{active:view==='places'}" :aria-current="view==='places'?'page':undefined" @click="navigate('places')"><MapPin :size="19" aria-hidden="true"/>Miejsca</button>
-   <button :class="{active:view==='explore'}" :aria-current="view==='explore'?'page':undefined" @click="navigate('explore')" data-nav-label="Planer"><Route :size="19" aria-hidden="true"/>Planer <span :key="plannerPlaceCount" class="planner-nav-count" aria-live="polite">({{plannerPlaceCount}} {{plannerCountLabel}})</span></button>
+   <button :class="{active:view==='explore','planner-just-added':plannerAddNotice}" :aria-current="view==='explore'?'page':undefined" @click="navigate('explore')" data-nav-label="Planer"><Route :size="19" aria-hidden="true"/>Planer <span :key="'count-'+plannerPlaceCount" class="planner-nav-count" aria-live="polite">({{plannerPlaceCount}} {{plannerCountLabel}})</span><span v-if="plannerAddNotice" :key="'notice-'+plannerNoticeVersion" class="planner-added-bubble" role="status"><Check :size="14"/>Dodano miejsce</span></button>
    <button :class="{active:['trips','walking','cycling','planner'].includes(view)}" :aria-current="['trips','walking','cycling','planner'].includes(view)?'page':undefined" @click="navigate('trips')"><Route :size="19" aria-hidden="true"/>Wycieczki</button>
    <button v-if="user?.is_superadmin" :class="{active:view==='admin'}" @click="navigate('admin')">Administracja</button>
   </nav>
@@ -446,3 +448,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 <style>.trip-type-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}.trip-type-tabs button{display:flex;align-items:center;gap:8px;padding:11px 16px;border:1px solid #d3dfc8;border-radius:9px;background:#fff;color:#42683c;font-size:12px}.trip-type-tabs button[aria-pressed=true]{color:white;background:#19744f;border-color:#19744f}.trip-type-tabs button:focus-visible{outline:2px solid #19744f;outline-offset:3px}</style>
 
 <style>.planner-nav-count{display:inline-block;font-size:11px;font-weight:600;animation:planner-count-change .32s ease-out;transform-origin:center}@keyframes planner-count-change{0%{transform:scale(.88);opacity:.4}55%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}@media(prefers-reduced-motion:reduce){.planner-nav-count{animation:none}}</style>
+
+<style>
+.site-header .main-navigation button[data-nav-label=Planer]{position:relative}.site-header .main-navigation button.planner-just-added{color:#105a3a;background:#e4f1d3;border-radius:7px;box-shadow:0 0 0 7px #e4f1d3}.planner-added-bubble{position:absolute;top:calc(100% + 18px);left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:6px;white-space:nowrap;padding:10px 13px;border:1px solid #236d42;border-radius:10px;background:#19744f;color:#fff;font-size:11px;font-weight:600;box-shadow:0 5px 18px #173d2929;pointer-events:none;animation:planner-bubble-in .24s ease-out}.planner-added-bubble:before{content:'';position:absolute;top:-5px;left:calc(50% - 5px);width:8px;height:8px;transform:rotate(45deg);background:#19744f;border-left:1px solid #236d42;border-top:1px solid #236d42}@keyframes planner-bubble-in{from{opacity:0;translate:0 -6px;scale:.94}to{opacity:1;translate:0 0;scale:1}}@media(prefers-reduced-motion:reduce){.planner-added-bubble{animation:none}}
+</style>
