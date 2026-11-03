@@ -15,13 +15,13 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr, Field
 from pwdlib import PasswordHash
-from sqlalchemy import create_engine, String, Text, Float, Boolean, ForeignKey, JSON, DateTime, UniqueConstraint, select, func, text, or_, cast
+from sqlalchemy import create_engine, String, Text, Float, Boolean, ForeignKey, JSON, DateTime, UniqueConstraint, select, func, text, or_, cast, case
 from sqlalchemy.dialects.postgresql import insert, JSONB
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, Session
 from .routing import calculate_route, route_gpx
 from .maps import router as maps_router
-from . import ai_routes, region_research
+from . import ai_routes, region_research, contact_research
 
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql+psycopg://perly:perly@localhost:5432/perly')
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
@@ -225,17 +225,25 @@ async def lifespan(app: FastAPI):
         data = json.loads((Path(__file__).resolve().parents[1] / 'seed.json').read_text(encoding='utf-8'))
         for place in data:
             statement = insert(Place).values(**dict(place, details=place.get('details', {})))
-            statement = statement.on_conflict_do_update(index_elements=[Place.id], set_={key: getattr(statement.excluded, key) for key in place if key != 'id'},where=Place.details['admin_managed'].as_boolean().is_not(True))
+            updates = {key: getattr(statement.excluded, key) for key in place if key != 'id'}
+            # Verified production contacts survive seed refreshes and deployments.
+            updates['details'] = cast(statement.excluded.details, JSONB).op('||')(
+                case((cast(Place.details, JSONB).has_key('contact'),
+                      func.jsonb_build_object('contact', Place.details['contact'])),
+                     else_=cast(text("'{}'"), JSONB)))
+            statement = statement.on_conflict_do_update(index_elements=[Place.id], set_=updates,where=Place.details['admin_managed'].as_boolean().is_not(True))
             db.execute(statement)
         db.commit()
     from .local_catalog import import_catalogs
     import_catalogs()
     region_research.recover_discovery_jobs()
     worker=region_research.start_worker()
+    contact_worker=contact_research.start_worker()
     try:
         yield
     finally:
         worker.set()
+        contact_worker.set()
 
 
 app = FastAPI(title='Perły Ziemi Lubuskiej API', version='1.0.0', lifespan=lifespan)
@@ -423,6 +431,22 @@ def resume_region_research(slug: str,user: User=Depends(superadmin),db: Session=
 @app.get('/api/admin/regions')
 def admin_regions(user: User = Depends(superadmin), db: Session = Depends(get_db)):
     return {'regions':region_summaries(db,True),'options':[{'slug':slug,'name':name} for slug,name in REGION_NAMES.items()],'types':[{'id':key,'name':value} for key,value in PLACE_TYPES.items()]}
+
+
+@app.get('/api/admin/contact-research')
+def contact_research_progress(user: User = Depends(superadmin)):
+    return contact_research.progress()
+
+
+@app.post('/api/admin/contact-research/resume')
+def resume_contact_research(user: User = Depends(superadmin)):
+    run = os.environ.get('CONTACT_RESEARCH_RUN', '').strip()
+    if not run:
+        raise HTTPException(409, 'Nie skonfigurowano zadania sprawdzania kontaktów.')
+    with engine.begin() as db:
+        db.execute(text("UPDATE place_contact_tasks SET status='pending',attempts=0,error='' WHERE run_id=:run AND status IN ('blocked','failed')"), {'run': run})
+    contact_research.start_worker()
+    return contact_research.progress()
 
 
 @app.post('/api/admin/regions',status_code=201)

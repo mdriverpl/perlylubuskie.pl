@@ -1,6 +1,7 @@
 <script setup>
 import {ref,computed,onMounted,watch,nextTick} from 'vue'
 import RegionResearch from './RegionResearch.vue'
+import ContactResearchStatus from './ContactResearchStatus.vue'
 import {readApiJson} from '../apiResponse.js'
 const props=defineProps({token:String})
 const emit=defineEmits(['login','changed','catalog'])
@@ -89,6 +90,7 @@ function downloadTemplate(){
   <template v-else-if="!verified"><p>Panel jest dostępny wyłącznie dla superadministratora.</p><button v-if="!token" class="button" @click="emit('login')">Zaloguj się</button></template>
   <p v-if="error" class="admin-error" role="alert">{{error}}</p><p v-if="message" class="admin-message" role="status">{{message}}</p>
   <template v-if="verified">
+   <ContactResearchStatus :token="token"/>
    <section class="admin-card"><h2>Dodaj województwo</h2><p>AI doda opisy i zdjęcia. Bez noclegów, winiarni i restauracji. Korzysta z płatnego konta OpenAI.</p>
     <form @submit.prevent="createRegion(true)"><fieldset :disabled="busy"><label>Województwo<select id="admin-new-region" v-model="newSlug" required><option v-for="option in availableOptions" :key="option.slug" :value="option.slug">{{option.name}}</option></select></label><details class="admin-options"><summary>Ustawienia</summary><div class="admin-types" role="group" aria-label="Kategorie województwa"><label v-for="type in types" :key="type.id"><input v-model="allowed" type="checkbox" :value="type.id">{{type.name}}</label></div><label>Limit wyszukiwanych obiektów<select v-model.number="researchLimit"><option :value="100">100</option><option :value="500">500</option><option :value="1000">1000</option><option :value="5000">5000</option></select></label><button class="text-link" :disabled="!newSlug||!allowed.length" type="button" @click="createRegion(false)">Utwórz pusty szkic</button></details><button class="button" :disabled="!newSlug||!allowed.length" type="submit">Dodaj i uruchom AI</button></fieldset></form>
    </section>
