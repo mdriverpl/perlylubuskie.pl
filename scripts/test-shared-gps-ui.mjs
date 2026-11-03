@@ -27,7 +27,7 @@ await nav('Planer')
 await click(toggle());assert.match(toggle().textContent,/GPS?/)
 fix();await settle();assert.match(toggle().textContent,/GPS ON/)
 assert.equal(document.querySelector('.gps-status'),null,'GPS does not show a coordinates banner')
-for(const name of ['Miejsca','Planer','Wycieczki piesze','Wycieczki rowerowe']){
+for(const name of ['Miejsca','Planer','Wycieczki']){
  await nav(name);assert.match(toggle().textContent,/GPS ON/);assert.equal(calls,1)
  if(name==='Miejsca'){
   assert.equal(document.querySelector('[aria-label="Sortuj miejsca"]').value,'distance')

@@ -20,17 +20,16 @@ const history=async direction=>{const done=new Promise(resolve=>window.addEventL
 await settle()
 assert.equal(active(),'Start');assert.equal(window.location.pathname,'/start')
 assert.ok(document.querySelector('.hero-search'))
-for(const [label,path] of [['Miejsca','/miejsca'],['Planer','/planer'],['Wycieczki piesze','/wycieczki-piesze'],['Wycieczki rowerowe','/wycieczki-rowerowe']]){
+for(const [label,path] of [['Miejsca','/miejsca'],['Planer','/planer'],['Wycieczki','/wycieczki']]){
  await navigate(label);assert.equal(active(),label);assert.equal(window.location.pathname,path)
 }
 const length=window.history.length
-await navigate('Wycieczki rowerowe');assert.equal(window.history.length,length,'No duplicate history entry for active view')
-await history('back');assert.equal(active(),'Wycieczki piesze')
+await navigate('Wycieczki');assert.equal(window.history.length,length,'No duplicate history entry for active view')
 await history('back');assert.equal(active(),'Planer')
-await history('forward');assert.equal(active(),'Wycieczki piesze')
+await history('forward');assert.equal(active(),'Wycieczki')
 assert.equal(window.history.length,length,'History navigation does not push new entries')
 app.unmount();app=createApp(App);app.mount('#app');await settle()
-assert.equal(active(),'Wycieczki piesze','Reload restores the current URL view')
+assert.equal(active(),'Wycieczki','Reload restores the current URL view')
 await navigate('Start');assert.equal(window.location.pathname,'/start')
 app.unmount();dom.window.close()
 console.log('PASS: Start default, readable URLs, direct links, legacy URLs, reload, back/forward and duplicate history protection')

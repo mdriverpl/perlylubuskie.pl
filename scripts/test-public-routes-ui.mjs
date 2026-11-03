@@ -30,7 +30,7 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const click=async el=>{assert.ok(el);el.click();await settle()}
-const nav=[...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()==='Wycieczki rowerowe')
+const nav=[...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()==='Wycieczki')
 await settle();await click(nav)
 assert.equal(document.querySelectorAll('.route-library-item').length,2)
 const other=[...document.querySelectorAll('.route-library-item')].find(el=>el.textContent.includes(publicRoute.name))

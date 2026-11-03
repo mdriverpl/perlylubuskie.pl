@@ -22,7 +22,7 @@ const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));aw
 const click=async selector=>{document.querySelector(selector).click();await settle()}
 const input=async(selector,value)=>{const el=document.querySelector(selector);el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));await settle()}
 await settle();await click('.planned-places-panel>.button')
-assert.equal(document.querySelector('.modal h2').textContent,'Dodaj trasę')
+assert.equal(document.querySelector('.modal h2').textContent,'Zapisz wycieczkę')
 assert.equal(document.querySelectorAll('.new-route-type input').length,2)
 assert.equal(document.querySelector('.new-route-form button[type=submit]').disabled,false)
 assert.equal(document.querySelector('#new-route-name').value,'Łagów')

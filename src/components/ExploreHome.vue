@@ -162,7 +162,7 @@ function openMarker(id){const place=[...props.places,...props.routePoints].find(
      </article></div>
      <div v-else class="planned-empty"><List :size="28"/><p>Wybierz miejsce na mapie lub w katalogu i kliknij „Dodaj do listy”.</p></div>
      <p class="planned-note">Kolejność miejsc jest wspólna z planerem tras. Lista zapisuje się na tym urządzeniu.</p>
-     <button class="button full-width" :disabled="!plannedPlaces.length" @click="emit('planner')"><Route :size="17"/>Dodaj trasę<ArrowRight :size="16"/></button>
+     <button class="button full-width" :disabled="!plannedPlaces.length" @click="emit('planner')"><Route :size="17"/>Zapisz wycieczkę<ArrowRight :size="16"/></button>
     </aside>
     </div>
    </section>
