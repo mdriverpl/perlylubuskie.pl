@@ -25,7 +25,7 @@ export function useRouting({ ids, transport, enabled, online, customPoints, poin
    } finally { clearTimeout(timeout); if(current===generation)loading.value=false }
   },350)
  }
- watch(()=>[enabled.value,online.value,transport.value,JSON.stringify(ids.value),JSON.stringify(pointPositions?.value)],refresh,{immediate:true})
+ watch(()=>[enabled.value,online.value,transport.value,JSON.stringify(ids.value),JSON.stringify(pointPositions?.value),JSON.stringify(customPoints?.value)],refresh,{immediate:true})
  onBeforeUnmount(()=>{generation++;clearTimeout(timer);controller?.abort()})
  return {route,loading,error,refresh}
 }

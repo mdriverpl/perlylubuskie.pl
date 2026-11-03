@@ -100,6 +100,16 @@ const onlyMyTrips=ref(false),editingRoute=ref(null)
 const routePreview=ref(false)
 const plannerFocus=ref(null)
 const pointPositions=ref([])
+const gpsStartId=-9000000000001
+watch([userLocation,()=>view.value,()=>selected.value[0]],([point,current])=>{
+ if(current!=='explore'||!point)return
+ const start=sanitizeCustomPoints([{id:gpsStartId,name:'Twoja pozycja GPS',lat:point.lat,lng:point.lng}])[0]
+ if(!start)return
+ routePoints.value=[start,...routePoints.value.filter(p=>p.id!==gpsStartId)]
+ if(selected.value[0]!==gpsStartId)selected.value=[gpsStartId,...selected.value.filter(id=>id!==gpsStartId)]
+ pointPositions.value=pointPositions.value.filter(p=>p.id!==gpsStartId)
+},{immediate:true})
+
 function moveRoutePoint(point){
  if(!editingRoute.value||!isOwnRoute(editingRoute.value)||!selected.value.includes(point.id)||!Number.isFinite(point.lat)||!Number.isFinite(point.lng)||Math.abs(point.lat)>90||Math.abs(point.lng)>180)return
  pointPositions.value=[...pointPositions.value.filter(p=>p.id!==point.id),{id:point.id,lat:point.lat,lng:point.lng}]

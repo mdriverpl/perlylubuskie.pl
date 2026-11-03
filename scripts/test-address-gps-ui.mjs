@@ -43,9 +43,9 @@ assert.equal(document.querySelector('[aria-label="Sortuj miejsca"]').value,'dist
 assert.equal(pendingRadius.value,'5')
 assert.deepEqual(names(),['Przy GPS'])
 await click(document.querySelector('[aria-label="Widok mapy"]'))
-assert.equal(document.querySelector('.test-explore-map').dataset.ids,'101','Map uses the same radius-filtered points')
+assert.equal(document.querySelector('.test-explore-map').dataset.ids.split(',').filter(id=>Number(id)>0).join(','),'101','Map uses the same radius-filtered points')
 pendingRadius.value='100';pendingRadius.dispatchEvent(new Event('change',{bubbles:true}));await settle()
-assert.deepEqual(document.querySelector('.test-explore-map').dataset.ids.split(','),['101','102'],'Changing the limit updates map points')
+assert.deepEqual(document.querySelector('.test-explore-map').dataset.ids.split(',').filter(id=>Number(id)>0),['101','102'],'Changing the limit updates map points')
 await click(document.querySelector('.explore-view-switch button:nth-child(2)'))
 
 pendingRadius.value='';pendingRadius.dispatchEvent(new Event('change',{bubbles:true}));await settle()

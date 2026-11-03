@@ -6,6 +6,9 @@ for(const key of ['window','document','Document','ShadowRoot','Element','HTMLEle
 globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window)
 globalThis.getComputedStyle=window.getComputedStyle.bind(window)
 window.scrollTo=()=>{};Element.prototype.scrollIntoView=()=>{}
+Object.defineProperty(globalThis,'navigator',{value:window.navigator,configurable:true})
+let gpsSuccess
+Object.defineProperty(navigator,'geolocation',{value:{getCurrentPosition(success){gpsSuccess=success}}})
 let fail=false, requests=[]
 globalThis.fetch=async(path,options={})=>{
  if(path==='/api/places')return {ok:true,json:async()=>places}
@@ -31,6 +34,18 @@ document.querySelector('.planned-route-mode button:nth-child(2)').click();await 
 assert.equal(requests.at(-1).transport,'walk','Draft planner switches the real route profile')
 document.querySelector('.planned-actions button:nth-child(2)').click();await nextTick();await waitDraftRoute()
 assert.deepEqual(requests.at(-1).place_ids,JSON.parse(localStorage.getItem('perly-route')),'Reordering draft points recalculates their connections')
+document.querySelector('.gps-toggle').click();await settle()
+gpsSuccess({coords:{latitude:52.3,longitude:15.2,accuracy:10}});await nextTick();await waitDraftRoute()
+const gpsRequest=requests.at(-1),startId=gpsRequest.place_ids[0]
+assert.equal(startId,-9000000000001,'Current GPS position is the first route stop')
+assert.deepEqual(gpsRequest.custom_points[0],{id:startId,name:'Twoja pozycja GPS',lat:52.3,lng:15.2})
+assert.match(document.querySelector('.planned-stop .planned-open').textContent,/Twoja pozycja GPS/)
+assert.equal(document.querySelector('.planned-number').textContent,'1')
+document.querySelector('.planned-places-panel>.button').click();await settle()
+document.querySelector('.new-route-form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await settle();await settle()
+const savedGps=JSON.parse(localStorage.getItem('perly-saved')).at(-1)
+assert.equal(savedGps.place_ids[0],startId,'Saving the trip preserves its GPS start')
+assert.equal(savedGps.custom_points[0].lat,52.3)
 button('Wycieczki').click();await settle();document.querySelector('.trip-type-tabs button:last-child').click();await settle()
 assert.ok(document.querySelector('.route-library'))
 assert.equal(document.querySelector('.planner-layout'),null)
