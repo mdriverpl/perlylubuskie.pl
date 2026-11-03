@@ -11,7 +11,7 @@ from . import contact_research
 logger=logging.getLogger('uvicorn.error')
 FIELDS={'phone':'numery telefonów','email':'adresy e-mail','website':'strony WWW',
         'accommodation':'noclegi','restaurant':'restauracje','region_import':'atrakcje, opisy i dostępne zdjęcia'}
-KINDS={'castle':'Zamki','palace':'Pałace','lake':'Jeziora','nature':'Parki i przyroda',
+KINDS={'castle':'Zamki','palace':'Pałace','lake':'Jeziora','beach':'Plaże','nature':'Parki i przyroda',
        'heritage':'Zabytki','leisure':'Atrakcje rodzinne','stay':'Noclegi','food':'Restauracje','vineyard':'Winiarnie'}
 
 
@@ -30,7 +30,7 @@ def region_instruction(prompt,region):
     slug=named[0] if named else region
     if slug not in REGION_NAMES:raise HTTPException(422,'Nie rozpoznano województwa.')
     positive=re.split(r'\b(?:bez|oprocz)\b',value)[0]
-    patterns={'castle':r'\bzam(?:ek|k)','palace':r'\bpalac','lake':r'\bjezior',
+    patterns={'castle':r'\bzam(?:ek|k)','palace':r'\bpalac','lake':r'\bjezior','beach':r'\bplaz',
               'nature':r'\bpark|\bprzyrod','heritage':r'\bzabyt|\bhistor','leisure':r'\brodzinn'}
     kinds=[kind for kind,pattern in patterns.items() if re.search(pattern,positive)] or list(CORE_TYPES)
     return slug,kinds
@@ -52,7 +52,7 @@ def parse(prompt,region,db):
         raise HTTPException(422,'Wpisz np. „Dodaj województwo lubelskie” albo wskaż dane do uzupełnienia: numery telefonów, e-mail, strony WWW, noclegi lub restauracje.')
     kinds=[]
     # The target follows "dla" / "w" / "obiektów". Service words alone describe data, not target categories.
-    for kind,pattern in {'castle':r'\bzam(?:ek|k)', 'palace':r'\bpalac','lake':r'\bjezior',
+    for kind,pattern in {'castle':r'\bzam(?:ek|k)', 'palace':r'\bpalac','lake':r'\bjezior','beach':r'\bplaz',
                          'nature':r'\bpark|\bprzyrod','heritage':r'\bzabyt',
                          'leisure':r'\batrakcj.{0,12}rodzin','vineyard':r'\bwiniar|\bwinnic',
                          'stay':r'(?:dla|w|obiektow)\s+(?:wszystkich\s+)?(?:hotel|pensjonat|nocleg)',

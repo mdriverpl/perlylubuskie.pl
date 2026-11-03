@@ -72,7 +72,7 @@ watch([homeView,homeTileSize],([view,size])=>{try{localStorage.setItem('perly:ho
 const legacyRoutePoints=sanitizeCustomPoints(read('perly-custom-places',[]))
 const routePoints=ref(sanitizeCustomPoints(read('perly-route-points',legacyRoutePoints)).filter(p=>read('perly-route',[]).includes(p.id)))
 const places=ref([...initialPlaces]), view=ref(viewFromUrl(window.location)), category=ref('all'), query=ref(''), selected=ref(read('perly-route',[1,5,3])), favorites=ref(read('perly-favorites',[])), saved=ref(read('perly-saved',[]).map(r=>({...r,custom_points:sanitizeCustomPoints(r.custom_points||legacyRoutePoints.filter(p=>r.place_ids.includes(p.id)))}))), modal=ref(null), detail=ref(null), toast=ref(''), menu=ref(false), onlyFavorites=ref(false), transport=ref('bike'), apiOnline=ref(false), user=ref(read('perly-user',null)), token=ref(localStorage.getItem('perly-token') || ''), authMode=ref('login'), authEmail=ref(''), authPassword=ref(''), authName=ref(''), authError=ref(''), busy=ref(false), routeName=ref('Moja lubuska przygoda')
-const regions=ref([{slug:'lubuskie',name:'Lubuskie',allowed_types:['castle','palace','lake','nature','heritage','leisure','stay','vineyard','food'],active:true}])
+const regions=ref([{slug:'lubuskie',name:'Lubuskie',allowed_types:['castle','palace','lake','nature','heritage','leisure','beach','stay','vineyard','food'],active:true}])
 const selectedRegion=ref(typeof read('perly:region','lubuskie')==='string'?read('perly:region','lubuskie'):'lubuskie')
 const regionInfo=computed(()=>selectedRegion.value==='all'?null:regions.value.find(r=>r.slug===selectedRegion.value))
 const regionalPlaces=computed(()=>selectedRegion.value==='all'?places.value:places.value.filter(p=>(p.region||'lubuskie')===selectedRegion.value))

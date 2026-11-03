@@ -3,6 +3,7 @@ export const placeFacets = [
  { id:'palaces', name:'Pałace', icon:'landmark', match:p=>p.details?.kind==='palace' },
  { id:'family', name:'Atrakcje rodzinne', icon:'sparkles', match:p=>p.category==='leisure' },
  { id:'lakes', name:'Jeziora', icon:'waves', match:p=>p.details?.kind==='lake'||p.category==='nature'&&/jezior/i.test(`${p.name} ${p.subtitle}`) },
+ { id:'beaches', name:'Plaże', icon:'waves', match:p=>p.details?.kind==='beach'||p.category==='beach' },
  { id:'nature', name:'Parki i przyroda', icon:'trees', match:p=>p.category==='nature'||/park/i.test(p.name) },
  { id:'history', name:'Zabytki i historia', icon:'landmark', match:p=>p.category==='heritage' },
  { id:'stays', name:'Noclegi', icon:'bed', match:p=>p.category==='stay'||p.details?.categories?.includes('stay') },

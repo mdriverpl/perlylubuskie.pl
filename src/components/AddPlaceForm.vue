@@ -3,7 +3,7 @@ import {ref,computed,watch} from 'vue'
 const props=defineProps({busy:Boolean,error:String,regions:{type:Array,default:()=>[]},initialRegion:{type:String,default:'lubuskie'}})
 const emit=defineEmits(['submit'])
 const draft=ref({name:'',subtitle:'',location:'',description:'',place_type:'heritage',lat:null,lng:null,image:'',region:props.initialRegion})
-const types=[['castle','Zamek'],['palace','Pałac'],['vineyard','Winnica'],['food','Restauracja'],['lake','Jezioro'],['nature','Park lub przyroda'],['heritage','Zabytek'],['stay','Nocleg'],['leisure','Atrakcja rodzinna']]
+const types=[['castle','Zamek'],['palace','Pałac'],['vineyard','Winnica'],['food','Restauracja'],['lake','Jezioro'],['beach','Plaża'],['nature','Park lub przyroda'],['heritage','Zabytek'],['stay','Nocleg'],['leisure','Atrakcja rodzinna']]
 const allowedTypes=computed(()=>{const region=props.regions.find(r=>r.slug===draft.value.region);return region?types.filter(([id])=>region.allowed_types.includes(id)):types})
 watch(allowedTypes,value=>{if(value.length&&!value.some(([id])=>id===draft.value.place_type))draft.value.place_type=value[0][0]},{immediate:true})
 </script>

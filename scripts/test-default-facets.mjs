@@ -5,7 +5,10 @@ import {JSDOM} from 'jsdom'
 import {placeFacets,defaultPlaceFacets} from '../src/explore.js'
 import {places} from '../src/data.js'
 assert.deepEqual(placeFacets.slice(-3).map(f=>f.name),['Noclegi','Winiarnie','Restauracje'])
-assert.deepEqual(defaultPlaceFacets,['castles','palaces','family','lakes','nature','history'])
+assert.deepEqual(defaultPlaceFacets,['castles','palaces','family','lakes','beaches','nature','history'])
+assert.equal(placeFacets.find(f=>f.id==='beaches').name,'Plaże')
+assert.ok(placeFacets.find(f=>f.id==='beaches').match({category:'nature',details:{kind:'beach'}}))
+assert.ok(!placeFacets.find(f=>f.id==='beaches').match({category:'nature',details:{kind:'lake'}}))
 const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/planer',pretendToBeVisual:true})
 for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event','localStorage'])globalThis[key]=dom.window[key]
 const {createApp,nextTick}=await import('vue')
@@ -28,4 +31,4 @@ for(const catalogOnly of [false,true]){
  app.unmount()
 }
 dom.window.close()
-console.log('PASS: category order, six default checked categories, lodging/wineries/food unchecked, manual lodging selection in catalog and planner')
+console.log('PASS: category order, seven default checked categories, lodging/wineries/food unchecked, manual lodging selection in catalog and planner')

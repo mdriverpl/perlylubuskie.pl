@@ -64,7 +64,7 @@ aiTab.dispatchEvent(new window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles
 assert.equal(document.querySelector('#hero-tab-address').getAttribute('aria-selected'),'true')
 assert.equal(document.activeElement.id,'hero-tab-address')
 await click(document.querySelector('#hero-tab-categories'))
-assert.equal(document.querySelectorAll('.hero-category-grid button').length,9)
+assert.equal(document.querySelectorAll('.hero-category-grid button').length,10)
 await click(document.querySelector('#hero-tab-ai'))
 assert.equal(document.querySelector('.hero-search input').value,'M?j pomys?','Tab changes preserve the AI draft')
 await click(document.querySelector('#hero-tab-categories'))

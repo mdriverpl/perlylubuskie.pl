@@ -36,6 +36,26 @@ def test_catalog_and_filter(client):
     assert client.get('/api/places', params={'q': 'Łagów'}).json()[0]['id'] == 1
 
 
+def test_beach_type_is_enabled_and_saved(client):
+    from app.main import Place
+    from sqlalchemy import delete
+    headers,email=account(client)
+    assert all('beach' in region['allowed_types'] for region in client.get('/api/regions').json())
+    payload={'name':'Testowa plaża','location':'Łagów','description':'Plaża w katalogu.','place_type':'beach','lat':52.33,'lng':15.29,'region':'lubuskie'}
+    result=client.post('/api/places',headers=headers,json=payload)
+    assert result.status_code==201,result.text
+    place=result.json()
+    try:
+        assert place['category']=='nature' and place['details']['kind']=='beach'
+        assert any(p['id']==place['id'] for p in client.get('/api/places',params={'category':'nature'}).json())
+        with TestClient(app) as restarted:
+            assert any(p['id']==place['id'] and p['details']['kind']=='beach' for p in restarted.get('/api/places').json())
+            assert all(region['allowed_types'].count('beach')==1 for region in restarted.get('/api/regions').json())
+    finally:
+        with SessionLocal() as db:
+            db.execute(delete(Place).where(Place.id==place['id']));db.execute(delete(User).where(User.email==email));db.commit()
+
+
 def test_lagow_attractions_catalog(client):
     catalog=client.get('/api/places').json()
     added=[p for p in catalog if 910001<=p['id']<=910008]

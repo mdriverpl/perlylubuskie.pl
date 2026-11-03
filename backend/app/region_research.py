@@ -76,6 +76,7 @@ def classify(tags):
     if tags.get('tourism') in ('hotel','motel','hostel','guest_house','apartment','chalet','camp_site','caravan_site') or tags.get('amenity') in ('restaurant','cafe','bar','pub','fast_food') or tags.get('craft')=='winery' or tags.get('landuse')=='vineyard':return None
     if tags.get('castle_type')=='palace' or tags.get('historic')=='palace' or tags.get('building')=='palace':return 'palace'
     if tags.get('historic')=='castle' or tags.get('building')=='castle':return 'castle'
+    if tags.get('natural')=='beach' or tags.get('leisure')=='beach_resort':return 'beach'
     if tags.get('water')=='lake' or tags.get('natural')=='water' and normalized(tags.get('name','')).startswith('jezior'):return 'lake'
     if tags.get('historic') or tags.get('tourism')=='museum':return 'heritage'
     if tags.get('tourism') in ('zoo','theme_park','aquarium','attraction') or tags.get('leisure')=='water_park':return 'leisure'
@@ -110,10 +111,11 @@ DISCOVERY_GROUPS={
     'lake':('Jeziora','nwr(area.region)["natural"="water"]["water"="lake"]["name"];nwr(area.region)["natural"="water"]["name"~"^[Jj]ezior"];'),
     'nature':('Parki i przyroda','nwr(area.region)["leisure"~"^(park|nature_reserve)$"]["name"];nwr(area.region)["boundary"~"^(national_park|protected_area)$"]["name"];nwr(area.region)["tourism"="viewpoint"]["name"];'),
     'heritage':('Zabytki i historia','nwr(area.region)["historic"]["name"];nwr(area.region)["tourism"="museum"]["name"];'),
+    'beach':('Plaże','nwr(area.region)["natural"="beach"]["name"];nwr(area.region)["leisure"="beach_resort"]["name"];'),
 }
 
 COMMONS_REGIONS=dict(zip(ISO_CODES,('Lower Silesian','Kuyavian-Pomeranian','Lublin','Lubusz','Łódź','Lesser Poland','Masovian','Opole','Subcarpathian','Podlaskie','Pomeranian','Silesian','Świętokrzyskie','Warmian-Masurian','Greater Poland','West Pomeranian')))
-COMMONS_GROUPS={'castle':'Castles','palace':'Palaces','lake':'Lakes','nature':'Nature reserves','heritage':'Cultural heritage monuments','leisure':'Tourist attractions'}
+COMMONS_GROUPS={'castle':'Castles','palace':'Palaces','lake':'Lakes','nature':'Nature reserves','heritage':'Cultural heritage monuments','leisure':'Tourist attractions','beach':'Beaches'}
 
 
 def discover_commons(slug,group,max_places):
@@ -498,7 +500,7 @@ def process_job_step(job_id,event):
             else:
                 sources=[{'title':candidate.get('source_name','OpenStreetMap — dane obiektu'),'url':candidate['source_url']}]+[source for source in summary['sources'] if source['url']!=candidate['source_url']]
                 details={'kind':candidate['kind'],'official_name':candidate['name'],'wikidata':candidate.get('wikidata',''),'sources':sources+([{'title':'Wikimedia Commons — kategoria województwa','url':candidate['discovery_source']}] if candidate.get('discovery_source') else []),'coordinate_source':candidate['source_url'],'coordinate_accuracy':candidate['coordinate_accuracy'],'coordinate_license':candidate.get('coordinate_license','OpenStreetMap ODbL 1.0'),'description_license':'Opis opracowany z AI na podstawie wskazanych źródeł','photo':photo,'ai_generated':True,'research_job':job_id,'submitted_by':creator,'checked_at':datetime.now(timezone.utc).date().isoformat()}
-                place=Place(id=db.scalar(text("SELECT nextval('submitted_place_ids')")),research_key=candidate['source_key'],name=candidate['name'],subtitle=summary['subtitle'],category={'castle':'heritage','palace':'heritage','lake':'nature'}.get(candidate['kind'],candidate['kind']),image=image or '/images/heritage-placeholder.svg',lat=candidate['lat'],lng=candidate['lng'],rating=0,location=candidate.get('location') or summary.get('location') or name,description=summary['description'],region=slug,details=details)
+                place=Place(id=db.scalar(text("SELECT nextval('submitted_place_ids')")),research_key=candidate['source_key'],name=candidate['name'],subtitle=summary['subtitle'],category={'castle':'heritage','palace':'heritage','lake':'nature','beach':'nature'}.get(candidate['kind'],candidate['kind']),image=image or '/images/heritage-placeholder.svg',lat=candidate['lat'],lng=candidate['lng'],rating=0,location=candidate.get('location') or summary.get('location') or name,description=summary['description'],region=slug,details=details)
                 db.add(place);db.flush();item.place_id=place.id;item.status='added';item.photo_added=bool(image)
             item.error=photo_error[:500];job.updated_at=datetime.now(timezone.utc);job.phase='research';db.commit()
             logger.info('Region research saved job=%s region=%s result=%s place_id=%s',job_id,slug,item.status,item.place_id)

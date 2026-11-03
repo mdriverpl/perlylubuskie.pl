@@ -26,6 +26,10 @@ def test_candidates_categories_coordinates_and_duplicates():
     assert data[0]['source_key']=='wd:Q123'
     assert research.classify({'name':'Winiarnia','craft':'winery','historic':'building'}) is None
     assert research.classify({'name':'Jezioro Test','natural':'water'})=='lake'
+    assert research.classify({'name':'Plaża miejska','natural':'beach'})=='beach'
+    assert research.classify({'name':'Kąpielisko','leisure':'beach_resort'})=='beach'
+    beaches=research.parse_candidates([{'type':'node','id':9,'lat':53,'lon':18,'tags':{'name':'Plaża miejska','natural':'beach'}}],['beach'])
+    assert len(beaches)==1 and beaches[0]['kind']=='beach'
 
 
 def test_photo_category_fallback_without_an_entity_image(monkeypatch):

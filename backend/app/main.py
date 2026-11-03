@@ -220,6 +220,7 @@ async def lifespan(app: FastAPI):
     # Additive catalog migration; stable IDs preserve community data and saved trips.
     with engine.begin() as connection:
         connection.execute(text('UPDATE regions SET active=TRUE WHERE active=FALSE'))
+        connection.execute(text("UPDATE regions SET allowed_types=(allowed_types::jsonb || '[\"beach\"]'::jsonb)::json WHERE NOT (allowed_types::jsonb ? 'beach')"))
         connection.execute(text('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE'))
         connection.execute(text("ALTER TABLE places ADD COLUMN IF NOT EXISTS region VARCHAR(40) NOT NULL DEFAULT 'lubuskie'"))
         connection.execute(text('CREATE INDEX IF NOT EXISTS ix_places_region ON places(region)'))
@@ -235,7 +236,7 @@ async def lifespan(app: FastAPI):
         connection.execute(text("ALTER TABLE trips ADD COLUMN IF NOT EXISTS custom_points JSON NOT NULL DEFAULT '[]'"))
     with SessionLocal() as db:
         if not db.get(Region, 'lubuskie'):
-            db.add(Region(slug='lubuskie', name='Lubuskie', allowed_types=['castle','palace','lake','nature','heritage','leisure','stay','vineyard','food'], active=True))
+            db.add(Region(slug='lubuskie', name='Lubuskie', allowed_types=['castle','palace','lake','nature','heritage','leisure','beach','stay','vineyard','food'], active=True))
         configured_admins=bootstrap_admin_emails()
         matched_admins=0
         created_admins=0
@@ -338,7 +339,7 @@ class PlaceInput(BaseModel):
     subtitle: str = Field(default='', max_length=250)
     location: str = Field(min_length=1, max_length=200)
     description: str = Field(min_length=1, max_length=2000)
-    place_type: Literal['castle', 'palace', 'vineyard', 'food', 'lake', 'nature', 'heritage', 'stay', 'leisure']
+    place_type: Literal['castle', 'palace', 'vineyard', 'food', 'lake', 'nature', 'heritage', 'stay', 'leisure', 'beach']
     lat: float = Field(ge=-90, le=90, allow_inf_nan=False)
     lng: float = Field(ge=-180, le=180, allow_inf_nan=False)
     image: str = Field(default='', max_length=2000, pattern=r'^(?:https://[^\s]+)?$')
@@ -349,7 +350,7 @@ class PlaceInput(BaseModel):
 def new_catalog_place(data, user, db):
     if not all(value.strip() for value in (data.name, data.location, data.description)):
         raise HTTPException(422, 'Podaj nazwę, miejscowość i opis miejsca.')
-    category = {'castle': 'heritage', 'palace': 'heritage', 'lake': 'nature'}.get(data.place_type, data.place_type)
+    category = {'castle': 'heritage', 'palace': 'heritage', 'lake': 'nature', 'beach':'nature'}.get(data.place_type, data.place_type)
     region = db.get(Region, data.region)
     if not region or (not region.active and not user.is_superadmin):
         raise HTTPException(422, 'Wybierz dostępne województwo.')
@@ -373,8 +374,8 @@ REGION_NAMES = {
     'podkarpackie':'Podkarpackie','podlaskie':'Podlaskie','pomorskie':'Pomorskie','slaskie':'Śląskie',
     'swietokrzyskie':'Świętokrzyskie','warminsko-mazurskie':'Warmińsko-mazurskie','wielkopolskie':'Wielkopolskie','zachodniopomorskie':'Zachodniopomorskie',
 }
-PLACE_TYPES = {'castle':'Zamki','palace':'Pałace','lake':'Jeziora','nature':'Parki i przyroda','heritage':'Zabytki i historia','leisure':'Atrakcje rodzinne','stay':'Noclegi','vineyard':'Winiarnie','food':'Restauracje'}
-CORE_TYPES = ['castle','palace','lake','nature','heritage','leisure']
+PLACE_TYPES = {'castle':'Zamki','palace':'Pałace','lake':'Jeziora','beach':'Plaże','nature':'Parki i przyroda','heritage':'Zabytki i historia','leisure':'Atrakcje rodzinne','stay':'Noclegi','vineyard':'Winiarnie','food':'Restauracje'}
+CORE_TYPES = ['castle','palace','lake','nature','heritage','leisure','beach']
 
 
 def region_summaries(db, include_drafts=False):
@@ -390,7 +391,7 @@ def public_regions(db: Session = Depends(get_db)):
 
 class RegionInput(BaseModel):
     slug: str = Field(min_length=2,max_length=40)
-    allowed_types: list[str] = Field(default_factory=lambda:list(CORE_TYPES),min_length=1,max_length=9)
+    allowed_types: list[str] = Field(default_factory=lambda:list(CORE_TYPES),min_length=1,max_length=10)
 
 
 class RegionUpdate(BaseModel):
