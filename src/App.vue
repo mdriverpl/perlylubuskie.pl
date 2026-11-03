@@ -284,7 +284,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
   <section class="hero">
    <div class="hero-shade"></div>
    <div class="hero-inner content-width">
-    <div class="hero-copy"><div class="eyebrow"><span></span> BLISKO NATURY. DALEKO OD NUDY.</div><h1>Małe podróże.<br><em>Wielkie odkrycia.</em></h1><p>Jeziora, zamki i ścieżki, których jeszcze nie znasz.<br>Odkryj Ziemię Lubuską po swojemu.</p><div class="hero-hint"><MapPin :size="15"/><span>Łagów · tu zaczyna się przygoda</span></div></div>
+    <div class="hero-copy"><div class="eyebrow"><span></span> BLISKO NATURY. DALEKO OD NUDY.</div><h1>Od pomysłu<br><em>do przygody.</em></h1><p>Odkryj ciekawe miejsca, ułóż własną trasę<br>i ruszaj po nowe wspomnienia.</p><div class="hero-hint"><MapPin :size="15"/><span>Łagów · tu zaczyna się przygoda</span></div></div>
     <div class="hero-ai-panel">
      <div class="hero-tabs" role="tablist" aria-label="Odkrywaj i planuj"><button v-for="tab in [{id:'ai',label:'Planer AI',icon:Sparkles},{id:'address',label:'Szukaj po adresie',icon:MapPin},{id:'map',label:'Mapa Polski',icon:Navigation},{id:'categories',label:'Kategorie',icon:Compass}]" :key="tab.id" :id="'hero-tab-'+tab.id" role="tab" :aria-selected="heroTab===tab.id" :aria-controls="'hero-panel-'+tab.id" :tabindex="heroTab===tab.id?0:-1" @click="heroTab=tab.id" @keydown.right.prevent="moveHeroTab(1)" @keydown.left.prevent="moveHeroTab(-1)" @keydown.home.prevent="moveHeroTab(-99)" @keydown.end.prevent="moveHeroTab(99)"><component :is="tab.icon" :size="19" aria-hidden="true"/><span>{{tab.label}}</span></button></div>
      <div v-show="heroTab==='ai'" id="hero-panel-ai" role="tabpanel" aria-labelledby="hero-tab-ai">
