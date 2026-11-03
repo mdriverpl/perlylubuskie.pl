@@ -43,7 +43,7 @@ const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));aw
 const button=(text)=>[...document.querySelectorAll('button')].find(b=>b.textContent.includes(text))
 const click=async(el)=>{assert.ok(el,'Element exists');el.click();await settle()}
 await settle()
-assert.deepEqual([...document.querySelectorAll('.main-navigation button')].map(b=>b.textContent.trim()),['Start','Miejsca','Planer','Wycieczki'])
+assert.deepEqual([...document.querySelectorAll('.main-navigation button')].map(b=>(b.dataset.navLabel||b.textContent.trim())),['Start','Miejsca','Planer','Wycieczki'])
 assert.equal(document.querySelectorAll('.main-navigation button svg').length,4)
 await click(button('Start'))
 assert.equal(document.querySelectorAll('.place-card').length,6)

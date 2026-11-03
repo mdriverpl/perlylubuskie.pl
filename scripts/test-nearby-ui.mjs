@@ -15,7 +15,7 @@ assert.deepEqual(sortNearby(points,{lat:52,lng:16}).map(p=>p.id),[1003,1004,1002
 assert.deepEqual(sortNearby([]),[])
 assert.equal(sortNearby([...points,{id:9,lat:null,lng:null}]).at(-1).id,9)
 assert.deepEqual(sortNearby([{id:1,lat:0,lng:179.9},{id:2,lat:0,lng:0},{id:3,lat:0,lng:-179.9}],{lat:0,lng:179.8}).map(p=>p.id),[1,3,2])
-const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/planer',pretendToBeVisual:true})
+const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/miejsca',pretendToBeVisual:true})
 for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event','localStorage'])globalThis[key]=dom.window[key]
 globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window)
 globalThis.getComputedStyle=window.getComputedStyle.bind(window)

@@ -14,8 +14,8 @@ const {createApp,nextTick}=await import('vue')
 const App=(await import('../artifacts/ui-test.mjs')).default
 let app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
-const active=()=>document.querySelector('.main-navigation [aria-current="page"]')?.textContent.trim()
-const navigate=async text=>{[...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()===text).click();await settle()}
+const active=()=>{const el=document.querySelector('.main-navigation [aria-current="page"]');return el?.dataset.navLabel||el?.textContent.trim()}
+const navigate=async text=>{[...document.querySelectorAll('.main-navigation button')].find(el=>(el.dataset.navLabel||el.textContent.trim())===text).click();await settle()}
 const history=async direction=>{const done=new Promise(resolve=>window.addEventListener('popstate',resolve,{once:true}));window.history[direction]();await done;await settle()}
 await settle()
 assert.equal(active(),'Start');assert.equal(window.location.pathname,'/start')

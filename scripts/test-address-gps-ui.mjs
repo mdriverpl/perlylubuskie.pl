@@ -24,13 +24,13 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const click=async el=>{assert.ok(el);el.click();await settle()}
-const names=()=>[...document.querySelectorAll('.place-title')].map(el=>el.textContent)
+const names=()=>document.querySelector('.test-explore-map')?document.querySelector('.test-explore-map').dataset.ids.split(',').map(id=>places.find(p=>p.id===Number(id))?.name).filter(Boolean):[...document.querySelectorAll('.place-title')].map(el=>el.textContent)
 const input=()=>document.querySelector('#explore-query')
 const type=async text=>{input().value=text;input().dispatchEvent(new Event('input',{bubbles:true}));await settle()}
 const gpsButton=()=>document.querySelector('[aria-label="Wpisz adres z GPS"]')
 await settle()
 assert.equal(document.querySelector('[aria-label="Sortuj miejsca"]').value,'distance')
-await click(document.querySelector('[aria-label="Widok kafelków"]'))
+if(process.argv[2]!=='planer')await click(document.querySelector('[aria-label="Widok kafelków"]'))
 const pendingRadius=document.querySelector('.distance-filter select')
 assert.equal(pendingRadius.disabled,false)
 pendingRadius.value='5';pendingRadius.dispatchEvent(new Event('change',{bubbles:true}));await settle()
@@ -42,11 +42,11 @@ assert.equal(reverseCalls,1);assert.equal(input().value,'Adres z GPS 1, Lubuskie
 assert.equal(document.querySelector('[aria-label="Sortuj miejsca"]').value,'distance')
 assert.equal(pendingRadius.value,'5')
 assert.deepEqual(names(),['Przy GPS'])
-await click(document.querySelector('[aria-label="Widok mapy"]'))
+if(process.argv[2]!=='planer')await click(document.querySelector('[aria-label="Widok mapy"]'))
 assert.equal(document.querySelector('.test-explore-map').dataset.ids.split(',').filter(id=>Number(id)>0).join(','),'101','Map uses the same radius-filtered points')
 pendingRadius.value='100';pendingRadius.dispatchEvent(new Event('change',{bubbles:true}));await settle()
 assert.deepEqual(document.querySelector('.test-explore-map').dataset.ids.split(',').filter(id=>Number(id)>0),['101','102'],'Changing the limit updates map points')
-await click(document.querySelector('.explore-view-switch button:nth-child(2)'))
+if(process.argv[2]!=='planer')await click(document.querySelector('.explore-view-switch button:nth-child(2)'))
 
 pendingRadius.value='';pendingRadius.dispatchEvent(new Event('change',{bubbles:true}));await settle()
 assert.deepEqual(names(),['Przy GPS','Przy adresie'])

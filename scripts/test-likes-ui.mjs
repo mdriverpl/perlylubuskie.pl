@@ -1,7 +1,7 @@
 import {JSDOM} from 'jsdom'
 import assert from 'node:assert/strict'
 import {demoPlaces} from '../src/data.js'
-const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/planer',pretendToBeVisual:true})
+const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/miejsca',pretendToBeVisual:true})
 for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event','localStorage'])globalThis[key]=dom.window[key]
 globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window)
 globalThis.getComputedStyle=window.getComputedStyle.bind(window)

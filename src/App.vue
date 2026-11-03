@@ -101,6 +101,8 @@ const routePreview=ref(false)
 const plannerFocus=ref(null)
 const pointPositions=ref([])
 const gpsStartId=-9000000000001
+const plannerPlaceCount=computed(()=>selected.value.filter(id=>id!==gpsStartId).length)
+const plannerCountLabel=computed(()=>{const n=plannerPlaceCount.value;return n===1?'miejsce':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'miejsca':'miejsc'})
 watch([userLocation,()=>view.value,()=>selected.value[0]],([point,current])=>{
  if(current!=='explore'||!point)return
  const start=sanitizeCustomPoints([{id:gpsStartId,name:'Twoja pozycja GPS',lat:point.lat,lng:point.lng}])[0]
@@ -261,7 +263,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
   <nav :class="{open:menu}" class="main-navigation" aria-label="Nawigacja główna">
    <button :class="{active:view==='discover'&&!onlyFavorites}" :aria-current="view==='discover'&&!onlyFavorites?'page':undefined" @click="navigate('discover')"><House :size="19" aria-hidden="true"/>Start</button>
    <button :class="{active:view==='places'}" :aria-current="view==='places'?'page':undefined" @click="navigate('places')"><MapPin :size="19" aria-hidden="true"/>Miejsca</button>
-   <button :class="{active:view==='explore'}" :aria-current="view==='explore'?'page':undefined" @click="navigate('explore')"><Route :size="19" aria-hidden="true"/>Planer</button>
+   <button :class="{active:view==='explore'}" :aria-current="view==='explore'?'page':undefined" @click="navigate('explore')" data-nav-label="Planer"><Route :size="19" aria-hidden="true"/>Planer <span :key="plannerPlaceCount" class="planner-nav-count" aria-live="polite">({{plannerPlaceCount}} {{plannerCountLabel}})</span></button>
    <button :class="{active:['trips','walking','cycling','planner'].includes(view)}" :aria-current="['trips','walking','cycling','planner'].includes(view)?'page':undefined" @click="navigate('trips')"><Route :size="19" aria-hidden="true"/>Wycieczki</button>
    <button v-if="user?.is_superadmin" :class="{active:view==='admin'}" @click="navigate('admin')">Administracja</button>
   </nav>
@@ -442,3 +444,5 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 <style>.hero-category-grid button:disabled{opacity:.5;cursor:default}</style>
 
 <style>.trip-type-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}.trip-type-tabs button{display:flex;align-items:center;gap:8px;padding:11px 16px;border:1px solid #d3dfc8;border-radius:9px;background:#fff;color:#42683c;font-size:12px}.trip-type-tabs button[aria-pressed=true]{color:white;background:#19744f;border-color:#19744f}.trip-type-tabs button:focus-visible{outline:2px solid #19744f;outline-offset:3px}</style>
+
+<style>.planner-nav-count{display:inline-block;font-size:11px;font-weight:600;animation:planner-count-change .32s ease-out;transform-origin:center}@keyframes planner-count-change{0%{transform:scale(.88);opacity:.4}55%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}@media(prefers-reduced-motion:reduce){.planner-nav-count{animation:none}}</style>

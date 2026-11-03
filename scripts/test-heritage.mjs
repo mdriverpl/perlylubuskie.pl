@@ -18,7 +18,7 @@ for(const p of places.filter(p=>p.details?.wikidata)){
  if(p.details.photo){assert.ok(p.details.photo.author);assert.match(p.details.photo.license,/CC|Public domain|PDM/);assert.equal(new URL(p.details.photo.source_url).hostname,'commons.wikimedia.org')}
  if(p.image.startsWith('/'))await fs.access('public'+p.image)
 }
-const dom=new JSDOM('<!doctype html><div id="app"></div>',{url:'http://localhost/planer',pretendToBeVisual:true})
+const dom=new JSDOM('<!doctype html><div id="app"></div>',{url:'http://localhost/miejsca',pretendToBeVisual:true})
 for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event','localStorage'])globalThis[key]=dom.window[key]
 globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window)
 globalThis.getComputedStyle=window.getComputedStyle.bind(window)

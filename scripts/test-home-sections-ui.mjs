@@ -14,7 +14,7 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 let app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const click=async element=>{assert.ok(element);element.click();await settle()}
-const start=()=>[...document.querySelectorAll('.main-navigation button')].find(b=>b.textContent.trim()==='Start')
+const start=()=>[...document.querySelectorAll('.main-navigation button')].find(b=>(b.dataset.navLabel||b.textContent.trim())==='Start')
 await settle();await click(start())
 assert.match(document.querySelector('#places h2').textContent,/Miejsca TOP 20/)
 assert.equal(document.querySelectorAll('#places .place-card').length,20)

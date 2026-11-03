@@ -11,10 +11,10 @@ const {createApp,nextTick}=await import('vue')
 const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
-const nav=async name=>{await click([...document.querySelectorAll('.main-navigation button')].find(b=>b.textContent.trim()==='Wycieczki'));if(name!=='Wycieczki')await click([...document.querySelectorAll('.trip-type-tabs button')].find(b=>b.textContent.trim()===name))}
+const nav=async name=>{await click([...document.querySelectorAll('.main-navigation button')].find(b=>(b.dataset.navLabel||b.textContent.trim())==='Wycieczki'));if(name!=='Wycieczki')await click([...document.querySelectorAll('.trip-type-tabs button')].find(b=>(b.dataset.navLabel||b.textContent.trim())===name))}
 const click=async el=>{assert.ok(el);el.click();await settle()}
 await settle()
-assert.deepEqual([...document.querySelectorAll('.main-navigation button')].map(b=>b.textContent.trim()),['Start','Miejsca','Planer','Wycieczki'])
+assert.deepEqual([...document.querySelectorAll('.main-navigation button')].map(b=>(b.dataset.navLabel||b.textContent.trim())),['Start','Miejsca','Planer','Wycieczki'])
 await nav('Wycieczki')
 assert.equal(document.querySelector('.route-library h1').textContent,'Wycieczki')
 assert.equal(document.querySelectorAll('.route-library-item').length,3,'The combined library includes every trip type')
@@ -79,7 +79,7 @@ assert.deepEqual(routes.find(r=>r.id===2).point_positions,[{id:5,lat:52.12,lng:1
 await click(document.querySelector('.route-library-open'))
 assert.ok(document.querySelector('.test-drag-point'))
 assert.equal(document.querySelector('.main-navigation button:last-child').getAttribute('aria-current'),'page')
-await click([...document.querySelectorAll('.main-navigation button')].find(b=>b.textContent.trim()==='Planer'));assert.ok(document.querySelector('.explore-home'))
+await click([...document.querySelectorAll('.main-navigation button')].find(b=>(b.dataset.navLabel||b.textContent.trim())==='Planer'));assert.ok(document.querySelector('.explore-home'))
 await nav('Wycieczki piesze');await click(document.querySelector('.route-library-delete'))
 assert.ok(document.querySelector('.route-library-empty'))
 assert.equal(JSON.parse(localStorage.getItem('perly-saved')).length,2)

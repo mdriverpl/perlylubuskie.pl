@@ -23,7 +23,7 @@ for(const p of catalog){
 }
 assert.equal(catalog.find(p=>p.name==='Winnica Jany').details.coordinate_accuracy,'address-building')
 assert.equal(catalog.find(p=>p.id===900030).details.coordinate_accuracy,'complex-reference')
-const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/planer',pretendToBeVisual:true})
+const dom=new JSDOM('<div id="app"></div>',{url:'http://localhost/miejsca',pretendToBeVisual:true})
 for(const key of ['window','document','Document','ShadowRoot','Element','HTMLElement','SVGElement','Node','Event','localStorage'])globalThis[key]=dom.window[key]
 globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window)
 globalThis.getComputedStyle=window.getComputedStyle.bind(window)
@@ -34,6 +34,7 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 await settle();document.querySelector('.compact-clear-filters').click();await settle();document.querySelector('input[value="wineries"]').click();await settle()
+document.querySelector('[aria-label="Widok mapy"]').click();await settle()
 assert.equal(document.querySelector('.test-explore-map').dataset.ids.split(',').length,30)
 document.querySelector('[aria-label="Widok kafelków"]').click();await settle()
 assert.equal(document.querySelectorAll('.explore-place').length,30)

@@ -14,7 +14,7 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 let app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const click=async el=>{assert.ok(el);el.click();await settle()}
-const nav=name=>[...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()===name)
+const nav=name=>[...document.querySelectorAll('.main-navigation button')].find(el=>(el.dataset.navLabel||el.textContent.trim())===name)
 const inputQuery=async value=>{const input=document.querySelector('#explore-query');input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));await settle()}
 await settle();await click(nav('Miejsca'))
 assert.equal(calls,0,'Catalog never requests GPS automatically')

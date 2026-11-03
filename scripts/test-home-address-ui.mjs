@@ -21,7 +21,7 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 let app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const click=async el=>{assert.ok(el);el.click();await settle()}
-const nav=async name=>click([...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()===name))
+const nav=async name=>click([...document.querySelectorAll('.main-navigation button')].find(el=>(el.dataset.navLabel||el.textContent.trim())===name))
 const names=()=>[...document.querySelectorAll('.explore-place .place-title')].map(el=>el.textContent)
 const type=async(selector,text)=>{const input=document.querySelector(selector);input.value=text;input.dispatchEvent(new Event('input',{bubbles:true}));await settle()}
 const reload=async()=>{app.unmount();app=createApp(App);app.mount('#app');await settle()}

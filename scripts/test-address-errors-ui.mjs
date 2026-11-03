@@ -17,7 +17,7 @@ const {createApp,nextTick}=await import('vue')
 const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
-const nav=async label=>{[...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()===label).click();await settle()}
+const nav=async label=>{[...document.querySelectorAll('.main-navigation button')].find(el=>(el.dataset.navLabel||el.textContent.trim())===label).click();await settle()}
 for(const label of ['Start','Miejsca','Planer']){
  await nav(label)
  const home=label==='Start'

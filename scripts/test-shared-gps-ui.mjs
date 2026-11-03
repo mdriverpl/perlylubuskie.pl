@@ -15,7 +15,7 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const click=async el=>{assert.ok(el);el.click();await settle()}
-const nav=async name=>click([...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()===name))
+const nav=async name=>click([...document.querySelectorAll('.main-navigation button')].find(el=>(el.dataset.navLabel||el.textContent.trim())===name))
 const toggle=()=>document.querySelector('.gps-toggle')
 const fix=(lat=52.33)=>success({coords:{latitude:lat,longitude:15.29,accuracy:12}})
 await settle();assert.equal(calls,0);assert.match(toggle().textContent,/GPS OFF/)

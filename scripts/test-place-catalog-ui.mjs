@@ -24,7 +24,7 @@ const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 const click=async el=>{assert.ok(el);el.click();await settle()}
-const nav=name=>[...document.querySelectorAll('.main-navigation button')].find(el=>el.textContent.trim()===name)
+const nav=name=>[...document.querySelectorAll('.main-navigation button')].find(el=>(el.dataset.navLabel||el.textContent.trim())===name)
 const input=async(selector,value)=>{const el=document.querySelector(selector);el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));await settle()}
 await settle();assert.ok(document.querySelector('.planned-places-panel'))
 await click(nav('Miejsca'))
@@ -78,7 +78,7 @@ const firstName=document.querySelector('.place-title').textContent
 const firstPlace=demoPlaces.find(p=>p.name===firstName)
 await click(document.querySelector('.add-place-to-list'))
 assert.ok(document.querySelector('.planned-places-panel'))
-assert.equal(document.querySelector('[aria-label="Widok mapy"]').getAttribute('aria-pressed'),'true')
+assert.equal(document.querySelector('.explore-view-switch'),null);assert.ok(document.querySelector('.explore-map'))
 assert.equal(document.querySelector('.test-explore-map').dataset.focusLat,String(firstPlace.lat))
 assert.equal(document.querySelector('.test-explore-map').dataset.focusLng,String(firstPlace.lng))
 await input('#explore-query','Łagów')
