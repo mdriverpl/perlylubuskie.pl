@@ -7883,7 +7883,7 @@
     "name": "Majaland Kownaty",
     "subtitle": "Park rozrywki · Kownaty",
     "category": "leisure",
-    "image": "/images/attraction-placeholder.svg",
+    "image": "/images/attractions/majaland-kownaty.webp",
     "lat": 52.349763,
     "lng": 15.082608,
     "rating": 0,
@@ -7911,7 +7911,16 @@
       "coordinate_accuracy": "area",
       "visit_note": "Atrakcja w okolicy Łagowa. Punkt wskazuje obszar parku. Aktualne bilety i dostępność atrakcji sprawdź u operatora.",
       "website": "https://majaland.pl/kownaty",
-      "checked_at": "2026-10-30"
+      "checked_at": "2026-11-03",
+      "wikidata": "Q56824864",
+      "photo": {
+        "author": "Klapi",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Majaland_Kownaty_wej%C5%9Bcie_2023.jpg",
+        "archival": false,
+        "transformation": "Zmniejszenie do szerokości 1200 px i zapis WebP; bez kadrowania."
+      }
     }
   },
   {

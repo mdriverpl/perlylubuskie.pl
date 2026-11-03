@@ -125,9 +125,13 @@ def test_wineries_seed_and_community(client):
 
 def test_heritage_catalog_sync_preserves_community(client):
     places = client.get('/api/places').json()
-    heritage = [p for p in places if p['details'].get('wikidata')]
+    heritage = [p for p in places if p['category']=='heritage' and p['details'].get('wikidata')]
     assert len(heritage) == 175
     assert sum(p['details']['kind'] == 'palace' for p in heritage) == 151
+    majaland=next(p for p in places if p['id']==910005)
+    assert majaland['category']=='leisure'
+    assert majaland['image']=='/images/attractions/majaland-kownaty.webp'
+    assert majaland['details']['photo']['license']=='CC BY-SA 4.0'
     place_id = next(p['id'] for p in heritage if p['id'] != 1)
     headers, _ = account(client)
     assert client.put(f'/api/places/{place_id}/visit', headers=headers).status_code == 204

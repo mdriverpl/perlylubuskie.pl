@@ -16,6 +16,9 @@ assert.equal(filterPlaces(places,'Lubuskie','Ciecz',[]).find(p=>p.id===5).name,'
 assert.deepEqual(filterPlaces(places,'Lubuskie','',['family']).map(p=>p.id),[910005,910008])
 assert.ok(filterPlaces(places,'Lubuskie','Łagów',['history']).some(p=>p.id===910002))
 assert.equal(places.find(p=>p.id===910005).location,'Kownaty')
+assert.equal(places.find(p=>p.id===910005).image,'/images/attractions/majaland-kownaty.webp')
+assert.equal(places.find(p=>p.id===910005).details.photo.author,'Klapi')
+assert.equal(places.find(p=>p.id===910005).details.photo.license,'CC BY-SA 4.0')
 assert.equal(places.find(p=>p.id===910008).location,'Mostki')
 for(const place of lagow){
  assert.ok(Number.isFinite(place.lat)&&Number.isFinite(place.lng))

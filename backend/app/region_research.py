@@ -261,18 +261,34 @@ def research_batch(region,candidates,entities):
     except (ValueError,TypeError,ValidationError):raise ResearchError('AI zwróciło niepełny lub niepotwierdzony zestaw danych. Wznów zadanie.') from None
 
 
-def entity_photo(candidate,entity):
-    if not entity:return ''
+def matching_photo_entity(candidate,entity):
+    if not entity:return False
     if candidate.get('wikidata')!=entity.get('id'):
         coordinates=[c.get('mainsnak',{}).get('datavalue',{}).get('value',{}) for c in entity.get('claims',{}).get('P625',[])]
         name=(entity.get('labels',{}).get('pl') or entity.get('labels',{}).get('en') or {}).get('value','')
         original=set(normalized(candidate['name']).split());target=set(normalized(name).split())
         nearby=any(isinstance(c.get('latitude'),(int,float)) and isinstance(c.get('longitude'),(int,float)) and math.hypot((c['latitude']-candidate['lat'])*111.2,(c['longitude']-candidate['lng'])*68)<=.5 for c in coordinates)
-        if not nearby or not original.intersection(target):return ''
+        if not nearby or not original.intersection(target):return False
+    return True
+
+
+def entity_photo(candidate,entity):
+    if not matching_photo_entity(candidate,entity):return ''
     for claim in entity.get('claims',{}).get('P18',[]):
         value=claim.get('mainsnak',{}).get('datavalue',{}).get('value')
         if isinstance(value,str):return value
     return ''
+
+
+def category_photo_files(category):
+    """Use only the exact Commons category linked to this object, not name search."""
+    category=category.removeprefix('Category:').strip()
+    if not category or len(category)>250 or '|' in category:return []
+    data=get_json('https://commons.wikimedia.org/w/api.php',{'action':'query','generator':'categorymembers','gcmtitle':'Category:'+category,'gcmtype':'file','gcmlimit':20,'prop':'imageinfo','iiprop':'mime','format':'json'})
+    pages=data.get('query',{}).get('pages',{}).values()
+    images=[p for p in pages if p.get('title','').startswith('File:') and (p.get('imageinfo') or [{}])[0].get('mime') in ('image/jpeg','image/webp','image/png')]
+    images.sort(key=lambda p:((p.get('imageinfo') or [{}])[0].get('mime')!='image/jpeg',p['title']))
+    return [p['title'].removeprefix('File:') for p in images[:4]]
 
 
 def commons_photo(filename):
@@ -323,18 +339,28 @@ def store_photo(photo):
 
 def obtain_photo(candidate,summary,entities):
     filename=candidate['tags'].get('wikimedia_commons','')
-    if filename.startswith('Category:'):filename=''
+    category=filename if filename.startswith('Category:') else ''
+    if category:filename=''
+    qid=candidate.get('wikidata') or summary.get('wikidata','')
+    entity=entities.get(qid)
     if not filename:
-        qid=candidate.get('wikidata') or summary.get('wikidata','')
-        entity=entities.get(qid)
         if not entity and qid:entity=wikidata_entities([qid]).get(qid)
         filename=entity_photo(candidate,entity)
-    if not filename:return '',None,'Nie znaleziono potwierdzonego zdjęcia na obsługiwanej licencji.'
     try:
-        photo=commons_photo(filename)
-        if not photo:return '',None,'Nie znaleziono zdjęcia z potwierdzonym autorem i licencją.'
-        image=store_photo(photo)
-        return image,{key:value for key,value in photo.items() if key not in ('download_url','sha1')},''
+        if filename:
+            photo=commons_photo(filename)
+            if photo:
+                image=store_photo(photo)
+                return image,{key:value for key,value in photo.items() if key not in ('download_url','sha1')},''
+        if not category and matching_photo_entity(candidate,entity):
+            category=next((claim.get('mainsnak',{}).get('datavalue',{}).get('value','') for claim in entity.get('claims',{}).get('P373',[]) if claim.get('rank')!='deprecated'),'')
+        if category:
+            for alternate in category_photo_files(category):
+                photo=commons_photo(alternate)
+                if not photo:continue
+                image=store_photo(photo)
+                return image,{key:value for key,value in photo.items() if key not in ('download_url','sha1')},''
+        return '',None,'Nie znaleziono zdjęcia z potwierdzonym autorem i licencją.'
     except ResearchError as error:return '',None,str(error)
 
 

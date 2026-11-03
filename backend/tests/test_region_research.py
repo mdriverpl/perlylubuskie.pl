@@ -28,6 +28,36 @@ def test_candidates_categories_coordinates_and_duplicates():
     assert research.classify({'name':'Jezioro Test','natural':'water'})=='lake'
 
 
+def test_photo_category_fallback_without_an_entity_image(monkeypatch):
+    point=candidate(wikidata='Q123')
+    entity={'id':'Q123','claims':{'P373':[{'mainsnak':{'datavalue':{'value':'Test castle'}}}]}}
+    queries=[]
+    def get(url,params):
+        queries.append(params)
+        assert params['gcmtitle']=='Category:Test castle'
+        return {'query':{'pages':{'1':{'title':'File:Video.webm','imageinfo':[{'mime':'video/webm'}]},'2':{'title':'File:Map.png','imageinfo':[{'mime':'image/png'}]},'3':{'title':'File:Castle.jpg','imageinfo':[{'mime':'image/jpeg'}]}}}}
+    monkeypatch.setattr(research,'get_json',get)
+    filenames=[]
+    def photo(filename):
+        filenames.append(filename)
+        return {'author':'Author','license':'CC BY-SA 4.0','license_url':'https://creativecommons.org/licenses/by-sa/4.0/','source_url':'https://commons.wikimedia.org/wiki/File:Castle.jpg','download_url':'https://upload.wikimedia.org/castle.jpg','sha1':'abc'}
+    monkeypatch.setattr(research,'commons_photo',photo)
+    monkeypatch.setattr(research,'store_photo',lambda photo:'/api/media/castle.webp')
+    image,metadata,error=research.obtain_photo(point,{}, {'Q123':entity})
+    assert image=='/api/media/castle.webp' and error==''
+    assert filenames==['Castle.jpg'],'Prefer a photo over a diagram; never use a video as the card image'
+    assert metadata['author']=='Author' and metadata['license']=='CC BY-SA 4.0'
+    assert 'download_url' not in metadata
+    # Category selection cannot bypass author/license checks.
+    monkeypatch.setattr(research,'commons_photo',lambda filename:None)
+    assert research.obtain_photo(point,{}, {'Q123':entity})[0]==''
+    # An unrelated entity must never supply its category.
+    unrelated={'id':'Q999','claims':entity['claims']}
+    queries.clear()
+    assert research.obtain_photo(point,{}, {'Q123':unrelated})[0]==''
+    assert queries==[]
+
+
 def test_ai_requires_grounded_citations_and_exact_ids(monkeypatch):
     point=candidate();result=description(point)
     monkeypatch.setenv('OPENAI_API_KEY','test-key')
