@@ -108,12 +108,12 @@ const storedRoutePositions=read('perly:route-positions',[])
 const pointPositions=ref(Array.isArray(storedRoutePositions)?storedRoutePositions.filter(p=>p&&selected.value.includes(p.id)&&Number.isFinite(p.lat)&&Math.abs(p.lat)<=90&&Number.isFinite(p.lng)&&Math.abs(p.lng)<=180):[])
 const startPositionLocked=ref(pointPositions.value.some(p=>p.id===-9000000000001))
 const navigating=ref(false),navigationReturnView=ref(null),navigationDestination=ref(null),navigationOrigin=ref(null),directTransport=ref('walk')
-watch(userLocation,point=>{if(navigating.value&&navigationDestination.value&&point)navigationOrigin.value={...point}})
+watch(userLocation,point=>{if(navigating.value&&navigationDestination.value&&!navigationOrigin.value&&point)navigationOrigin.value={...point}})
 function openPlaceNavigation(place){detail.value=place;directTransport.value=transport.value==='bike'?'bike':'walk';modal.value='navigate-place'}
 const googleNavigationUrl=computed(()=>detail.value?'https://www.google.com/maps/dir/?'+new URLSearchParams({api:'1',destination:detail.value.details?.coordinate_accuracy==='street'&&detail.value.details?.address?detail.value.details.address+', Polska':detail.value.lat+','+detail.value.lng,travelmode:directTransport.value==='bike'?'bicycling':'walking'}):'')
 async function startPlaceNavigation(){
  navigationReturnView.value=view.value;navigationDestination.value={...detail.value}
- navigationOrigin.value=userLocation.value?{...userLocation.value}:readAddress()?.location||null
+ navigationOrigin.value=userLocation.value?{...userLocation.value}:null
  modal.value=null;await nextTick();navigating.value=true;if(!userLocation.value)locate()
 }
 const tripLibraryView=ref(read('perly:trip-view','list')==='tiles'?'tiles':'list')
@@ -127,7 +127,7 @@ const gpsStartId=-9000000000001
 const plannerPlaceCount=computed(()=>selected.value.filter(id=>id!==gpsStartId).length)
 const plannerCountLabel=computed(()=>{const n=plannerPlaceCount.value;return n===1?'miejsce':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'miejsca':'miejsc'})
 watch([()=>plannerStartPoint.value||userLocation.value,()=>view.value,()=>selected.value[0],startPositionLocked],([point,current])=>{
- if(current!=='explore'||editingRoute.value||startPositionLocked.value)return
+ if(current!=='explore'||navigating.value||editingRoute.value||startPositionLocked.value)return
  if(!point){
   if(selected.value.includes(gpsStartId)){selected.value=selected.value.filter(id=>id!==gpsStartId);routePoints.value=routePoints.value.filter(p=>p.id!==gpsStartId)}
   return
@@ -246,6 +246,9 @@ const directIds=computed(()=>navigationDestination.value&&navigationOrigin.value
 const directPoints=computed(()=>navigationOrigin.value?[{id:-9000000000002,name:'Punkt startowy',lat:navigationOrigin.value.lat,lng:navigationOrigin.value.lng}]:[])
 const directRoute=useRouting({ids:directIds,transport:directTransport,enabled:computed(()=>navigating.value&&!!navigationDestination.value),online:apiOnline,customPoints:directPoints})
 const navigationGeometry=computed(()=>navigationDestination.value?directRoute.route.value?.geometry||null:plannerGeometry.value)
+const navigationRoute=computed(()=>navigationDestination.value?directRoute.route.value:computedRoute.value)
+const navigationDistance=computed(()=>navigationRoute.value?tripDistance(navigationRoute.value):'—')
+const navigationDuration=computed(()=>navigationRoute.value?tripDuration(navigationRoute.value):'—')
 const navigationLoading=computed(()=>navigationDestination.value?directRoute.loading.value:routeLoading.value)
 const navigationError=computed(()=>!apiOnline.value?'Wyznaczanie trasy wymaga połączenia z serwerem.':navigationDestination.value?directRoute.error.value:routeError.value)
 function retryNavigation(){navigationDestination.value?directRoute.refresh():refreshRoute()}
@@ -408,7 +411,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 
  <footer class="content-width"><a class="footer-brand" href="#" @click.prevent="navigate('explore')"><BrandMark class="footer-brand-mark"/>Perły Ziemi Lubuskiej</a><span>Blisko natury. Bliżej siebie.</span><div><span :class="['connection-status',{online:apiOnline}]"></span>{{apiOnline?'Połączono z serwerem':'Tryb demonstracyjny · dane lokalne'}}</div><a href="/heritage-credits.html" target="_blank" rel="noopener noreferrer">Źródła i licencje</a><small>© {{new Date().getFullYear()}} Perły Ziemi Lubuskiej</small></footer>
 
- <TripNavigation v-if="navigating" :geometry="navigationGeometry" :position="userLocation" :locating="locating" :loading="navigationLoading" :error="navigationError" :location-error="locationError" @back="closeNavigation" @refresh="locate()" @retry="retryNavigation"/>
+ <TripNavigation v-if="navigating" :geometry="navigationGeometry" :distance="navigationDistance" :duration="navigationDuration" :position="userLocation" :locating="locating" :loading="navigationLoading" :error="navigationError" :location-error="locationError" @back="closeNavigation" @refresh="locate()" @retry="retryNavigation"/>
  <Transition name="toast"><div v-if="toast" class="toast-message" role="status"><Check :size="18"/>{{toast}}<button @click="toast=''" aria-label="Zamknij komunikat"><X :size="16"/></button></div></Transition>
  <div v-if="modal" class="modal-overlay" :class="{'planner-preview-overlay':modal==='planner-place'||modal==='navigate-place'}" @click.self="modal=null" @keydown.esc="modal=null" @keydown="trapFocus"><section class="modal" :class="{'planner-place-modal':modal==='planner-place'||modal==='navigate-place'}" role="dialog" aria-modal="true" :aria-label="modal==='detail'||modal==='planner-place'?detail.name:modal==='navigate-place'?'Nawiguj do: '+detail.name:modal==='route-point'?'Punkt trasy':modal==='add-place'?'Dodaj miejsce':modal==='ai'?'Asystent tras AI':modal==='auth'?'Konto użytkownika':modal==='add-route'?'Zapisz wycieczkę':modal==='save'?'Zapisz trasę':'Zapisane trasy'" tabindex="-1"><button class="modal-close icon-btn" @click="modal=null" aria-label="Zamknij okno"><X :size="22"/></button>
   <div v-if="modal==='planner-place'" class="planner-place-preview"><div class="planner-preview-heading"><img :src="detail.image" @error="imageFallback" :alt="detail.name"><div><span>{{detail.location}}</span><h2>{{detail.name}}</h2></div></div><p class="planner-preview-description">{{previewDescription(detail)}}</p><div class="detail-actions"><button class="button full-width" :disabled="selected.includes(detail.id)" @click="addToList(detail)"><Plus :size="17"/>{{selected.includes(detail.id)?'Na liście':'Dodaj do listy'}}</button></div><button class="planner-preview-more" @click="openDetail(detail)">Pełny opis i źródła <ArrowRight :size="14"/></button></div>

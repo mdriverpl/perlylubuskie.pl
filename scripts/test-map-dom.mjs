@@ -43,6 +43,14 @@ assert.equal(document.querySelector('path[stroke="#19744f"]'),null,'Removing the
 geometry.value={type:'LineString',coordinates:[[15.2922,52.3347],[15.3,52.34]]}
 focusLocation.value={lat:52.3347,lng:15.2922,zoom:15};await settle()
 assert.ok(document.querySelector('path[stroke="#1685d2"]'),'Following the GPS position keeps the route line visible')
+const stableRoutePath=document.querySelector('path[stroke="#1685d2"]')
+const stablePositionMarker=document.querySelector('path[fill="#1876d2"]')
+const startFlag=document.querySelector('.route-flag-start')
+userLocation.value={lat:52.3355,lng:15.294,accuracy:7}
+focusLocation.value={lat:52.3355,lng:15.294,zoom:15};await settle()
+assert.equal(document.querySelector('path[stroke="#1685d2"]'),stableRoutePath,'Moving GPS never removes/recreates the route line')
+assert.equal(document.querySelector('path[fill="#1876d2"]'),stablePositionMarker,'The existing position dot is moved in place')
+assert.equal(document.querySelector('.route-flag-start'),startFlag,'Moving GPS keeps the original start flag')
 routeSelected.value=[1,2,3];draggable.value=true;await settle()
 assert.ok(document.querySelector('.route-flag-start'),'A start flag replaces the first numbered stop')
 assert.ok(document.querySelector('.route-flag-end'),'A finish flag replaces the last numbered stop')

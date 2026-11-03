@@ -60,7 +60,7 @@ localStorage.removeItem('perly:map-provider')
 const places=Array.from({length:8},(_,i)=>({id:i+1,name:i===1?'<b>Bezpieczna nazwa</b>':'Miejsce '+i,lat:53.01+i*.000001,lng:18.6}))
 const selected=[],moved=[]
 const clusterApp=createApp(Component,{places,selected:[1],draggablePoints:true,onSelect:id=>selected.push(id),onMovePoint:p=>moved.push(p)});clusterApp.mount('#app');await settle()
-const markers=layers.at(-1).markers
+const markers=layers.findLast(layer=>layer.markers.some(marker=>marker.options.title)).markers
 assert.equal(markers.length,2,'Seven nearby points cluster while route point remains separate')
 const routePoint=markers.find(m=>m.options.draggable)
 assert.match(routePoint.options.icon.html,/chosen/)

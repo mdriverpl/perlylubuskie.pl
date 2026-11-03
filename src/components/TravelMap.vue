@@ -6,7 +6,7 @@ import {preferredMap,rememberMap,osmTileUrl} from '../mapPreferences.js'
 import {pointClusters,validMapPoint} from '../mapClusters.js'
 const props = defineProps({ places: Array, endpointPlaces:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
-let map, layer, markerLayer, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
+let map, layer, markerLayer, userLayer, userMarker, accuracyCircle, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
 const provider=ref('osm'), mapStyle=ref('terrain'), mapError=ref(''),switchingMap=ref(false)
 const osmAttribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 function hereAttribution(){
@@ -92,6 +92,24 @@ function drawFlag(point,kind,place){
  if(place)marker.on('dragend',()=>{const {lat,lng}=marker.getLatLng();emit('move-point',{id:place.id,lat:+lat.toFixed(6),lng:+lng.toFixed(6)})})
 }
 const mapElement=ref(null)
+function drawPosition(){
+ if(!map||!userLayer)return
+ const point=props.userLocation
+ if(validMapPoint(point)){
+  const latlng=[point.lat,point.lng]
+  if(userMarker)userMarker.setLatLng(latlng)
+  else userMarker=L.circleMarker(latlng,{radius:8,color:'#fff',weight:3,fillColor:'#1876d2',fillOpacity:1}).addTo(userLayer).bindTooltip('Tu jesteś')
+  if(Number.isFinite(point.accuracy)&&point.accuracy>0){
+   if(accuracyCircle)accuracyCircle.setLatLng(latlng).setRadius(point.accuracy)
+   else accuracyCircle=L.circle(latlng,{radius:point.accuracy,color:'#1876d2',weight:1,fillOpacity:.08}).addTo(userLayer)
+   userMarker.bringToFront()
+  }else if(accuracyCircle){userLayer.removeLayer(accuracyCircle);accuracyCircle=null}
+ }else{userLayer.clearLayers();userMarker=null;accuracyCircle=null}
+ const focus=props.focusLocation
+ if(!props.distanceArea&&validMapPoint(focus)&&focus!==lastFocus){
+  lastFocus=focus;map.setView([focus.lat,focus.lng],Number.isFinite(focus.zoom)?Math.max(8,Math.min(16,focus.zoom)):14,{animate:false})
+ }
+}
 function draw() {
  if (!map) return
  const catalogPoints=props.places.filter(p=>p.details?.kind!=='custom')
@@ -101,11 +119,6 @@ function draw() {
  layer.clearLayers()
  const nextClusterKey=JSON.stringify([props.places.map(p=>[p.id,p.lat,p.lng,p.details?.kind,p.name]).sort((a,b)=>a[0]-b[0]),props.selected,props.draggablePoints])
  if(nextClusterKey!==clusterKey){clusterIndex=pointClusters(props.places,props.selected);clusterKey=nextClusterKey;drawMarkers()}
- if(props.userLocation){
-  const {lat,lng,accuracy}=props.userLocation
-  if(accuracy)L.circle([lat,lng],{radius:accuracy,color:'#1876d2',weight:1,fillOpacity:.08}).addTo(layer)
-  L.circleMarker([lat,lng],{radius:8,color:'#fff',weight:3,fillColor:'#1876d2',fillOpacity:1}).addTo(layer).bindTooltip('Tu jesteś')
- }
  const area=props.distanceArea
  let distanceCircle
  if(validMapPoint(area)&&Number.isFinite(area.radiusKm)&&area.radiusKm>0){
@@ -144,7 +157,7 @@ onMounted(async () => {
   if(Number.isFinite(lat)&&Number.isFinite(lng)&&lat>=-90&&lat<=90&&lng>=-180&&lng<=180)emit('create-point',{lat:+lat.toFixed(6),lng:+lng.toFixed(6)})
  })
  setTiles();map.on('moveend zoomend',()=>{updateAttribution();drawMarkers()})
- layer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map);draw()
+ layer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map);userLayer=L.layerGroup().addTo(map);draw();drawPosition()
  if(typeof ResizeObserver!=='undefined'){
   resizeObserver=new ResizeObserver(()=>{if(!disposed){map.invalidateSize({pan:false});lastViewportKey=undefined;draw()}})
   resizeObserver.observe(mapElement.value)
@@ -153,7 +166,8 @@ onMounted(async () => {
 })
 watch(mapStyle,setTiles)
 watch(()=>props.trackOnly,setTiles)
-watch(()=>[props.selected,props.places,props.geometry,props.userLocation,props.searchLocation,props.draggablePoints,props.focusLocation,props.distanceArea,props.endpointPlaces],draw,{deep:true})
+watch(()=>[props.selected,props.places,props.geometry,props.searchLocation,props.draggablePoints,props.distanceArea,props.endpointPlaces],draw,{deep:true})
+watch(()=>[props.userLocation,props.focusLocation],drawPosition,{deep:true})
 onBeforeUnmount(()=>{disposed=true;resizeObserver?.disconnect();map?.remove();tiles?.off()})
 </script>
 <template><div class="travel-map" :class="{'track-only':trackOnly}"><div ref="mapElement" class="travel-map-canvas" aria-label="Mapa miejsc i tras w Polsce"></div><div v-if="!minimal&&!trackOnly" class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div><div v-if="provider==='here'&&!minimal&&!trackOnly" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div><p v-if="mapError" class="map-provider-error" role="status">{{mapError}}</p></div></template>

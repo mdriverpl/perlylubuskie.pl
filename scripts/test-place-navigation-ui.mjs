@@ -8,7 +8,7 @@ globalThis.requestAnimationFrame=window.requestAnimationFrame.bind(window);globa
 window.scrollTo=()=>{};Element.prototype.scrollIntoView=()=>{}
 let gpsCalls=0,deliver
 const requests=[]
-Object.defineProperty(navigator,'geolocation',{value:{getCurrentPosition(success){gpsCalls++;deliver=()=>success({coords:{latitude:52.3,longitude:15.3,accuracy:8}})}}})
+Object.defineProperty(navigator,'geolocation',{value:{watchPosition(success){gpsCalls++;deliver=(latitude=52.3,longitude=15.3)=>success({coords:{latitude,longitude,accuracy:8}});return gpsCalls},clearWatch(){}}})
 localStorage.setItem('perly-route','[1,5]')
 const geometry={type:'LineString',coordinates:[[15.3,52.3],[15.292786,52.334686]]}
 globalThis.fetch=async(path,options={})=>{
@@ -43,6 +43,16 @@ deliver();await waitFor(()=>requests.length>0&&JSON.parse(document.querySelector
 assert.deepEqual(requests.at(-1).place_ids,[-9000000000002,place.id])
 assert.equal(requests.at(-1).transport,'walk')
 assert.deepEqual(requests.at(-1).custom_points,[{id:-9000000000002,name:'Punkt startowy',lat:52.3,lng:15.3}])
+assert.match(document.querySelector('.navigation-metrics').textContent,/3 km/)
+assert.match(document.querySelector('.navigation-metrics').textContent,/30 min/)
+const routeCalls=requests.length
+for(const lat of [52.301,52.302,52.303]){
+ deliver(lat,15.31);await settle()
+ assert.equal(document.querySelector('.navigation-status'),null,'New GPS readings never flash the route loading message')
+}
+await new Promise(r=>setTimeout(r,450));await settle()
+assert.equal(requests.length,routeCalls,'Direct navigation calculates its route once across GPS updates')
+assert.equal(document.querySelector('.trip-navigation .test-explore-map').dataset.userLat,'52.303')
 assert.equal(localStorage.getItem('perly-route'),'[1,5]','Single-place navigation never overwrites the planned trip')
 await click(document.querySelector('.navigation-back'))
 assert.equal(window.location.pathname,'/miejsca')
