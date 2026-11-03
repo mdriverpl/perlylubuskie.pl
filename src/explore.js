@@ -10,7 +10,7 @@ export const placeFacets = [
  { id:'restaurants', name:'Restauracje', icon:'utensils', match:p=>p.details?.kind!=='inspiration'&&(p.category==='food'||p.details?.categories?.includes('food')) },
 ]
 export const defaultPlaceFacets=placeFacets.filter(f=>!['stays','wineries','restaurants'].includes(f.id)).map(f=>f.id)
-export function normalizeRegion(value){return value.trim().toLocaleLowerCase('pl').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ł/g,'l').replace(/^woj(?:ewodztwo)?\.?\s*/,'').trim()}
+export function normalizeRegion(value){return value.trim().toLocaleLowerCase('pl').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ł/g,'l').replace(/^woj(?:ewodztwo)?\.?\s*:?\s*/,'').trim()}
 export function matchesRegion(value){return ['lubuskie','ziemia lubuska'].includes(normalizeRegion(value))}
 export function provinceSlug(value){
  const name=normalizeRegion(value).replace(/[\s–—-]+/g,'')

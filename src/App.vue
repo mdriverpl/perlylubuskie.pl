@@ -52,7 +52,7 @@ import AddPlaceForm from './components/AddPlaceForm.vue'
 import { sanitizeCustomPoints } from './customPoints.js'
 import { useRouting, buildGpx } from './useRouting.js'
 import {useTripMetrics,tripDistance,tripDuration} from './useTripMetrics.js'
-import {readAddress} from './rememberedAddress.js'
+import {readAddress,forgetAddress} from './rememberedAddress.js'
 import { distanceKm, placeFacets } from './explore.js'
 import {readApiJson} from './apiResponse.js'
 import { useGeolocation, geolocationKey } from './useGeolocation.js'
@@ -258,7 +258,13 @@ watch(saved,v=>localStorage.setItem('perly-saved',JSON.stringify(v)),{deep:true}
 async function api(path,options={}) {const response=await fetch(`/api${path}`,{signal:AbortSignal.timeout(8000),...options, headers:{'Content-Type':'application/json',...(token.value?{Authorization:`Bearer ${token.value}`} :{}),...options.headers}});return readApiJson(response)}
 function notify(message){toast.value=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.value='',4000)}
 function navigate(target){catalogFacet.value='';plannerFocus.value=null;routeIsPublic.value=false;routePreview.value=false;previewRoute.value=null;editingRoute.value=null;view.value=target;menu.value=false;onlyFavorites.value=false;category.value='all';query.value='';window.scrollTo({top:0,behavior:'smooth'})}
-function openProvince(slug){selectedRegion.value=slug;navigate('places')}
+function openProvince(slug){
+ const region=regions.value.find(item=>item.slug===slug)
+ if(!region)return
+ forgetAddress()
+ try{localStorage.setItem('perly:places-query','Województwo: '+region.name)}catch{}
+ selectedRegion.value=slug;navigate('places')
+}
 function focusSearch(){navigate('places');nextTick(()=>document.getElementById('explore-query')?.focus())}
 function chooseCategory(id){if(id==='bike'||id==='walk'){transport.value=id;trailFilter.value=trailFilter.value===id?'all':id;document.querySelector('#trails')?.scrollIntoView({behavior:'smooth'});return}category.value=category.value===id?'all':id;document.querySelector('#places')?.scrollIntoView({behavior:'smooth',block:'start'})}
 async function toggleFavorite(id){const exists=favorites.value.includes(id);favorites.value=exists?favorites.value.filter(x=>x!==id):[...favorites.value,id];if(user.value&&apiOnline.value&&id>0){try{await api(`/favorites/${id}`,{method:exists?'DELETE':'PUT'})}catch(e){favorites.value=exists?[...favorites.value,id]:favorites.value.filter(x=>x!==id);notify(e.message)}}}
@@ -318,7 +324,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 </style>
 
 <template>
- <header class="site-header">
+ <header class="site-header responsive-header">
   <a href="#" class="brand" @click.prevent="navigate('explore')" aria-label="Perły Ziemi Lubuskiej — strona główna">
    <BrandMark class="brand-mark"/>
    <span class="brand-name">Perły<br>Ziemi Lubuskiej</span>
@@ -326,7 +332,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
   <nav :class="{open:menu}" class="main-navigation" aria-label="Nawigacja główna">
    <button :class="{active:view==='discover'&&!onlyFavorites}" :aria-current="view==='discover'&&!onlyFavorites?'page':undefined" @click="navigate('discover')"><House :size="19" aria-hidden="true"/>Start</button>
    <button :class="{active:view==='places'}" :aria-current="view==='places'?'page':undefined" @click="navigate('places')"><MapPin :size="19" aria-hidden="true"/>Miejsca</button>
-   <button :class="{active:view==='explore','planner-just-added':plannerAddNotice}" :aria-current="view==='explore'?'page':undefined" @click="navigate('explore')" data-nav-label="Planer"><Route :size="19" aria-hidden="true"/>Planer <span :key="'count-'+plannerPlaceCount" class="planner-nav-count" aria-live="polite">({{plannerPlaceCount}} {{plannerCountLabel}})</span><span v-if="plannerAddNotice" :key="'notice-'+plannerNoticeVersion" class="planner-added-bubble" role="status"><Check :size="14"/>Dodano miejsce</span></button>
+   <button :class="{active:view==='explore','planner-just-added':plannerAddNotice}" :aria-current="view==='explore'?'page':undefined" @click="navigate('explore')" data-nav-label="Planer"><Route :size="19" aria-hidden="true"/>Planer <span :key="'count-'+plannerPlaceCount" class="planner-nav-count" :data-count="plannerPlaceCount" aria-live="polite">({{plannerPlaceCount}} {{plannerCountLabel}})</span><span v-if="plannerAddNotice" :key="'notice-'+plannerNoticeVersion" class="planner-added-bubble" role="status"><Check :size="14"/>Dodano miejsce</span></button>
    <button :class="{active:['trips','walking','cycling','planner'].includes(view)}" :aria-current="['trips','walking','cycling','planner'].includes(view)?'page':undefined" @click="navigate('trips')"><Compass :size="19" aria-hidden="true"/>Wycieczki</button>
    <button v-if="user?.is_superadmin" :class="{active:view==='admin'}" @click="navigate('admin')">Administracja</button>
   </nav>
@@ -532,3 +538,26 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 <style>.place-navigation-choice{padding:28px 23px 23px}.place-navigation-choice h2{font-size:22px;color:#245039;line-height:1.4;padding-right:22px}.place-navigation-choice>p{font-size:12px;line-height:1.7;color:#718568;margin:12px 0 18px}.place-navigation-choice>.button{min-height:48px;margin-top:10px;font-size:13px}.place-navigation-modes{display:flex;gap:8px;margin-bottom:20px}.place-navigation-modes button{display:flex;align-items:center;gap:7px;justify-content:center;flex:1;padding:10px;border:1px solid #d3dfc8;border-radius:8px;font-size:12px;color:#527448}.place-navigation-modes button[aria-pressed=true]{background:#e5f0d8;border-color:#8cac75;color:#19744f}.place-navigation-choice .button:focus-visible{outline:2px solid #19744f;outline-offset:3px}.detail-actions{flex-wrap:wrap}</style>
 
 <style>.footer-brand-mark{width:34px;height:30px;flex-shrink:0}@media(max-width:720px){.site-header .brand-name{display:none}.site-header .brand{gap:0;flex-shrink:0}.site-header .brand-mark{width:50px;height:48px}}</style>
+
+<style>
+@media(max-width:720px){
+ .site-header.responsive-header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:5px 12px;height:auto;min-height:108px;padding:7px 12px 0;position:relative}
+ .site-header.responsive-header .brand{grid-column:1;grid-row:1;justify-self:start}
+ .site-header.responsive-header .brand-mark{width:44px;height:42px}
+ .site-header.responsive-header .header-actions{grid-column:2;grid-row:1;justify-self:end;margin:0;gap:0}
+ .site-header.responsive-header .header-actions .login-btn{display:inline-flex;min-height:36px;max-width:190px;overflow:hidden;white-space:nowrap;padding:8px 12px;font-size:11px}
+ .site-header.responsive-header .search-nav,.site-header.responsive-header .favorites-nav,.site-header.responsive-header .header-actions .pwa-controls .pwa-install,.site-header.responsive-header .mobile-menu{display:none}
+ .site-header.responsive-header .pwa-controls{display:contents}
+ .site-header.responsive-header .pwa-messages{top:auto;bottom:16px;left:12px;right:12px;width:auto;max-width:none}
+ .site-header.responsive-header .main-navigation,.site-header.responsive-header .main-navigation.open{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-column:1/-1;grid-row:2;position:static;width:100%;height:auto;gap:0;padding:0;background:transparent;box-shadow:none;align-items:stretch}
+ .site-header.responsive-header .main-navigation button,.site-header.responsive-header .main-navigation.open button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:54px;height:auto;padding:7px 2px 9px;font-size:11px;line-height:1.2;text-align:center}
+ .site-header.responsive-header .main-navigation button>svg{width:18px;height:18px}
+ .site-header.responsive-header .main-navigation button.active:after{display:block;bottom:0;left:8px;right:8px;height:3px}
+ .site-header.responsive-header .main-navigation button:nth-child(n+5){grid-column:1/-1;flex-direction:row;min-height:36px}
+ .site-header.responsive-header .planner-nav-count{position:absolute;top:3px;right:calc(50% - 24px);width:16px;height:16px;font-size:0;line-height:0}
+ .site-header.responsive-header .planner-nav-count:after{content:attr(data-count);display:block;width:16px;height:16px;border-radius:50%;background:#e4f0d6;color:#19744f;font-size:9px;line-height:16px;text-align:center}
+ .site-header.responsive-header .planner-added-bubble{top:calc(100% + 8px)}
+}
+</style>
+
+<style>.brand-mark,.footer-brand-mark{object-fit:contain}</style>

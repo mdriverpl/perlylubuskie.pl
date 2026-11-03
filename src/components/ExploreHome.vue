@@ -119,12 +119,12 @@ async function findLocation(showMap=true){
   if(slug!=='all'&&!props.regions.some(r=>r.slug===slug)){
    await nextTick();clearTimeout(searchTimer);searchError.value='To województwo nie ma jeszcze opublikowanego katalogu miejsc.';return
   }
-  query.value='';clearLocation();forgetAddress();radius.value='';await nextTick();clearTimeout(searchTimer);emit('region',slug);return
+  query.value=slug==='all'?'Cała Polska':'Województwo: '+props.regions.find(r=>r.slug===slug).name;clearLocation();forgetAddress();radius.value='';await nextTick();clearTimeout(searchTimer);emit('region',slug);return
  }
  if(showMap)displayMode.value='map'
  await searchLocation(query.value)
 }
-const catalogQuery=computed(()=>searchedLocation.value&&(radius.value||sort.value==='distance')?'':query.value)
+const catalogQuery=computed(()=>{const slug=provinceSlug(query.value);return slug&&(slug==='all'||props.regions.some(r=>r.slug===slug))||searchedLocation.value&&(radius.value||sort.value==='distance')?'':query.value})
 const base=computed(()=>withinRadius(filterPlaces(catalogPlaces.value,region,catalogQuery.value,[])))
 const results=computed(()=>{const found=withinRadius(filterPlaces(catalogPlaces.value,region,catalogQuery.value,chosen.value));if(sort.value==='nearby')return sortNearby(found,distanceOrigin.value);if(sort.value==='local'&&distanceOrigin.value)return [...found].sort((a,b)=>(b.popularity??0)-(a.popularity??0)||distanceKm(distanceOrigin.value,a)-distanceKm(distanceOrigin.value,b));if(sort.value==='distance'&&sortOrigin.value)return [...found].sort((a,b)=>distanceKm(sortOrigin.value,a)-distanceKm(sortOrigin.value,b)||a.name.localeCompare(b.name,'pl'));return [...found].sort((a,b)=>sort.value==='name'?a.name.localeCompare(b.name,'pl'):(sort.value==='likes'?(b.like_count??0)-(a.like_count??0):sort.value==='comments'?(b.comment_count??0)-(a.comment_count??0):(b.popularity??0)-(a.popularity??0)))})
 const viewModes=computed(()=>[{id:'list',name:'Lista',label:'Widok listy',icon:List},{id:'grid',name:'Kafelki',label:'Widok kafelków',icon:Grid2X2},...(props.catalogOnly?[{id:'small',name:'Małe kafelki',label:'Widok małych kafelków',icon:Grid3X3}]:[]),{id:'map',name:'Mapa',label:'Widok mapy',icon:Map}])
