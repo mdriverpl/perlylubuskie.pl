@@ -41,7 +41,7 @@ assert.match(document.querySelector('.planned-route-stats').textContent,/4 km/)
 assert.match(document.querySelector('.planned-route-stats').textContent,/1 h/)
 document.querySelector('.planned-actions button:nth-child(2)').click();await nextTick();await waitDraftRoute()
 assert.deepEqual(requests.at(-1).place_ids,JSON.parse(localStorage.getItem('perly-route')),'Reordering draft points recalculates their connections')
-document.querySelector('.gps-toggle').click();await settle()
+document.querySelector('.map-locate-button').click();await settle()
 gpsSuccess({coords:{latitude:52.3,longitude:15.2,accuracy:10}});await nextTick();await waitDraftRoute()
 const gpsRequest=requests.at(-1),startId=gpsRequest.place_ids[0]
 assert.equal(startId,-9000000000001,'Current GPS position is the first route stop')

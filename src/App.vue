@@ -36,6 +36,7 @@ import Navigation from "lucide-vue-next/dist/esm/icons/navigation.js"
 import Mail from "lucide-vue-next/dist/esm/icons/mail.js"
 import { places as initialPlaces, categories, trails } from './data'
 import TravelMap from './components/TravelMap.vue'
+import BrandMark from './components/BrandMark.vue'
 import TripNavigation from './components/TripNavigation.vue'
 import Grid2X2 from 'lucide-vue-next/dist/esm/icons/grid-2x2.js'
 import PlaceCommunity from './components/PlaceCommunity.vue'
@@ -54,7 +55,6 @@ import {useTripMetrics,tripDistance,tripDuration} from './useTripMetrics.js'
 import {readAddress} from './rememberedAddress.js'
 import { distanceKm, placeFacets } from './explore.js'
 import {readApiJson} from './apiResponse.js'
-import LocateFixed from 'lucide-vue-next/dist/esm/icons/locate-fixed.js'
 import { useGeolocation, geolocationKey } from './useGeolocation.js'
 const geolocation=useGeolocation()
 provide(geolocationKey,geolocation)
@@ -320,8 +320,8 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 <template>
  <header class="site-header">
   <a href="#" class="brand" @click.prevent="navigate('explore')" aria-label="Perły Ziemi Lubuskiej — strona główna">
-   <svg class="brand-mark" viewBox="0 0 76 70" aria-hidden="true"><circle cx="53" cy="21" r="13" fill="#f5b82f"/><path d="M22 5 5 27h10L2 43h40L30 27h9Z" fill="#19754f"/><path d="m39 20-11 15h6l-8 12h27l-9-12h6Z" fill="#268459"/><path d="M7 52q18-12 37-3t28-1l-8 9q-19-8-35 1T7 52" fill="#087eac"/><path d="M15 63q16-8 31-3t16 1q-21 13-47 2" fill="#0b95bd"/><path d="M21 38v12" stroke="#fff" stroke-width="3"/></svg>
-   <span>Perły<br>Ziemi Lubuskiej</span>
+   <BrandMark class="brand-mark"/>
+   <span class="brand-name">Perły<br>Ziemi Lubuskiej</span>
   </a>
   <nav :class="{open:menu}" class="main-navigation" aria-label="Nawigacja główna">
    <button :class="{active:view==='discover'&&!onlyFavorites}" :aria-current="view==='discover'&&!onlyFavorites?'page':undefined" @click="navigate('discover')"><House :size="19" aria-hidden="true"/>Start</button>
@@ -330,7 +330,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
    <button :class="{active:['trips','walking','cycling','planner'].includes(view)}" :aria-current="['trips','walking','cycling','planner'].includes(view)?'page':undefined" @click="navigate('trips')"><Compass :size="19" aria-hidden="true"/>Wycieczki</button>
    <button v-if="user?.is_superadmin" :class="{active:view==='admin'}" @click="navigate('admin')">Administracja</button>
   </nav>
-  <div class="header-actions"><button class="gps-toggle" :class="{active:!!userLocation}" :aria-pressed="!!userLocation" :aria-busy="locating" :aria-label="locating?'Anuluj ustalanie pozycji GPS':userLocation?'Wyłącz GPS':'Włącz GPS'" :title="userLocation?'Wyłącz odczyt lokalizacji':'Odczytaj moją pozycję GPS'" @click="userLocation||locating?stopGps():locate()"><LocateFixed :size="18"/><span>{{locating?'GPS…':userLocation?'GPS ON':'GPS OFF'}}</span></button><PwaControls/><button class="icon-btn search-nav" aria-label="Szukaj miejsc" @click="focusSearch"><Search :size="22"/></button><button class="icon-btn favorites-nav" aria-label="Ulubione miejsca" @click="showFavorites"><Heart :size="23"/><span v-if="favorites.length" class="count-dot">{{favorites.length}}</span></button><button v-if="!user" class="button login-btn" @click="modal='auth'">Zaloguj się <ArrowUpRight :size="15"/></button><button v-else class="button login-btn" @click="logout">{{user.name || 'Wyloguj'}} <LogOut :size="16"/></button><button class="icon-btn mobile-menu" @click="menu=!menu" aria-label="Otwórz menu"><Menu/></button></div>
+  <div class="header-actions"><PwaControls/><button class="icon-btn search-nav" aria-label="Szukaj miejsc" @click="focusSearch"><Search :size="22"/></button><button class="icon-btn favorites-nav" aria-label="Ulubione miejsca" @click="showFavorites"><Heart :size="23"/><span v-if="favorites.length" class="count-dot">{{favorites.length}}</span></button><button v-if="!user" class="button login-btn" @click="modal='auth'">Zaloguj się <ArrowUpRight :size="15"/></button><button v-else class="button login-btn" @click="logout">{{user.name || 'Wyloguj'}} <LogOut :size="16"/></button><button class="icon-btn mobile-menu" @click="menu=!menu" aria-label="Otwórz menu"><Menu/></button></div>
  </header>
  <div v-if="locationError" class="gps-status gps-error">
   <p role="alert">{{locationError}}</p>
@@ -399,7 +399,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 
  <main v-else-if="view!=='admin'" class="about-page content-width"><div class="section-kicker">DOBRZE BYĆ BLISKO</div><h1>Ziemia Lubuska.<br><em>Naturalnie niezwykła.</em></h1><img src="/images/hero.webp" alt="Jezioro i zamek otoczone lasem"><div class="about-copy"><h2>Przestrzeń na małe odkrycia</h2><p>Między jeziorami, lasami i historycznymi miasteczkami czeka region, który najlepiej poznaje się bez pośpiechu. Od Łagowa po Park Mużakowski, od podziemnych historii po rozlewiska Warty — znajdź własny powód, żeby tu wrócić.</p><p>Perły Ziemi Lubuskiej to projekt pomagający zbierać pomysły na wycieczki. Opisy i zdjęcia mają charakter inspiracyjny. Przed wyjazdem sprawdź godziny otwarcia i dostępność wybranych atrakcji.</p><button class="button" @click="navigate('discover')">Znajdź swoją perłę <ArrowRight :size="18"/></button></div></main>
 
- <footer class="content-width"><a class="footer-brand" href="#" @click.prevent="navigate('explore')"><Trees :size="25"/>Perły Ziemi Lubuskiej</a><span>Blisko natury. Bliżej siebie.</span><div><span :class="['connection-status',{online:apiOnline}]"></span>{{apiOnline?'Połączono z serwerem':'Tryb demonstracyjny · dane lokalne'}}</div><a href="/heritage-credits.html" target="_blank" rel="noopener noreferrer">Źródła i licencje</a><small>© {{new Date().getFullYear()}} Perły Ziemi Lubuskiej</small></footer>
+ <footer class="content-width"><a class="footer-brand" href="#" @click.prevent="navigate('explore')"><BrandMark class="footer-brand-mark"/>Perły Ziemi Lubuskiej</a><span>Blisko natury. Bliżej siebie.</span><div><span :class="['connection-status',{online:apiOnline}]"></span>{{apiOnline?'Połączono z serwerem':'Tryb demonstracyjny · dane lokalne'}}</div><a href="/heritage-credits.html" target="_blank" rel="noopener noreferrer">Źródła i licencje</a><small>© {{new Date().getFullYear()}} Perły Ziemi Lubuskiej</small></footer>
 
  <TripNavigation v-if="navigating" :geometry="navigationGeometry" :position="userLocation" :locating="locating" :loading="navigationLoading" :error="navigationError" :location-error="locationError" @back="closeNavigation" @refresh="locate()" @retry="retryNavigation"/>
  <Transition name="toast"><div v-if="toast" class="toast-message" role="status"><Check :size="18"/>{{toast}}<button @click="toast=''" aria-label="Zamknij komunikat"><X :size="16"/></button></div></Transition>
@@ -530,3 +530,5 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 <style>.route-library-copy{display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:10px;color:#19744f;border:1px solid #d5e2cb;border-radius:7px;font-size:11px;flex-shrink:0}.route-library-copy:disabled{opacity:.5;cursor:wait}</style>
 
 <style>.place-navigation-choice{padding:28px 23px 23px}.place-navigation-choice h2{font-size:22px;color:#245039;line-height:1.4;padding-right:22px}.place-navigation-choice>p{font-size:12px;line-height:1.7;color:#718568;margin:12px 0 18px}.place-navigation-choice>.button{min-height:48px;margin-top:10px;font-size:13px}.place-navigation-modes{display:flex;gap:8px;margin-bottom:20px}.place-navigation-modes button{display:flex;align-items:center;gap:7px;justify-content:center;flex:1;padding:10px;border:1px solid #d3dfc8;border-radius:8px;font-size:12px;color:#527448}.place-navigation-modes button[aria-pressed=true]{background:#e5f0d8;border-color:#8cac75;color:#19744f}.place-navigation-choice .button:focus-visible{outline:2px solid #19744f;outline-offset:3px}.detail-actions{flex-wrap:wrap}</style>
+
+<style>.footer-brand-mark{width:34px;height:30px;flex-shrink:0}@media(max-width:720px){.site-header .brand-name{display:none}.site-header .brand{gap:0;flex-shrink:0}.site-header .brand-mark{width:50px;height:48px}}</style>
