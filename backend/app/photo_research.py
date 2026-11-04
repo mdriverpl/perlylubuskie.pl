@@ -57,6 +57,8 @@ def find_photo(place):
     entities=sources.wikidata_entities([qid]) if qid else {}
     image,photo,_=sources.obtain_photo(candidate,{},entities)
     if image:return image,photo,'Powiązany rekord Wikidata / OpenStreetMap'
+    if (details.get('lake_catalog') or {}).get('unnamed'):
+        return '',None,'Jezioro bez nazwy: brak fotografii przypisanej bezpośrednio do rekordu źródłowego.'
     tokens=_name_tokens(place['name'])
     if not tokens:return '',None,'Brak jednoznacznej nazwy do przypisania fotografii.'
     town=place['location'].split('·')[0].strip()
@@ -95,7 +97,7 @@ def create_run(region='lubuskie',run_id=None,initialize_only=False):
         exists=db.scalar(text('SELECT id FROM photo_research_runs WHERE id=:id FOR UPDATE'),{'id':run_id})
         if exists and initialize_only:return run_id
         if not exists:db.execute(text("INSERT INTO photo_research_runs(id,region,status) VALUES (:id,:region,'running')"),{'id':run_id,'region':region})
-        db.execute(text("INSERT INTO photo_research_tasks(run_id,place_id) SELECT :run,id FROM places WHERE region=:region AND (image LIKE '%placeholder.svg' OR image='') ON CONFLICT DO NOTHING"),{'run':run_id,'region':region})
+        db.execute(text("INSERT INTO photo_research_tasks(run_id,place_id) SELECT :run,id FROM places WHERE region=:region AND (image LIKE '%placeholder.svg' OR image='' OR image LIKE '/images/lake-maps/%.webp') ON CONFLICT DO NOTHING"),{'run':run_id,'region':region})
         if exists:
             db.execute(text("UPDATE photo_research_tasks SET status='pending',message='' WHERE run_id=:run AND status IN ('failed','missing','running')"),{'run':run_id})
             db.execute(text("UPDATE photo_research_runs SET status='running',error='',updated_at=now() WHERE id=:id"),{'id':run_id})
@@ -136,7 +138,8 @@ def process_one(run_id):
         db.execute(text('UPDATE photo_research_runs SET current_name=:name,updated_at=now() WHERE id=:run'),{'run':run_id,'name':place.name});db.commit()
     pause=False
     try:
-        if not record['image'].endswith('placeholder.svg') and record['image']:
+        from .map_previews import has_photo
+        if has_photo(record['image'],record['details']):
             image,photo,message='',None,'Fotografia została już uzupełniona.';status='added'
         else:
             image,photo,message=find_photo(record);status='added' if image else 'missing'
@@ -147,7 +150,7 @@ def process_one(run_id):
         state=db.scalar(text('SELECT status FROM photo_research_runs WHERE id=:run FOR UPDATE'),{'run':run_id})
         if state!='running':return False
         place=db.scalar(select(Place).where(Place.id==place_id).with_for_update())
-        if image and photo and place and place.image.endswith('placeholder.svg'):
+        if image and photo and place and not has_photo(place.image,place.details):
             place.image=image;place.details={**(place.details or {}),'photo':{**photo,'checked_at':datetime.now(timezone.utc).date().isoformat()}}
         db.execute(text('UPDATE photo_research_tasks SET status=:status,message=:message WHERE run_id=:run AND place_id=:id'),{'run':run_id,'id':place_id,'status':status,'message':message[:500]});db.commit()
         if pause:

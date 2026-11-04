@@ -31,6 +31,15 @@ assert.equal(contact.querySelector('a[target="_blank"]').href,'https://palace.ex
 assert.ok(disclosure.querySelector('a[href="'+source+'"]'),'Contact evidence stays available in sources')
 assert.ok(!disclosure.contains(contact),'Practical contact stays outside collapsed provenance')
 app.unmount()
+place.image='/images/lake-maps/test.webp';place.category='nature';place.details.kind='lake'
+place.details.map_preview={image:place.image,source_url:'https://www.openstreetmap.org/way/123',geometry_available:true}
+const mapApp=createApp(App);mapApp.mount('#app');await settle();await settle()
+assert.match(document.querySelector('.map-preview-badge').textContent,/OpenStreetMap/)
+document.querySelector('.place-title').click();await settle()
+assert.match(document.querySelector('.map-preview-note').textContent,/Podgląd mapy/)
+assert.ok(document.querySelector('.provenance-content a[href="https://www.openstreetmap.org/way/123"]'))
+assert.ok(!document.querySelector('.provenance-content').textContent.includes('Autor zdjęcia'),'A map crop must not inherit an unrelated photograph credit')
+mapApp.unmount()
 const Contact=(await import('../artifacts/place-contact-test.mjs')).default
 const lakeApp=createApp(Contact,{lakeInfo:{
  swimming:{status:'unknown',explanation:'Brak aktualnych danych.'},

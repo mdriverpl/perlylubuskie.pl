@@ -588,7 +588,8 @@ def process_job_step(job_id,event):
             continue
         with SessionLocal() as db:
             previous=db.get(Place,row['existing']) if row.get('existing') else None
-            skip_photo=previous and ((previous.details or {}).get('admin_managed') or not previous.image.endswith('placeholder.svg'))
+            from .map_previews import has_photo
+            skip_photo=previous and ((previous.details or {}).get('admin_managed') or has_photo(previous.image,previous.details))
         image,photo,photo_error=('',None,'') if skip_photo else obtain_photo(candidate,summary,entities)
         if stopped(job_id,event):return
         with SessionLocal() as db:
@@ -598,14 +599,14 @@ def process_job_step(job_id,event):
             if item.status!='pending':continue
             previous=existing_place(db,slug,candidate)
             if previous:
-                item.status='duplicate';item.place_id=previous.id;item.photo_added=bool(previous.image and not previous.image.endswith('placeholder.svg'))
+                item.status='duplicate';item.place_id=previous.id;item.photo_added=has_photo(previous.image,previous.details)
                 if lake_questions and candidate['kind']=='lake':
                     info=summary.get('lake_info') or verified_lake_info({},set())
                     old=(previous.details or {}).get('lake_info') or {}
                     for field in ('swimming','motorboats','beach'):
                         if info[field]['status']=='unknown' and (old.get(field) or {}).get('status') in ('yes','no'):info[field]=old[field]
                     previous.details={**(previous.details or {}),'lake_info':info};item.status='updated'
-                if image and not (previous.details or {}).get('admin_managed') and previous.image.endswith('placeholder.svg'):
+                if image and not (previous.details or {}).get('admin_managed') and not has_photo(previous.image,previous.details):
                     previous.image=image;previous.details={**(previous.details or {}),'photo':photo};item.status='updated';item.photo_added=True
             else:
                 sources=[{'title':candidate.get('source_name','OpenStreetMap — dane obiektu'),'url':candidate['source_url']}]+[source for source in summary['sources'] if source['url']!=candidate['source_url']]

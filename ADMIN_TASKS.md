@@ -117,6 +117,21 @@ wykonywanie kolejki. Wyniki i kolejka są zapisywane w PostgreSQL, pobrane zdję
 w `catalog_media`. Zatrzymanie zachowuje gotowe wyniki. Brak jednoznacznej
 fotografii na obsługiwanej licencji jest wykazywany w raporcie.
 
+Jeziora w Lubuskiem bez fotografii mają zapisane podglądy map: 430 plików
+WebP 1200 × 800 w `public/images/lake-maps/`. Są renderowane lokalnie z danych
+OSM/Geofabrik, bez pobierania kafelków publicznego serwera i bez AI. Dwa obiekty
+bez obrysu mają oznaczenie przybliżonej lokalizacji. Mapa zawiera atrybucję OSM,
+a szczegóły miejsca udostępniają źródło i licencję ODbL.
+
+`scripts/extract-lake-map-context.py` przygotowuje kontekst z regionalnego PBF;
+`scripts/render-lake-map-previews.py` generuje obrazy i manifest
+`backend/lake-map-previews.json`. Narzędzia lokalne wymagają Pillow, Shapely i
+pyosmium. Import manifestu przy starcie API uzupełnia tylko brakujące obrazy
+lub poprzednie podglądy, zachowując prawdziwe fotografie i pozostałe dane.
+`LAKE_MAP_PREVIEWS_IMPORT=0` wyłącza import. Ręczny Start zadania zdjęć może
+zastąpić mapę fotografią z potwierdzonym źródłem; dla jezior bez nazwy wymagane
+jest bezpośrednie powiązanie zdjęcia z rekordem OSM/Wikidata.
+
 Kolejne wdrożenia zachowują kontakty i fotografie pobrane na produkcji. Rejestr
 Wikimedia przy każdym zdjęciu zawiera autora, źródło i licencję. Zadania nie
 zastępują ręcznie dodanych fotografii ani społecznościowych danych miejsca.
