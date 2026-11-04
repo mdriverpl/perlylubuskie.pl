@@ -135,3 +135,19 @@ jest bezpośrednie powiązanie zdjęcia z rekordem OSM/Wikidata.
 Kolejne wdrożenia zachowują kontakty i fotografie pobrane na produkcji. Rejestr
 Wikimedia przy każdym zdjęciu zawiera autora, źródło i licencję. Zadania nie
 zastępują ręcznie dodanych fotografii ani społecznościowych danych miejsca.
+
+## Zdjęcia dodawane przez użytkowników
+
+Zalogowana osoba może dodać do 5 własnych zdjęć przy tworzeniu miejsca oraz
+uzupełnić je później w szczegółach swojego miejsca. Wymagane jest potwierdzenie
+prawa do publikacji. Inne konta nie mogą dodawać zdjęć do tego miejsca.
+Obsługiwane pliki: JPG, PNG, WebP, do 10 MB i 20 megapikseli. API sprawdza
+rzeczywisty format, obraca obraz według EXIF, zmniejsza do 1600 px i zapisuje
+WebP bez metadanych. Pierwsze zdjęcie jest główne, pozostałe tworzą galerię.
+
+Pliki i powiązanie z autorem są przechowywane w tabeli `place_photos` PostgreSQL;
+kopie zapasowe bazy obejmują również te obrazy. Przesyłanie używa autoryzowanego
+`POST /api/place-photos`, a zapis miejsca atomowo przypina wybrane identyfikatory.
+Nieprzypięte pliki nie są publiczne. Porzucone pliki starsze niż 24 h są usuwane
+przy kolejnym przesłaniu; limit wynosi 20 oczekujących plików i 30 na godzinę
+na konto. Dodawanie do istniejącego miejsca sprawdza `details.submitted_by`.

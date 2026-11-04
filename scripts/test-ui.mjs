@@ -1,4 +1,4 @@
-﻿// Component tests in jsdom; map tiles and visual layout require a real browser.
+// Component tests in jsdom; map tiles and visual layout require a real browser.
 import { JSDOM } from 'jsdom'
 import { parse, compileScript } from '@vue/compiler-sfc'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
@@ -32,7 +32,11 @@ await writeFile('artifacts/home-address-test.mjs',compileScript(homeAddress,{id:
 const pwa=parse(await readFile('src/components/PwaControls.vue','utf8')).descriptor
 await writeFile('artifacts/pwa-test.mjs',compileScript(pwa,{id:'test-pwa',inlineTemplate:true}).content)
 const addPlace=parse(await readFile('src/components/AddPlaceForm.vue','utf8')).descriptor
-await writeFile('artifacts/add-place-test.mjs',compileScript(addPlace,{id:'test-add-place',inlineTemplate:true}).content)
+const picker=parse(await readFile('src/components/PhotoPicker.vue','utf8')).descriptor
+await writeFile('artifacts/photo-picker-test.mjs',compileScript(picker,{id:'test-photo-picker',inlineTemplate:true}).content)
+const placePhotos=parse(await readFile('src/components/PlacePhotos.vue','utf8')).descriptor
+await writeFile('artifacts/place-photos-test.mjs',compileScript(placePhotos,{id:'test-place-photos',inlineTemplate:true}).content.replace("from './PhotoPicker.vue'","from './photo-picker-test.mjs'").replace("from '../placePhotos.js'","from '../src/placePhotos.js'").replace("from '../apiResponse.js'","from '../src/apiResponse.js'"))
+await writeFile('artifacts/add-place-test.mjs',compileScript(addPlace,{id:'test-add-place',inlineTemplate:true}).content.replace("from './PhotoPicker.vue'","from './photo-picker-test.mjs'"))
 const community=parse(await readFile('src/components/PlaceCommunity.vue','utf8')).descriptor
 await writeFile('artifacts/community-test.mjs',compileScript(community,{id:'test-community',inlineTemplate:true}).content.replace("from '../apiResponse.js'","from '../src/apiResponse.js'"))
 const navigationComponent=parse(await readFile('src/components/TripNavigation.vue','utf8')).descriptor
@@ -44,7 +48,7 @@ await writeFile('artifacts/ai-test.mjs',compileScript(ai,{id:'test-ai',inlineTem
 await writeFile('artifacts/trip-navigation-test.mjs',compileScript(navigationComponent,{id:'test-navigation-screen',inlineTemplate:true}).content.replace("import TravelMap from './TravelMap.vue'",mapStub).replace("from '../mapPreferences.js'","from '../src/mapPreferences.js'"))
 const exploreSource=compileScript(explore,{id:'test-explore',inlineTemplate:true}).content.replace("from '../explore.js'","from '../src/explore.js'").replace("from '../useGeolocation.js'","from '../src/useGeolocation.js'").replace("from '../useLocationSearch.js'","from '../src/useLocationSearch.js'").replace("from '../rememberedAddress.js'","from '../src/rememberedAddress.js'").replace("import TravelMap from './TravelMap.vue'",mapStub)
 await writeFile('artifacts/explore-test.mjs',exploreSource)
-await writeFile('artifacts/ui-test.mjs',source.replace("from './components/BrandMark.vue'","from './brand-mark-test.mjs'").replace("from './components/TripNavigation.vue'","from './trip-navigation-test.mjs'").replace("from './components/AdminRegions.vue'","from './admin-regions-test.mjs'").replace("import('./components/PolandRegions.vue')","import('./poland-regions-test.mjs')").replace("from './components/HomeAddressSearch.vue'","from './home-address-test.mjs'").replace("from './components/AiPlanner.vue'","from './ai-test.mjs'").replace("from './components/PwaControls.vue'","from './pwa-test.mjs'").replace("from './components/AddPlaceForm.vue'","from './add-place-test.mjs'").replace("const TravelMap = { template: '<div>Map stub</div>' }",mapStub).replace("import { createRouteCover } from './routeCover.js'", "const createRouteCover=async()=>{if(globalThis.failRouteCover)throw Error('Nie udało się pobrać mapy do zdjęcia.');return 'data:image/webp;base64,UklGRg=='}"))
+await writeFile('artifacts/ui-test.mjs',source.replace("from './components/BrandMark.vue'","from './brand-mark-test.mjs'").replace("from './components/TripNavigation.vue'","from './trip-navigation-test.mjs'").replace("from './components/AdminRegions.vue'","from './admin-regions-test.mjs'").replace("import('./components/PolandRegions.vue')","import('./poland-regions-test.mjs')").replace("from './components/HomeAddressSearch.vue'","from './home-address-test.mjs'").replace("from './components/AiPlanner.vue'","from './ai-test.mjs'").replace("from './components/PwaControls.vue'","from './pwa-test.mjs'").replace("from './components/AddPlaceForm.vue'","from './add-place-test.mjs'").replace("from './components/PlacePhotos.vue'","from './place-photos-test.mjs'").replace("from './placePhotos.js'","from '../src/placePhotos.js'").replace("const TravelMap = { template: '<div>Map stub</div>' }",mapStub).replace("import { createRouteCover } from './routeCover.js'", "const createRouteCover=async()=>{if(globalThis.failRouteCover)throw Error('Nie udało się pobrać mapy do zdjęcia.');return 'data:image/webp;base64,UklGRg=='}"))
 const App=(await import('../artifacts/ui-test.mjs')).default
 const app=createApp(App);app.mount('#app')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}

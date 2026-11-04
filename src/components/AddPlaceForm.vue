@@ -1,14 +1,16 @@
 <script setup>
 import {ref,computed,watch} from 'vue'
+import PhotoPicker from './PhotoPicker.vue'
 const props=defineProps({busy:Boolean,error:String,regions:{type:Array,default:()=>[]},initialRegion:{type:String,default:'lubuskie'}})
 const emit=defineEmits(['submit'])
+const photos=ref([]),rights=ref(false)
 const draft=ref({name:'',subtitle:'',location:'',description:'',place_type:'heritage',lat:null,lng:null,image:'',region:props.initialRegion})
 const types=[['castle','Zamek'],['palace','Pałac'],['vineyard','Winnica'],['food','Restauracja'],['lake','Jezioro'],['beach','Plaża'],['nature','Park lub przyroda'],['heritage','Zabytek'],['stay','Nocleg'],['leisure','Atrakcja rodzinna']]
 const allowedTypes=computed(()=>{const region=props.regions.find(r=>r.slug===draft.value.region);return region?types.filter(([id])=>region.allowed_types.includes(id)):types})
 watch(allowedTypes,value=>{if(value.length&&!value.some(([id])=>id===draft.value.place_type))draft.value.place_type=value[0][0]},{immediate:true})
 </script>
 <template>
- <form class="add-place-form modal-body" @submit.prevent="emit('submit',{...draft})">
+ <form class="add-place-form modal-body" @submit.prevent="emit('submit',{...draft,photos,photo_rights_confirmed:rights})">
   <div class="section-kicker">KATALOG MIEJSC</div><h2>Dodaj miejsce</h2>
   <p>Miejsce pojawi się we wspólnym katalogu. Inni będą mogli je polubić i skomentować.</p>
   <label>Nazwa<input id="new-place-name" v-model="draft.name" required maxlength="200" autocomplete="off"></label>
@@ -18,11 +20,14 @@ watch(allowedTypes,value=>{if(value.length&&!value.some(([id])=>id===draft.value
   <label>Krótki opis<input id="new-place-subtitle" v-model="draft.subtitle" maxlength="250"></label>
   <label>Opis<textarea id="new-place-description" v-model="draft.description" required maxlength="2000" rows="4"></textarea></label>
   <div class="place-coordinate-fields"><label>Szerokość geograficzna<input id="new-place-lat" v-model.number="draft.lat" required type="number" step="any" min="-90" max="90" placeholder="np. 51.95"></label><label>Długość geograficzna<input id="new-place-lng" v-model.number="draft.lng" required type="number" step="any" min="-180" max="180" placeholder="np. 15.70"></label></div>
-  <label>Link do zdjęcia (opcjonalnie)<input id="new-place-image" v-model="draft.image" type="url" pattern="https://.*" maxlength="2000" placeholder="https://…"></label>
+  <PhotoPicker v-model="photos" :disabled="busy"/>
+  <label v-if="photos.length" class="photo-rights"><input type="checkbox" v-model="rights" :disabled="busy" required> Dodaję własne zdjęcia i zgadzam się na ich publikację w tym serwisie.</label>
+  <label v-else>Link do zdjęcia (opcjonalnie)<input id="new-place-image" v-model="draft.image" type="url" pattern="https://.*" maxlength="2000" placeholder="https://…"></label>
   <p v-if="error" class="form-error" role="alert">{{error}}</p>
-  <button class="button full-width" type="submit" :disabled="busy||!draft.name.trim()||!draft.location.trim()||!draft.description.trim()||!Number.isFinite(draft.lat)||!Number.isFinite(draft.lng)">{{busy?'Zapisuję…':'Dodaj miejsce'}}</button>
+  <button class="button full-width" type="submit" :disabled="busy||(photos.length&&!rights)||!draft.name.trim()||!draft.location.trim()||!draft.description.trim()||!Number.isFinite(draft.lat)||!Number.isFinite(draft.lng)">{{busy?'Zapisuję miejsce i zdjęcia…':'Dodaj miejsce'}}</button>
  </form>
 </template>
 <style scoped>
+.photo-rights{display:flex!important;align-items:flex-start;gap:8px;line-height:1.7}.photo-rights input{width:16px!important;height:16px;margin:2px 0 0;flex-shrink:0}
 .add-place-form label{display:block;font-size:12px;font-weight:600;margin:16px 0}.add-place-form select{display:block;width:100%;margin-top:8px;padding:12px;border:1px solid #d5e2cb;background:white;border-radius:7px;font:inherit}.add-place-form textarea{width:100%;padding:12px;margin-top:8px;border:1px solid #d5e2cb;border-radius:7px;font:inherit;resize:vertical}.place-coordinate-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}.place-coordinate-fields label{min-width:0}.add-place-form .form-error{color:#a0442c}@media(max-width:480px){.place-coordinate-fields{grid-template-columns:1fr;gap:0}}
 </style>

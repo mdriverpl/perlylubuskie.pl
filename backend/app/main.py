@@ -15,7 +15,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr, Field
 from pwdlib import PasswordHash
-from sqlalchemy import create_engine, String, Text, Float, Boolean, ForeignKey, JSON, DateTime, UniqueConstraint, select, func, text, or_, cast, case
+from sqlalchemy import create_engine, String, Text, Float, Boolean, ForeignKey, JSON, DateTime, LargeBinary, UniqueConstraint, select, func, text, or_, cast, case
+from starlette.concurrency import run_in_threadpool
 from sqlalchemy.dialects.postgresql import insert, JSONB
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, Session
@@ -98,6 +99,15 @@ class Place(Base):
     details: Mapped[dict] = mapped_column(JSON, default=dict)
     region: Mapped[str] = mapped_column(String(40), default='lubuskie', index=True)
     research_key: Mapped[str | None] = mapped_column(String(100),nullable=True)
+
+
+class PlacePhoto(Base):
+    __tablename__='place_photos'
+    id: Mapped[str] = mapped_column(String(36),primary_key=True,default=lambda:str(uuid4()))
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id',ondelete='CASCADE'),index=True)
+    place_id: Mapped[int | None] = mapped_column(ForeignKey('places.id',ondelete='CASCADE'),nullable=True,index=True)
+    content: Mapped[bytes] = mapped_column(LargeBinary)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
 
 
 class RegionResearchJob(Base):
@@ -356,6 +366,8 @@ class PlaceInput(BaseModel):
     image: str = Field(default='', max_length=2000, pattern=r'^(?:https://[^\s]+)?$')
     region: str = Field(default='lubuskie', max_length=40)
     source_url: str = Field(default='', max_length=2000, pattern=r'^(?:https://[^\s]+)?$')
+    photo_ids: list[str] = Field(default_factory=list,max_length=5)
+    photo_rights_confirmed: bool = False
 
 
 def new_catalog_place(data, user, db):
@@ -375,8 +387,46 @@ def new_catalog_place(data, user, db):
 def create_place(data: PlaceInput, user: User = Depends(current_user), db: Session = Depends(get_db)):
     place = new_catalog_place(data,user,db)
     db.add(place)
+    if data.photo_ids:
+        from .user_photos import attach_photos
+        db.flush()
+        attach_photos(db,place,user,data.photo_ids,data.photo_rights_confirmed)
     db.commit()
     return place
+
+
+@app.post('/api/place-photos',status_code=201)
+async def upload_place_photo(request: Request,user: User=Depends(current_user),db: Session=Depends(get_db)):
+    from .user_photos import MAX_BYTES,normalize_photo,stage_photo
+    content=bytearray()
+    async for chunk in request.stream():
+        if len(content)+len(chunk)>MAX_BYTES:raise HTTPException(413,'Zdjęcie może mieć maksymalnie 10 MB.')
+        content.extend(chunk)
+    normalized=await run_in_threadpool(normalize_photo,bytes(content))
+    return await run_in_threadpool(stage_photo,db,user,normalized)
+
+
+@app.get('/api/place-photos/{photo_id}.webp')
+def public_place_photo(photo_id: str,db: Session=Depends(get_db)):
+    photo=db.scalar(select(PlacePhoto).where(PlacePhoto.id==photo_id,PlacePhoto.place_id.is_not(None)))
+    if not photo:raise HTTPException(404,'Nie znaleziono zdjęcia.')
+    return Response(photo.content,media_type='image/webp',headers={'Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'})
+
+
+class PhotoSelection(BaseModel):
+    photo_ids: list[str] = Field(min_length=1,max_length=5)
+    photo_rights_confirmed: bool = False
+
+
+@app.post('/api/places/{place_id}/photos')
+def add_place_photos(place_id: int,data: PhotoSelection,user: User=Depends(current_user),db: Session=Depends(get_db)):
+    from .user_photos import attach_photos
+    place=db.scalar(select(Place).where(Place.id==place_id).with_for_update())
+    if not place:raise HTTPException(404,'Nie znaleziono miejsca.')
+    if (place.details or {}).get('submitted_by')!=user.id:raise HTTPException(403,'Zdjęcia może dodawać osoba, która dodała to miejsce.')
+    attach_photos(db,place,user,data.photo_ids,data.photo_rights_confirmed)
+    db.commit()
+    return {'id':place.id,'image':place.image,'details':place.details}
 
 
 REGION_NAMES = {
