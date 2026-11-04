@@ -265,11 +265,14 @@ async def lifespan(app: FastAPI):
             updates['image']=case((keep_photo,Place.image),else_=statement.excluded.image)
             updates['details']=updates['details'].op('||')(case((keep_photo,func.jsonb_build_object('photo',Place.details['photo'])),else_=cast(text("'{}'"),JSONB)))
             updates['details']=updates['details'].op('||')(case((cast(Place.details,JSONB).has_key('lake_info'),func.jsonb_build_object('lake_info',Place.details['lake_info'])),else_=cast(text("'{}'"),JSONB)))
+            updates['details']=updates['details'].op('||')(case((cast(Place.details,JSONB).has_key('lake_catalog'),func.jsonb_build_object('lake_catalog',Place.details['lake_catalog'],'aliases',Place.details['aliases'],'sources',Place.details['sources'])),else_=cast(text("'{}'"),JSONB)))
             statement = statement.on_conflict_do_update(index_elements=[Place.id], set_=updates,where=Place.details['admin_managed'].as_boolean().is_not(True))
             db.execute(statement)
         db.commit()
     from .local_catalog import import_catalogs
     import_catalogs()
+    from .lake_catalog import import_catalogs as import_lakes
+    if os.environ.get('LAKE_CATALOG_IMPORT','1')!='0':import_lakes()
     if os.environ.get('REGION_RESEARCH_AUTO_RECOVER','0')=='1':region_research.recover_discovery_jobs()
     prompt_worker=prompt_tasks.start_worker()
     worker=region_research.start_worker()

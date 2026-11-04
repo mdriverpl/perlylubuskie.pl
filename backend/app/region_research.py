@@ -177,12 +177,7 @@ SELECT DISTINCT ?item ?label ?coord WHERE {{
 def discover_region(slug,allowed,max_places,group=None,progress=None):
     code=ISO_CODES.get(slug)
     if not code:raise ResearchError('Nieobsługiwane województwo.')
-    if group=='lake':
-        if progress:progress('Pobieram jeziora bezpośrednio z Wikidata.')
-        try:
-            items,total=discover_wikidata_lakes(slug,max_places)
-            if items:return items,total
-        except ResearchError:logger.warning('Wikidata lake discovery unavailable region=%s; trying other sources.',slug)
+    if group=='lake':return discover_lakes(slug,max_places,progress)
     if group:
         if progress:progress(f'Pobieram: {DISCOVERY_GROUPS[group][0]} z Wikimedia Commons i Wikidata.')
         try:
@@ -208,6 +203,39 @@ def discover_region(slug,allowed,max_places,group=None,progress=None):
             logger.warning('Region discovery source failed region=%s group=%s attempt=%s error_type=%s elapsed=%.1fs',slug,group,attempt,type(error).__name__,time.monotonic()-started)
             continue
     raise ResearchError('OpenStreetMap nie odpowiedziało poprawnie. Możesz wznowić zadanie później.')
+
+
+def discover_lakes(slug,max_places,progress=None):
+    """Union independent data sources; a non-empty source must not end discovery."""
+    found={};successful=False
+    def merge(items):
+        for item in items:
+            key=item['source_key']
+            if key in found:
+                old=found[key]
+                old['tags']={**old.get('tags',{}),**item.get('tags',{})}
+                old['alternate_sources']=list(dict.fromkeys([*old.get('alternate_sources',[]),item['source_url']]))
+            else:found[key]=item
+    for label,fetch in [('Wikidata',lambda:discover_wikidata_lakes(slug,5000)),('Wikimedia Commons',lambda:discover_commons(slug,'lake',5000))]:
+        if progress:progress(f'Znaleziono {len(found)} jezior. Sprawdzam: {label}.')
+        try:
+            items,_=fetch();merge(items);successful=True
+        except ResearchError:logger.warning('Lake discovery source unavailable region=%s source=%s',slug,label)
+    query=f'''[out:json][timeout:30];area["ISO3166-2"="PL-{ISO_CODES[slug]}"]["admin_level"="4"]->.region;({DISCOVERY_GROUPS['lake'][1]});out center tags;'''
+    for endpoint in ('https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter'):
+        if progress:progress(f'Znaleziono {len(found)} jezior. Uzupełniam listę z OpenStreetMap.')
+        try:
+            response=httpx.get(endpoint,params={'data':query},headers=HEADERS,timeout=httpx.Timeout(45,connect=10),follow_redirects=False)
+            response.raise_for_status()
+            if len(response.content)>30_000_000:raise ValueError('Too much data')
+            data=response.json()
+            if data.get('remark') or not isinstance(data.get('elements'),list):raise ValueError('Incomplete data')
+            merge(parse_candidates(data['elements'],['lake']));successful=True;break
+        except (httpx.HTTPError,ValueError):logger.warning('OSM lake discovery unavailable region=%s endpoint=%s',slug,endpoint)
+    if not successful:raise ResearchError('Źródła jezior są chwilowo niedostępne. Spróbuj ponownie później.')
+    items=list(found.values())
+    logger.info('Combined lake discovery region=%s count=%s',slug,len(items))
+    return items[:max_places],len(items)
 
 
 def wikidata_entities(ids):

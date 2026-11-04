@@ -1,5 +1,26 @@
 # Zadania administratora
 
+## Katalog jezior Lubuskiego
+
+Przy starcie API domyślnie działa addytywny import `backend/lake-catalogs/lubuskie.json`.
+Połączono regionalny wyciąg OSM/Geofabrik (pełne geometrie, dokładna granica
+województwa i nazwy gmin) z Wikidata. Katalog zawiera 508 pozycji, w tym 115
+akwenów bez nazwy w źródle. Zawiera m.in. Liwno/Zabór, Liwno Małe i Jezioro
+Droszkowskie. Nazwy jeziorne niekiedy odnoszą się do stawów lub starorzeczy;
+oryginalny typ wody jest zachowany w `details.lake_catalog.water_type`.
+
+Import dopasowuje identyfikatory, aliasy i zasięgi akwenów. Nie usuwa istniejących
+rekordów ani nie zmienia ich ID, opisów, zdjęć, kontaktów i lake_info. Nie
+zatrzymuje innych zadań. Wersja pliku jest zapisywana w `lake_catalog_imports`,
+więc restart nie powiela danych. Testy izolują import przez `LAKE_CATALOG_IMPORT=0`;
+test dedykowany sprawdza import bezpośrednio. Nie używa OpenAI ani płatnych tokenów.
+
+Źródłowy JSON jest dostępny jako `/lakes-lubuskie.json`, a atrybucja i licencje
+jako `/lakes-credits.html` (OSM: ODbL 1.0; Wikidata: CC0 1.0). Odtwarzanie:
+`scripts/extract-lubuskie-lakes.py` (wymaga osmium i shapely), następnie
+`scripts/build-lubuskie-lakes.py`. Pliki wejściowe są w `.tools/lubuskie-lakes-sources`.
+Publiczne źródła nie gwarantują kompletnego urzędowego rejestru wszystkich wód.
+
 ## Zadania z promptu
 
 Panel zawiera formularz promptu i listę zadań, bez oddzielnych sekcji dodawania

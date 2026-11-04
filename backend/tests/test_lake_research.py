@@ -33,6 +33,17 @@ def test_wikidata_lake_discovery_checks_identity_coordinates_and_region(monkeypa
     assert total==1 and items[0]['source_key']=='wd:Q123' and items[0]['kind']=='lake'
 
 
+def test_lake_discovery_unions_sources_instead_of_returning_the_first(monkeypatch):
+    import httpx
+    first={'source_key':'wd:Q123','source_url':'https://www.wikidata.org/wiki/Q123','name':'First','kind':'lake','wikidata':'Q123','tags':{}}
+    second={**first,'source_key':'wd:Q124','source_url':'https://www.wikidata.org/wiki/Q124','name':'Second','wikidata':'Q124'}
+    monkeypatch.setattr(research,'discover_wikidata_lakes',lambda *args:([first],1))
+    monkeypatch.setattr(research,'discover_commons',lambda *args:([second],1))
+    monkeypatch.setattr(research.httpx,'get',lambda *args,**kwargs:httpx.Response(200,request=httpx.Request('GET','https://overpass-api.de/api/interpreter'),json={'elements':[{'type':'way','id':12345,'center':{'lat':51.94,'lon':15.72},'tags':{'name':'Jezioro Zabór','natural':'water'}}]}))
+    items,total=research.discover_region('lubuskie',['lake'],5000,group='lake')
+    assert total==3 and {p['source_key'] for p in items}=={'wd:Q123','wd:Q124','osm:way:12345'}
+
+
 @pytest.mark.skipif(not os.environ.get('TEST_DATABASE_URL'),reason='Needs isolated PostgreSQL')
 def test_existing_lakes_are_enriched_before_discovery_failure_and_survive_restart(monkeypatch):
     os.environ['DATABASE_URL']=os.environ['TEST_DATABASE_URL']
