@@ -46,7 +46,7 @@ def test_map_import_preserves_photos_and_can_later_be_replaced_by_real_photo(tmp
     with TestClient(app):
         with SessionLocal() as db:
             place=db.get(Place,910001);original={'image':place.image,'details':deepcopy(place.details)}
-            place.image='/images/attraction-placeholder.svg';place.details={**place.details,'contact':{'phone':{'value':'123456789'}},'lake_info':{'beach':{'status':'unknown'}}}
+            place.image='/images/attraction-placeholder.svg';place.details={**place.details,'wikidata':'Q11727012','lake_catalog':{'source_keys':['wd:Q11727012']},'contact':{'phone':{'value':'123456789'}},'lake_info':{'beach':{'status':'unknown'}}}
             other=Place(id=db.scalar(text("SELECT nextval('submitted_place_ids')")),name='Keep real photo',subtitle='',location='Test',region='lubuskie',category='nature',
                         lat=52.8,lng=15.8,rating=0,description='Keep',image='/photos/real.webp',research_key=key,details={'kind':'lake','photo':{'author':'Real author'}})
             db.add(other);db.flush();other_id=other.id
@@ -64,6 +64,7 @@ def test_map_import_preserves_photos_and_can_later_be_replaced_by_real_photo(tmp
                 place=db.get(Place,910001)
                 assert place.image==image,'Map survives seed refresh while the seed still has no photo'
                 assert place.details['contact']['phone']['value']=='123456789' and place.details['lake_info']['beach']['status']=='unknown'
+                assert place.details['wikidata']=='Q11727012','Source identity survives seed refresh'
                 assert db.get(Place,other_id).image=='/photos/real.webp'
             photo_research.create_run('lubuskie',run)
             with engine.begin() as db:db.execute(text('DELETE FROM photo_research_tasks WHERE run_id=:run AND place_id<>910001'),{'run':run})

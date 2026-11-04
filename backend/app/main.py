@@ -266,6 +266,7 @@ async def lifespan(app: FastAPI):
             updates['details']=updates['details'].op('||')(case((keep_photo,func.jsonb_build_object('photo',Place.details['photo'])),else_=cast(text("'{}'"),JSONB)))
             updates['details']=updates['details'].op('||')(case((cast(Place.details,JSONB).has_key('lake_info'),func.jsonb_build_object('lake_info',Place.details['lake_info'])),else_=cast(text("'{}'"),JSONB)))
             updates['details']=updates['details'].op('||')(case((cast(Place.details,JSONB).has_key('lake_catalog'),func.jsonb_build_object('lake_catalog',Place.details['lake_catalog'],'aliases',Place.details['aliases'],'sources',Place.details['sources'])),else_=cast(text("'{}'"),JSONB)))
+            updates['details']=updates['details'].op('||')(case((cast(Place.details,JSONB).has_key('lake_catalog') & Place.details['wikidata'].as_string().is_not(None),func.jsonb_build_object('wikidata',Place.details['wikidata'])),else_=cast(text("'{}'"),JSONB)))
             keep_map=statement.excluded.image.like('%placeholder.svg') & (Place.details['map_preview']['image'].as_string()==Place.image)
             updates['image']=case((keep_map,Place.image),else_=updates['image'])
             updates['details']=updates['details'].op('||')(case((cast(Place.details,JSONB).has_key('map_preview'),func.jsonb_build_object('map_preview',Place.details['map_preview'])),else_=cast(text("'{}'"),JSONB)))

@@ -72,6 +72,13 @@ def import_catalogs(directory=None):
         for record in records:validate(record,slug)
         with SessionLocal() as db:
             db.execute(text('CREATE TABLE IF NOT EXISTS lake_catalog_imports (catalog VARCHAR(120) PRIMARY KEY,version VARCHAR(64) NOT NULL,imported_at TIMESTAMPTZ NOT NULL DEFAULT now())'))
+            # Older seed refreshes could drop the top-level ID while retaining
+            # the catalog's verified source identity. Restore only unambiguous IDs.
+            for place in db.scalars(select(Place).where(Place.region==slug,Place.details['kind'].as_string()=='lake')):
+                old=place.details or {}
+                ids={key[3:] for key in (old.get('lake_catalog') or {}).get('source_keys',[]) if re.fullmatch(r'wd:Q[1-9][0-9]*',key)}
+                if not old.get('wikidata') and len(ids)==1:place.details={**old,'wikidata':next(iter(ids))}
+            db.commit()
             if db.scalar(text('SELECT version FROM lake_catalog_imports WHERE catalog=:catalog'),{'catalog':path.name})==version:continue
             region=db.scalar(select(Region).where(Region.slug==slug).with_for_update())
             if not region:raise ValueError('Lake region must already exist')

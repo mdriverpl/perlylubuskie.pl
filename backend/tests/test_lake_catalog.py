@@ -53,7 +53,13 @@ def test_lake_import_is_additive_idempotent_and_preserves_enrichment(tmp_path):
                 db.add(original);job=RegionResearchJob(region=slug,active_region=slug,created_by=user.id,status='queued');db.add(job);db.commit();original_id=original.id;job_id=job.id
             result=import_catalogs(tmp_path)
             assert result==[{'region':slug,'added':3,'linked':1,'total':4}]
+            with SessionLocal() as db:
+                original=db.get(Place,original_id)
+                original.details={**original.details,'lake_catalog':{**original.details['lake_catalog'],'source_keys':['osm:way:99111','wd:Q11727012']}}
+                db.commit()
             assert import_catalogs(tmp_path)==[]
+            with SessionLocal() as db:
+                assert db.get(Place,original_id).details['wikidata']=='Q11727012','Previously linked source identity is repaired even when catalog version is unchanged'
             records[0]['description']='Never overwrite manual text'
             path.write_text(json.dumps({'region':slug,'places':records}),encoding='utf-8')
             assert import_catalogs(tmp_path)[0]['added']==0
