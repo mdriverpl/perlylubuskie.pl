@@ -77,12 +77,12 @@ def router_for(Location, User, get_db, current_user, Guest=None):
         h = dlat*dlat+math.cos(math.radians(own.lat))*func.cos(func.radians(model.lat))*dlng*dlng
         return 6371000*2*func.asin(func.sqrt(case((h < 0, 0), (h > 1, 1), else_=h)))
 
-    def nearby_people(db, own, radius_km, own_user=None, own_guest=None):
+    def nearby_people(db, own, radius_km, own_user=None, own_guest=None, include_accounts=True):
         distance = distance_from(Location, own)
         query = select(Location, User.name, distance.label('distance_m')).join(User, User.id == Location.user_id).where(Location.expires_at > now_utc(), distance <= radius_km*1000)
         if own_user is not None:
             query = query.where(Location.user_id != own_user)
-        rows = [(location, name, meters, location.user_id) for location, name, meters in db.execute(query.order_by(distance, Location.user_id).limit(100))]
+        rows = [(location, name, meters, location.user_id) for location, name, meters in db.execute(query.order_by(distance, Location.user_id).limit(100))] if include_accounts else []
         if Guest is not None:
             guest_distance = distance_from(Guest, own)
             query = select(Guest, guest_distance.label('distance_m')).where(Guest.expires_at > now_utc(), guest_distance <= radius_km*1000)
@@ -193,6 +193,8 @@ def router_for(Location, User, get_db, current_user, Guest=None):
         def guest_nearby(response: Response, radius_km: float = Query(5, ge=.1, le=10, allow_inf_nan=False), x_location_token: str | None = Header(default=None), db=Depends(get_db)):
             private(response)
             guest = guest_session(db, x_location_token)
-            return nearby_people(db, guest, radius_km, own_guest=guest.id)
+            # Legacy account sessions opted into an account-only audience. A guest
+            # must never widen that audience without a fresh nickname opt-in.
+            return nearby_people(db, guest, radius_km, own_guest=guest.id, include_accounts=False)
 
     return router

@@ -146,7 +146,7 @@ def test_guests_can_share_nick_and_see_participants_without_accounts(environment
     assert [p['name'] for p in result.json()['people']] == ['<b>Rowerzysta</b>']
     assert 'guest_token' not in result.text and 'token_hash' not in result.text
     start(client, headers, 1, lat=52.332)
-    assert len(client.get('/api/live-location/guest/nearby', headers=auth).json()['people']) == 2
+    assert len(client.get('/api/live-location/guest/nearby', headers=auth).json()['people']) == 1, 'Guests cannot see older account-only sharing sessions'
     assert len(client.get('/api/live-location/nearby', headers=headers(1)).json()['people']) == 2
     update = {**point(lat=52.333), 'session_id': first['session_id']}
     assert client.put('/api/live-location/guest', headers=auth, json=update).status_code == 200
