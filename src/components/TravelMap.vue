@@ -339,3 +339,7 @@ defineExpose({saveVisibleMap,toggleOfflineMap,deleteSavedMap,offlinePack,offline
 <style>
 .map-person-symbol{position:relative;display:block;width:32px;height:42px;color:#1876d2}.map-person-symbol>.map-travel-symbol{position:absolute;top:1px;left:2px;display:block;filter:drop-shadow(0 1px 1px #fff) drop-shadow(0 -1px 1px #fff)}.gps-exact-cross{position:absolute;left:12px;top:34px;width:8px;height:8px;background:linear-gradient(currentColor,currentColor) center/1.5px 100% no-repeat,linear-gradient(currentColor,currentColor) center/100% 1.5px no-repeat;filter:drop-shadow(0 0 1px #fff)}.map-person-symbol>.gps-direction-pointer{position:absolute;right:-3px;top:20px;transform-origin:5px 6px}.gps-transport-location:before,.gps-transport-location:after{display:none!important}.nearby-person-pin{display:block!important;width:32px!important;height:42px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}.nearby-person-pin .map-person-symbol{color:#805ab3}
 </style>
+
+<style>
+.map-person-symbol[data-transport="bike"]>.map-travel-symbol{width:44px;height:44px;left:-6px;top:-12px;padding:3px;box-sizing:border-box;border:2px solid currentColor;border-radius:11px;background:#fff;stroke-width:2.5;filter:none;box-shadow:0 2px 9px #173b2952}.map-person-symbol[data-transport="bike"]>.gps-direction-pointer{right:-12px;top:15px}.gps-transport-location .map-person-symbol[data-transport="bike"]{color:#0d5eb8}.nearby-person-pin .map-person-symbol[data-transport="bike"]{color:#69409f}
+</style>
