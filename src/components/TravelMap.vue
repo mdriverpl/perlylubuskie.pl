@@ -5,14 +5,16 @@ import {readApiJson} from '../apiResponse.js'
 import {preferredMap,rememberMap,osmTileUrl,preferredOsmTone,rememberOsmTone} from '../mapPreferences.js'
 import {pointClusters,validMapPoint} from '../mapClusters.js'
 import {routeDirectionArrows} from '../navigationDirections.js'
+import {personMarkerHtml,personTransport} from '../mapPeople.js'
 import {readOfflineMap,downloadOfflineMap,removeOfflineMap,offlineMapChanged,offlineFeatureStyle,validateMapArea} from '../offlineMaps.js'
 import Download from 'lucide-vue-next/dist/esm/icons/download.js'
 import WifiOff from 'lucide-vue-next/dist/esm/icons/wifi-off.js'
 import Trash2 from 'lucide-vue-next/dist/esm/icons/trash-2.js'
-const props = defineProps({ places: Array, roadsOnly:Boolean, hideOfflineControls:Boolean, nearbyPeople:{type:Array,default:()=>[]}, endpointPlaces:{type:Array,default:()=>[]}, travelledTrack:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
+const props = defineProps({ places: Array, positionTransport:{type:String,default:'walk'}, roadsOnly:Boolean, hideOfflineControls:Boolean, nearbyPeople:{type:Array,default:()=>[]}, endpointPlaces:{type:Array,default:()=>[]}, travelledTrack:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
 let map, layer, markerLayer, userLayer, arrowLayer, userMarker, accuracyCircle, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
 let offlineLayer,travelledLayer,peopleLayer,downloadController,travelledDrawn=[]
+let userMarkerTransport=null
 const offlinePack=ref(null),offlineView=ref(false),offlineBusy=ref(false),offlineNotice=ref('')
 const noNetwork=ref(navigator.onLine===false)
 const provider=ref('osm'), mapStyle=ref('terrain'), mapError=ref(''),switchingMap=ref(false)
@@ -180,9 +182,9 @@ function drawNearbyPeople(){
   const label=document.createElement('span');label.textContent=String(person.name||'Uczestnik').slice(0,80)
   const popup=document.createElement('div'),name=document.createElement('strong'),info=document.createElement('p')
   name.textContent=label.textContent
-  info.textContent=(Number.isFinite(person.distance_m)?'Od Ciebie: '+(person.distance_m<1000?Math.round(person.distance_m)+' m':(person.distance_m/1000).toFixed(1)+' km')+'. ':'')+'Aktualizacja: '+new Date(person.updated_at).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})
+  info.textContent=(personTransport(person.transport)==='bike'?'Rowerem. ':'Pieszo. ')+(Number.isFinite(person.distance_m)?'Od Ciebie: '+(person.distance_m<1000?Math.round(person.distance_m)+' m':(person.distance_m/1000).toFixed(1)+' km')+'. ':'')+'Aktualizacja: '+new Date(person.updated_at).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})
   popup.append(name,info)
-  L.marker([person.lat,person.lng],{zIndexOffset:2000,icon:L.divIcon({className:'nearby-person-icon',html:'<span class="nearby-person-pin"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3" fill="currentColor"/><path d="M5 21v-3a7 7 0 0 1 14 0v3" fill="currentColor"/></svg></span>',iconSize:[32,32],iconAnchor:[16,16]})}).addTo(peopleLayer).bindTooltip(label).bindPopup(popup)
+  L.marker([person.lat,person.lng],{zIndexOffset:2000,icon:L.divIcon({className:'nearby-person-icon',html:'<span class="nearby-person-pin">'+personMarkerHtml(person.transport)+'</span>',iconSize:[32,42],iconAnchor:[16,38]})}).addTo(peopleLayer).bindTooltip(label).bindPopup(popup)
  }
 }
 function drawPosition(){
@@ -191,9 +193,11 @@ function drawPosition(){
  if(validMapPoint(point)){
   const latlng=[point.lat,point.lng]
   if(userMarker)userMarker.setLatLng(latlng)
-  else if(props.directionalPosition)userMarker=L.marker(latlng,{interactive:false,keyboard:false,zIndexOffset:2200,icon:L.divIcon({className:'gps-direction-icon',html:'<svg class="gps-direction-pointer" width="32" height="34" viewBox="0 0 32 34" role="img" aria-label="Pozycja GPS"><path d="M16 2 L29 30 L16 24 L3 30 Z" fill="#1876d2" stroke="white" stroke-width="2.5" stroke-linejoin="round"/></svg>',iconSize:[32,34],iconAnchor:[16,17]})}).addTo(userLayer)
+  else if(props.directionalPosition){userMarkerTransport=personTransport(props.positionTransport);userMarker=L.marker(latlng,{interactive:false,keyboard:false,zIndexOffset:2200,icon:L.divIcon({className:'gps-direction-icon gps-transport-location',html:personMarkerHtml(userMarkerTransport,{directional:true}),iconSize:[32,42],iconAnchor:[16,38]})}).addTo(userLayer)}
   else userMarker=L.circleMarker(latlng,{radius:8,color:'#fff',weight:3,fillColor:'#1876d2',fillOpacity:1}).addTo(userLayer).bindTooltip('Tu jesteś')
   if(props.directionalPosition){
+   const mode=personTransport(props.positionTransport)
+   if(userMarkerTransport!==mode){userMarkerTransport=mode;userMarker.setIcon(L.divIcon({className:'gps-direction-icon gps-transport-location',html:personMarkerHtml(mode,{directional:true}),iconSize:[32,42],iconAnchor:[16,38]}))}
    const pointer=userMarker.getElement()?.querySelector('.gps-direction-pointer')
    if(pointer){
     const known=Number.isFinite(point.heading)
@@ -275,7 +279,7 @@ watch(mapStyle,setTiles)
 watch(()=>props.roadsOnly,value=>{if(value&&provider.value!=='here'&&!offlineView.value)selectProvider('here');else setTiles()})
 watch(()=>props.trackOnly,setTiles)
 watch(()=>[props.selected,props.places,props.geometry,props.searchLocation,props.draggablePoints,props.distanceArea,props.endpointPlaces],draw,{deep:true})
-watch(()=>[props.userLocation,props.focusLocation],drawPosition,{deep:true})
+watch(()=>[props.userLocation,props.focusLocation,props.positionTransport],drawPosition,{deep:true})
 watch(()=>[props.geometry,props.routeDirections],drawRouteDirections,{deep:true})
 watch(()=>props.travelledTrack,drawTravelledTrack,{deep:true})
 watch(()=>props.nearbyPeople,drawNearbyPeople,{deep:true})
@@ -331,3 +335,7 @@ defineExpose({saveVisibleMap,toggleOfflineMap,deleteSavedMap,offlinePack,offline
 <style scoped>.travel-map.track-only .travel-map-canvas{background:#f6f8f2}</style>
 
 <style>.route-flag{position:relative;display:block;width:58px;height:42px;filter:drop-shadow(0 2px 2px #173d2940)}.route-flag:before{content:'';position:absolute;left:7px;top:2px;width:3px;height:38px;background:#365340;border-radius:2px}.route-flag>span{position:absolute;left:10px;top:3px;width:44px;height:25px;display:flex;align-items:center;justify-content:center;padding-right:4px;clip-path:polygon(0 0,100% 0,84% 50%,100% 100%,0 100%);color:#fff;font:700 10px/1 system-ui,sans-serif}.route-flag-start>span{background:#19744f}.route-flag-end>span{background:#ba5846}.route-flag p{margin:6px 0 0}</style>
+
+<style>
+.map-person-symbol{position:relative;display:block;width:32px;height:42px;color:#1876d2}.map-person-symbol>.map-travel-symbol{position:absolute;top:1px;left:2px;display:block;filter:drop-shadow(0 1px 1px #fff) drop-shadow(0 -1px 1px #fff)}.gps-exact-cross{position:absolute;left:12px;top:34px;width:8px;height:8px;background:linear-gradient(currentColor,currentColor) center/1.5px 100% no-repeat,linear-gradient(currentColor,currentColor) center/100% 1.5px no-repeat;filter:drop-shadow(0 0 1px #fff)}.map-person-symbol>.gps-direction-pointer{position:absolute;right:-3px;top:20px;transform-origin:5px 6px}.gps-transport-location:before,.gps-transport-location:after{display:none!important}.nearby-person-pin{display:block!important;width:32px!important;height:42px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}.nearby-person-pin .map-person-symbol{color:#805ab3}
+</style>

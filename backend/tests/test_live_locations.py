@@ -138,12 +138,13 @@ def test_out_of_order_gps_cannot_overwrite_newer_fix(environment):
 def test_guests_can_share_nick_and_see_participants_without_accounts(environment):
     client, headers, Session = environment
     first = client.post('/api/live-location/guest', json={**point(), 'nick': 'Wędrowiec'}).json()
-    second = client.post('/api/live-location/guest', json={**point(lat=52.331), 'nick': '<b>Rowerzysta</b>'}).json()
+    second = client.post('/api/live-location/guest', json={**point(lat=52.331), 'nick': '<b>Rowerzysta</b>', 'transport': 'bike'}).json()
     auth = {'X-Location-Token': first['guest_token']}
     assert client.get('/api/live-location/guest/nearby').status_code == 401
     result = client.get('/api/live-location/guest/nearby', headers=auth)
     assert result.status_code == 200, result.text
     assert [p['name'] for p in result.json()['people']] == ['<b>Rowerzysta</b>']
+    assert result.json()['people'][0]['transport'] == 'bike'
     assert 'guest_token' not in result.text and 'token_hash' not in result.text
     start(client, headers, 1, lat=52.332)
     assert len(client.get('/api/live-location/guest/nearby', headers=auth).json()['people']) == 1, 'Guests cannot see older account-only sharing sessions'

@@ -19,7 +19,7 @@ const {createApp,nextTick}=await import('vue')
 const descriptor=parse(await readFile('src/components/TravelMap.vue','utf8')).descriptor
 await mkdir('artifacts',{recursive:true})
 let source=compileScript(descriptor,{id:'here-map-test',inlineTemplate:true}).content.replace("import * as L from 'leaflet/dist/leaflet-src.esm.js'",'const L=globalThis.__leaflet')
-for(const name of ['apiResponse','mapPreferences','mapClusters','navigationDirections','offlineMaps'])source=source.replace(`from '../${name}.js'`,`from '../src/${name}.js'`)
+for(const name of ['apiResponse','mapPreferences','mapClusters','navigationDirections','offlineMaps','mapPeople'])source=source.replace(`from '../${name}.js'`,`from '../src/${name}.js'`)
 await writeFile('artifacts/here-map-test.mjs',source)
 const Component=(await import('../artifacts/here-map-test.mjs')).default
 const app=createApp(Component,{places:[],allowCustomPoints:true,onCreatePoint:p=>custom.push(p)});app.mount('#app')

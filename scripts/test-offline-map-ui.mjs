@@ -37,7 +37,7 @@ quota=false;online=false
 const {createApp,nextTick,ref,h}=await import('vue')
 const descriptor=parse(await readFile('src/components/TravelMap.vue','utf8')).descriptor
 let source=compileScript(descriptor,{id:'offline-map-dom',inlineTemplate:true}).content
-for(const name of ['apiResponse','mapPreferences','mapClusters','navigationDirections','offlineMaps'])source=source.replace(`from '../${name}.js'`,`from '../src/${name}.js'`)
+for(const name of ['apiResponse','mapPreferences','mapClusters','navigationDirections','offlineMaps','mapPeople'])source=source.replace(`from '../${name}.js'`,`from '../src/${name}.js'`)
 await writeFile('artifacts/offline-map-test.mjs',source)
 const MapComponent=(await import('../artifacts/offline-map-test.mjs')).default
 const track=ref([{lat:52.335,lng:15.285}]),position=ref({lat:52.34,lng:15.29,accuracy:8,heading:90})

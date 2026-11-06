@@ -102,7 +102,7 @@ def map_tile(style: str, z: int = Path(ge=0, le=20), x: int = Path(ge=0), y: int
     params = {'style': STYLES[style], 'size': 256}
     if roads_only:
         params.update(style=STYLES['map'],features='pois:disabled')
-    body, content_type, cache_control = here_request(f'{"background" if roads_only else "base"}/mc/{z}/{x}/{y}/{image_format}', params)
+    body, content_type, cache_control = here_request(f'base/mc/{z}/{x}/{y}/{image_format}', params)
     if not body or content_type not in ('image/png', 'image/jpeg'):
         raise HTTPException(502, 'Nieprawidłowy format kafelka mapy.')
     max_age = re.search(r'(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*(\d+)',cache_control,re.I)

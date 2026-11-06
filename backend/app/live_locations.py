@@ -6,6 +6,7 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
 from uuid import UUID, uuid4
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, Header
 from pydantic import BaseModel, Field
@@ -21,6 +22,7 @@ class PositionInput(BaseModel):
     lng: float = Field(ge=-180, le=180, allow_inf_nan=False)
     accuracy: float = Field(ge=0, le=100, allow_inf_nan=False)
     measured_at: datetime
+    transport: Literal['walk', 'bike'] = 'walk'
 
 
 class PositionUpdate(PositionInput):
@@ -92,7 +94,7 @@ def router_for(Location, User, get_db, current_user, Guest=None):
         rows.sort(key=lambda row: (row[2], str(row[3])))
         return {'radius_km': radius_km, 'ttl_seconds': TTL_SECONDS, 'people': [
             {'id': public_id, 'name': name, 'lat': location.lat, 'lng': location.lng,
-             'accuracy': location.accuracy, 'distance_m': round(meters),
+             'accuracy': location.accuracy, 'transport': location.transport, 'distance_m': round(meters),
              'updated_at': location.updated_at, 'expires_at': location.expires_at}
             for location, name, meters, public_id in rows[:100]
         ]}
@@ -103,7 +105,7 @@ def router_for(Location, User, get_db, current_user, Guest=None):
         now = now_utc()
         check_fix(data, now)
         purge_expired(db, Location)
-        values = dict(user_id=user.id, session_id=str(uuid4()), lat=data.lat, lng=data.lng, accuracy=data.accuracy,
+        values = dict(user_id=user.id, session_id=str(uuid4()), lat=data.lat, lng=data.lng, accuracy=data.accuracy, transport=data.transport,
                       measured_at=data.measured_at, updated_at=now, expires_at=now+timedelta(seconds=TTL_SECONDS))
         # One position per account, across devices and server workers.
         statement = insert(Location).values(**values)
@@ -119,7 +121,7 @@ def router_for(Location, User, get_db, current_user, Guest=None):
         check_fix(data, now)
         # A delayed update cannot recreate a stopped session or replace another device.
         changed = db.execute(update(Location).where(Location.user_id == user.id, Location.session_id == str(data.session_id), Location.expires_at > now, Location.measured_at <= data.measured_at).values(
-            lat=data.lat, lng=data.lng, accuracy=data.accuracy, measured_at=data.measured_at,
+            lat=data.lat, lng=data.lng, accuracy=data.accuracy, transport=data.transport, measured_at=data.measured_at,
             updated_at=now, expires_at=now+timedelta(seconds=TTL_SECONDS)))
         if not changed.rowcount:
             raise HTTPException(409, 'Udostępnianie wygasło lub pozycja jest starsza od ostatniej aktualizacji.')
@@ -166,7 +168,7 @@ def router_for(Location, User, get_db, current_user, Guest=None):
                 raise HTTPException(503, 'Udostępnianie jest chwilowo zajęte. Spróbuj później.')
             token = secrets.token_urlsafe(32)
             guest = Guest(id=str(uuid4()), token_hash=hashlib.sha256(token.encode()).hexdigest(), nick=nick,
-                          lat=data.lat, lng=data.lng, accuracy=data.accuracy, measured_at=data.measured_at,
+                          lat=data.lat, lng=data.lng, accuracy=data.accuracy, transport=data.transport, measured_at=data.measured_at,
                           updated_at=now, expires_at=now+timedelta(seconds=TTL_SECONDS))
             db.add(guest);db.commit()
             return {'session_id': guest.id, 'guest_token': token, 'expires_at': guest.expires_at, 'ttl_seconds': TTL_SECONDS}
@@ -176,7 +178,7 @@ def router_for(Location, User, get_db, current_user, Guest=None):
             private(response)
             now = now_utc();check_fix(data, now)
             guest = guest_session(db, x_location_token)
-            changed = db.execute(update(Guest).where(Guest.id == guest.id, Guest.id == str(data.session_id), Guest.expires_at > now, Guest.measured_at <= data.measured_at).values(lat=data.lat, lng=data.lng, accuracy=data.accuracy, measured_at=data.measured_at, updated_at=now, expires_at=now+timedelta(seconds=TTL_SECONDS)).execution_options(synchronize_session=False))
+            changed = db.execute(update(Guest).where(Guest.id == guest.id, Guest.id == str(data.session_id), Guest.expires_at > now, Guest.measured_at <= data.measured_at).values(lat=data.lat, lng=data.lng, accuracy=data.accuracy, transport=data.transport, measured_at=data.measured_at, updated_at=now, expires_at=now+timedelta(seconds=TTL_SECONDS)).execution_options(synchronize_session=False))
             if not changed.rowcount:
                 raise HTTPException(409, 'Nieaktualna sesja lub pozycja GPS.')
             db.commit()

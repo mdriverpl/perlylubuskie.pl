@@ -35,7 +35,7 @@ def test_simplified_roads_disable_pois_and_labels(monkeypatch):
     monkeypatch.setattr(maps, 'here_request', here)
     result=client.get('/api/maps/tiles/map/12/2221/1346?roads_only=true')
     assert result.status_code==200
-    assert calls[0][0]=='background/mc/12/2221/1346/png'
+    assert calls[0][0]=='base/mc/12/2221/1346/png'
     assert calls[0][1]['features']=='pois:disabled'
     assert calls[0][1]['style']=='explore.day'
     client.get('/api/maps/tiles/map/12/2221/1346')

@@ -58,6 +58,7 @@ class LiveLocation(Base):
     lat: Mapped[float] = mapped_column(Float)
     lng: Mapped[float] = mapped_column(Float)
     accuracy: Mapped[float] = mapped_column(Float)
+    transport: Mapped[str] = mapped_column(String(10), default='walk')
     measured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
@@ -71,6 +72,7 @@ class GuestLiveLocation(Base):
     lat: Mapped[float] = mapped_column(Float)
     lng: Mapped[float] = mapped_column(Float)
     accuracy: Mapped[float] = mapped_column(Float)
+    transport: Mapped[str] = mapped_column(String(10), default='walk')
     measured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
@@ -256,6 +258,8 @@ async def lifespan(app: FastAPI):
     task_models.initialize(engine)
     # Additive catalog migration; stable IDs preserve community data and saved trips.
     with engine.begin() as connection:
+        connection.execute(text("ALTER TABLE user_live_locations ADD COLUMN IF NOT EXISTS transport VARCHAR(10) NOT NULL DEFAULT 'walk'"))
+        connection.execute(text("ALTER TABLE guest_live_locations ADD COLUMN IF NOT EXISTS transport VARCHAR(10) NOT NULL DEFAULT 'walk'"))
         connection.execute(text('UPDATE regions SET active=TRUE WHERE active=FALSE'))
         connection.execute(text("UPDATE regions SET allowed_types=(allowed_types::jsonb || '[\"beach\"]'::jsonb)::json WHERE NOT (allowed_types::jsonb ? 'beach')"))
         connection.execute(text('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE'))

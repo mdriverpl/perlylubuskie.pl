@@ -19,7 +19,7 @@ globalThis.fetch=async(url,options={})=>{
 const position=ref({lat:52.33,lng:15.29,accuracy:8,measuredAt:Date.now()}),token=ref('own-token')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
 let nearby
-let app=createApp({setup(){nearby=useNearbyPeople({position,token,interval:30000,requestGps:()=>gpsRequests++});return()=>null}})
+let app=createApp({setup(){nearby=useNearbyPeople({position,token,showOthers:ref(true),interval:30000,requestGps:()=>gpsRequests++});return()=>null}})
 app.mount('#app');await settle()
 assert.equal(requests.length,0,'Opening navigation never transmits a location without opt-in')
 nearby.enabled.value=true;await settle();await settle()
@@ -48,7 +48,7 @@ app.unmount()
 
 // A response arriving after the user stops is cleaned up instead of activating sharing.
 token.value='own-token';delayStart=true
-app=createApp({setup(){nearby=useNearbyPeople({position,token,interval:30000});return()=>null}});app.mount('#app')
+app=createApp({setup(){nearby=useNearbyPeople({position,token,showOthers:ref(true),interval:30000});return()=>null}});app.mount('#app')
 nearby.enabled.value=true;await settle();assert.ok(pendingStart)
 nearby.enabled.value=false;pendingStart();await settle();await settle()
 assert.equal(requests.at(-1).method,'DELETE')
@@ -58,7 +58,7 @@ app.unmount();delayStart=false
 
 // Old fixes never renew server visibility; the next actual GPS fix starts sharing.
 position.value={...position.value,measuredAt:Date.now()-90000}
-app=createApp({setup(){nearby=useNearbyPeople({position,token,interval:30000});return()=>null}});app.mount('#app')
+app=createApp({setup(){nearby=useNearbyPeople({position,token,showOthers:ref(true),interval:30000});return()=>null}});app.mount('#app')
 const staleCount=requests.length
 nearby.enabled.value=true;await settle()
 assert.equal(requests.length,staleCount)
@@ -75,6 +75,8 @@ app=createApp({render:()=>h(Navigation,{...props.value,onRefresh:()=>gpsRequests
 document.querySelector('[aria-controls="navigation-options"]').click();await settle()
 assert.equal(document.querySelector('.nearby-sharing-toggle').checked,false)
 document.querySelector('.nearby-sharing-toggle').click();await settle();await settle()
+assert.equal(document.querySelector('.nearby-show-others').checked,false,'Other people are hidden by default')
+document.querySelector('.nearby-show-others').click();await settle();await settle()
 assert.match(document.querySelector('.nearby-people-status').textContent,/osoby w pobliżu: 1/)
 document.querySelector('.nearby-sharing-stop').click();await settle();await settle()
 assert.equal(document.querySelector('.nearby-people-status'),null)
@@ -85,16 +87,17 @@ props.value={...props.value,token:'',user:null};await settle()
 assert.equal(document.querySelector('.nearby-sharing-toggle').disabled,false,'A nickname allows sharing without login')
 assert.equal(requests.length,before)
 document.querySelector('.nearby-sharing-toggle').click();await settle();await settle()
-assert.equal(requests.at(-2).url,'/api/live-location/guest')
-assert.equal(requests.at(-2).body.nick,'Ja')
-assert.equal(requests.at(-2).auth,undefined,'Guest publishing does not need an account token')
+assert.equal(requests.findLast(r=>r.method==='POST').url,'/api/live-location/guest')
+assert.equal(requests.findLast(r=>r.method==='POST').body.nick,'Ja')
+assert.equal(requests.findLast(r=>r.method==='POST').auth,undefined,'Guest publishing does not need an account token')
+document.querySelector('.nearby-show-others').click();await settle();await settle()
 assert.equal(requests.at(-1).guestToken,'test-guest-sharing-token')
 document.querySelector('.nearby-sharing-stop').click();await settle();await settle()
 assert.equal(requests.at(-1).url,'/api/live-location/guest')
 assert.equal(requests.at(-1).guestToken,'test-guest-sharing-token')
 app.unmount()
 
-assert.equal(freshSharedPosition({...position.value,measuredAt:Date.now()-60000}),false)
+assert.equal(freshSharedPosition({...position.value,measuredAt:Date.now()-61000}),false)
 assert.equal(freshSharedPosition({...position.value,accuracy:150}),false)
 assert.equal(freshSharedPosition({...position.value,measuredAt:null}),false)
 assert.equal(localStorage.getItem('perly:nearby-people'),null,'Other people’s locations are not saved offline')

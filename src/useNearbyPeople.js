@@ -3,9 +3,9 @@ import {readApiJson} from './apiResponse.js'
 
 const intervalMs=12000
 export function freshSharedPosition(point,now=Date.now()){
- return Number.isFinite(point?.lat)&&Math.abs(point.lat)<=90&&Number.isFinite(point?.lng)&&Math.abs(point.lng)<=180&&Number.isFinite(point?.accuracy)&&point.accuracy>=0&&point.accuracy<=100&&Number.isFinite(point?.measuredAt)&&now-point.measuredAt>=-30000&&now-point.measuredAt<=30000
+ return Number.isFinite(point?.lat)&&Math.abs(point.lat)<=90&&Number.isFinite(point?.lng)&&Math.abs(point.lng)<=180&&Number.isFinite(point?.accuracy)&&point.accuracy>=0&&point.accuracy<=100&&Number.isFinite(point?.measuredAt)&&now-point.measuredAt>=-30000&&now-point.measuredAt<=60000
 }
-export function useNearbyPeople({position,token,nickname,requestGps,interval=intervalMs}){
+export function useNearbyPeople({position,token,nickname,showOthers=ref(false),transport,requestGps,interval=intervalMs}){
  const enabled=ref(false),people=ref([]),busy=ref(false),stopping=ref(false),error=ref(''),connected=ref(false)
  let session=null,generation=0,timer,expiryTimer,disposed=false,lastAttempt=0
  async function request(path,{method='GET',body,auth=token?.value,guestToken,keepalive=false}={}){
@@ -28,7 +28,7 @@ export function useNearbyPeople({position,token,nickname,requestGps,interval=int
   if(!freshSharedPosition(point)){people.value=[];connected.value=false;error.value='Czekam na aktualny, dokładny odczyt GPS.';return}
   const current= generation,auth=token?.value,nick=nickname?.value?.trim()
   busy.value=true;lastAttempt=Date.now();error.value=''
-  const payload={lat:point.lat,lng:point.lng,accuracy:point.accuracy,measured_at:new Date(point.measuredAt).toISOString()}
+  const payload={lat:point.lat,lng:point.lng,accuracy:point.accuracy,measured_at:new Date(point.measuredAt).toISOString(),transport:transport?.value==='bike'?'bike':'walk'}
   try{
    if(!session){
     const result=await request(nick?'/guest':'',{method:'POST',body:nick?{...payload,nick}:payload,auth:nick?null:auth})
@@ -41,8 +41,10 @@ export function useNearbyPeople({position,token,nickname,requestGps,interval=int
     await request(session.guestToken?'/guest':'',{method:'PUT',body:{...payload,session_id:session.id},auth:session.token,guestToken:session.guestToken})
    }
    if(disposed||current!==generation)return
+   if(!showOthers.value){people.value=[];connected.value=true;return}
    const result=await request((session.guestToken?'/guest':'')+'/nearby?radius_km=5',{auth:session.token,guestToken:session.guestToken})
    if(disposed||current!==generation)return
+   if(!showOthers.value){people.value=[];return}
    people.value=(Array.isArray(result.people)?result.people:[]).filter(person=>Number.isFinite(person.lat)&&Math.abs(person.lat)<=90&&Number.isFinite(person.lng)&&Math.abs(person.lng)<=180&&Date.parse(person.expires_at)>Date.now()).slice(0,100)
    connected.value=true
   }catch(problem){
@@ -71,6 +73,8 @@ export function useNearbyPeople({position,token,nickname,requestGps,interval=int
  watch(position,()=>{if(enabled.value&&(!session||Date.now()-lastAttempt>=interval))sync()})
  if(token)watch(token,()=>{if(enabled.value&&!session?.guestToken)enabled.value=false})
  if(nickname)watch(nickname,()=>{if(enabled.value)enabled.value=false})
+ watch(showOthers,value=>{if(!value)people.value=[];else if(enabled.value)sync()})
+ if(transport)watch(transport,()=>{if(enabled.value)sync()})
  function visibility(){
   if(document.visibilityState==='hidden'){people.value=[];return}
   if(enabled.value){requestGps?.();sync()}
