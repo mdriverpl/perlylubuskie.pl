@@ -9,7 +9,7 @@ import {readOfflineMap,downloadOfflineMap,removeOfflineMap,offlineMapChanged,off
 import Download from 'lucide-vue-next/dist/esm/icons/download.js'
 import WifiOff from 'lucide-vue-next/dist/esm/icons/wifi-off.js'
 import Trash2 from 'lucide-vue-next/dist/esm/icons/trash-2.js'
-const props = defineProps({ places: Array, hideOfflineControls:Boolean, nearbyPeople:{type:Array,default:()=>[]}, endpointPlaces:{type:Array,default:()=>[]}, travelledTrack:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
+const props = defineProps({ places: Array, roadsOnly:Boolean, hideOfflineControls:Boolean, nearbyPeople:{type:Array,default:()=>[]}, endpointPlaces:{type:Array,default:()=>[]}, travelledTrack:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
 let map, layer, markerLayer, userLayer, arrowLayer, userMarker, accuracyCircle, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
 let offlineLayer,travelledLayer,peopleLayer,downloadController,travelledDrawn=[]
@@ -21,7 +21,7 @@ function updateOsmTone(){osmTone.value=preferredOsmTone()}
 const osmAttribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 function hereAttribution(){
  const bounds=map.getBounds(),zoom=map.getZoom()
- const labels=(copyrights[mapStyle.value]||[]).filter(n=>zoom>=(n.minLevel??0)&&zoom<=(n.maxLevel??20)&&(!n.boxes?.length||n.boxes.some(b=>bounds.intersects([[b[0],b[1]],[b[2],b[3]]])))).map(n=>String(n.label||''))
+ const labels=(copyrights[props.roadsOnly?'map':mapStyle.value]||[]).filter(n=>zoom>=(n.minLevel??0)&&zoom<=(n.maxLevel??20)&&(!n.boxes?.length||n.boxes.some(b=>bounds.intersects([[b[0],b[1]],[b[2],b[3]]])))).map(n=>String(n.label||''))
  const text=document.createElement('span');text.textContent=[...new Set(labels)].filter(Boolean).join(', ')
  return `© ${new Date().getFullYear()} <a href="https://legal.here.com/terms/general-content-supplier-terms-and-notices" target="_blank" rel="noopener noreferrer">HERE</a>${text.textContent?', '+text.innerHTML:''}`
 }
@@ -46,6 +46,7 @@ function setTiles(){
   offlineLayer=L.layerGroup().addTo(map)
   L.rectangle(leafletBounds,{color:'#a7b79d',weight:1,fillColor:'#f1eddd',fillOpacity:1,interactive:false}).addTo(offlineLayer)
   L.geoJSON(offlinePack.value.map,{
+   filter:feature=>!props.roadsOnly||!!feature.properties?.highway,
    style:offlineFeatureStyle,
    pointToLayer(feature,latlng){
     const label=document.createElement('span');label.className='offline-place-label';label.textContent=feature.properties?.name||({drinking_water:'Woda pitna',shelter:'Wiata',toilets:'Toaleta',parking:'Parking'}[feature.properties?.amenity]||'')
@@ -59,7 +60,7 @@ function setTiles(){
  const here=provider.value==='here'
  hereErrors=0
  map.setMaxZoom(here?20:19)
- tiles=L.tileLayer(here?`/api/maps/tiles/${mapStyle.value}/{z}/{x}/{y}`:osmTileUrl,{attribution:here?'':osmAttribution,maxZoom:here?20:19,updateWhenIdle:true,keepBuffer:1})
+ tiles=L.tileLayer(here?`/api/maps/tiles/${props.roadsOnly?'map':mapStyle.value}/{z}/{x}/{y}${props.roadsOnly?'?roads_only=1':''}`:osmTileUrl,{attribution:here?'':osmAttribution,maxZoom:here?20:19,updateWhenIdle:true,keepBuffer:1})
  if(here)tiles.on('tileerror',()=>{if(disposed||++hereErrors<3)return;mapError.value='Nie udało się wczytać map HERE. Dostępna jest mapa OpenStreetMap.';provider.value='osm';setTiles()})
  else tiles.on('tileerror',()=>{if(!disposed&&++hereErrors>=3)mapError.value='Mapa OpenStreetMap jest chwilowo niedostępna. Spróbuj ponownie lub wybierz HERE.'})
  tiles.addTo(map);updateAttribution()
@@ -105,7 +106,7 @@ async function selectProvider(value){
   const config=await readApiJson(response,'Mapy HERE są chwilowo niedostępne.')
   if(disposed)return
   if(config.provider!=='here')throw Error('Mapy HERE nie są skonfigurowane.')
-  copyrights=config.copyrights||{};provider.value='here';rememberMap('here');setTiles()
+  copyrights=config.copyrights||{};provider.value='here';if(!props.roadsOnly)rememberMap('here');setTiles()
  }catch(error){if(!disposed){mapError.value=error.message+' Dostępna jest mapa OpenStreetMap.';provider.value='osm';setTiles()}}
  finally{if(!disposed)switchingMap.value=false}
 }
@@ -264,13 +265,14 @@ onMounted(async () => {
  setTiles();map.on('moveend zoomend',()=>{updateAttribution();drawMarkers();drawRouteDirections()})
  layer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map);userLayer=L.layerGroup().addTo(map);arrowLayer=L.layerGroup().addTo(map);travelledLayer=L.layerGroup().addTo(map);peopleLayer=L.layerGroup().addTo(map);draw();drawPosition();drawRouteDirections();drawTravelledTrack();drawNearbyPeople()
  if(typeof ResizeObserver!=='undefined'){
-  resizeObserver=new ResizeObserver(()=>{if(!disposed){map.invalidateSize({pan:false});lastViewportKey=undefined;draw()}})
+  resizeObserver=new ResizeObserver(()=>{if(!disposed){map.invalidateSize({pan:false});drawRouteDirections()}})
   resizeObserver.observe(mapElement.value)
  }
  await restoreOfflineMap()
- if(!disposed&&!offlineView.value&&!props.trackOnly&&preferredMap()==='here')await selectProvider('here')
+ if(!disposed&&!offlineView.value&&!props.trackOnly&&(props.roadsOnly||preferredMap()==='here'))await selectProvider('here')
 })
 watch(mapStyle,setTiles)
+watch(()=>props.roadsOnly,value=>{if(value&&provider.value!=='here'&&!offlineView.value)selectProvider('here');else setTiles()})
 watch(()=>props.trackOnly,setTiles)
 watch(()=>[props.selected,props.places,props.geometry,props.searchLocation,props.draggablePoints,props.distanceArea,props.endpointPlaces],draw,{deep:true})
 watch(()=>[props.userLocation,props.focusLocation],drawPosition,{deep:true})

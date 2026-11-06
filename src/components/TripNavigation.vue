@@ -15,11 +15,17 @@ import {useNearbyPeople} from '../useNearbyPeople.js'
 import UsersRound from 'lucide-vue-next/dist/esm/icons/users-round.js'
 import Download from 'lucide-vue-next/dist/esm/icons/download.js'
 import Navigation from 'lucide-vue-next/dist/esm/icons/navigation.js'
+import ChevronDown from 'lucide-vue-next/dist/esm/icons/chevron-down.js'
 const props=defineProps({routeName:{type:String,default:'Twoja trasa'},geometry:Object,distance:String,duration:String,position:Object,user:Object,token:{type:String,default:''},places:{type:Array,default:()=>[]},offline:Boolean,locating:Boolean,loading:Boolean,error:String,locationError:String})
 const emit=defineEmits(['back','refresh','retry'])
-const nearby=useNearbyPeople({position:computed(()=>props.position),token:computed(()=>props.token),requestGps:()=>emit('refresh')})
+let initialNickname=props.user?.name||''
+try{initialNickname=localStorage.getItem('perly:nickname')||initialNickname}catch{}
+const nickname=ref(initialNickname),roadsOnly=ref(true)
+watch(nickname,value=>{try{localStorage.setItem('perly:nickname',value.slice(0,32))}catch{}})
+const nearby=useNearbyPeople({position:computed(()=>props.position),token:computed(()=>props.token),nickname,requestGps:()=>emit('refresh')})
 const host=ref(null),backButton=ref(null),options=ref(false)
 const travelMap=ref(null)
+const cockpitExpanded=ref(true)
 function downloadMap(){travelMap.value?.saveVisibleMap?.()}
 const sharing=ref(false),shareBusy=ref(false),shareNotice=ref(''),share= computed(()=>positionShare(props.position))
 const canNativeShare=typeof navigator.share==='function'
@@ -60,23 +66,25 @@ onMounted(()=>{document.body.style.overflow='hidden';backButton.value?.focus()})
 onBeforeUnmount(()=>{document.body.style.overflow=previousOverflow;previousFocus?.focus?.()})
 function trap(event){
  if(event.key!=='Tab')return
- const items=[...host.value.querySelectorAll('button:not([disabled]),input,a[href]')]
+ const items=[...host.value.querySelectorAll('button:not([disabled]),input:not([disabled]),a[href],[role="button"][tabindex="0"]')]
  const first=items[0],last=items.at(-1)
  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus()}
  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus()}
 }
 </script>
 <template>
- <section ref="host" class="trip-navigation" :class="{'has-route':!!geometry}" role="dialog" aria-modal="true" aria-label="Nawigacja wycieczki" @keydown="trap" @keydown.esc.stop="sharing?sharing=false:options?options=false:emit('back')">
-  <TravelMap ref="travelMap" hide-offline-controls :places="emptyPlaces" :nearby-people="nearby.people.value" :endpoint-places="places" :travelled-track="travelledTrack" :focus-location="positionFocus" :geometry="geometry" :user-location="position" :track-only="trackOnly" directional-position route-directions minimal/>
-  <header class="navigation-cockpit-header">
+ <section ref="host" class="trip-navigation" :class="{'has-route':!!geometry,'cockpit-collapsed':!cockpitExpanded}" role="dialog" aria-modal="true" aria-label="Nawigacja wycieczki" @keydown="trap" @keydown.esc.stop="sharing?sharing=false:options?options=false:emit('back')">
+  <div class="navigation-map-frame"><TravelMap ref="travelMap" hide-offline-controls :roads-only="roadsOnly" :places="emptyPlaces" :nearby-people="nearby.people.value" :endpoint-places="places" :travelled-track="travelledTrack" :focus-location="positionFocus" :geometry="geometry" :user-location="position" :track-only="trackOnly" directional-position route-directions minimal/></div>
+  <header class="navigation-cockpit-header" role="button" tabindex="0" :aria-expanded="cockpitExpanded" aria-controls="navigation-cockpit-details" @click="cockpitExpanded=!cockpitExpanded" @keydown.enter.prevent="cockpitExpanded=!cockpitExpanded" @keydown.space.prevent="cockpitExpanded=!cockpitExpanded">
    <div class="cockpit-heading-row"><span class="cockpit-kicker"><Navigation :size="14"/>NAWIGUJ</span><span class="cockpit-gps-badge" :class="{'gps-ready':!!position&&!locationError}"><i></i>{{locating?'Szukam GPS':position&&!locationError?'GPS aktywny':'GPS niedostępny'}}</span></div>
-   <h1 class="navigation-route-name">{{routeName}}</h1>
-   <div class="cockpit-position"><LocateFixed :size="16"/><div><small>Twoja pozycja GPS</small><span class="cockpit-coordinates">{{share?.coordinates||(locating?'Ustalam pozycję…':'Oczekiwanie na pozycję')}}</span></div><span v-if="position&&Number.isFinite(position.accuracy)" class="cockpit-accuracy">± {{Math.round(position.accuracy)}} m</span></div>
-   <p v-if="offline&&geometry" class="navigation-offline-note">Zapisana trasa offline · bez przeliczania</p>
+   <div class="cockpit-title-row"><h1 class="navigation-route-name">{{routeName}}</h1><ChevronDown class="cockpit-expand-chevron" :class="{expanded:cockpitExpanded}" :size="19"/></div>
+   <div v-show="cockpitExpanded" id="navigation-cockpit-details">
+    <div class="cockpit-position"><LocateFixed :size="16"/><div><small>Twoja pozycja GPS</small><span class="cockpit-coordinates">{{share?.coordinates||(locating?'Ustalam pozycję…':'Oczekiwanie na pozycję')}}</span></div><span v-if="position&&Number.isFinite(position.accuracy)" class="cockpit-accuracy"><small>Dokładność</small><strong>± {{Math.round(position.accuracy)}} m</strong></span></div>
+    <div v-if="geometry" class="navigation-metrics" aria-label="Dystans i czas całej trasy"><div><Route :size="19"/><span><small>Cała trasa</small><strong>{{distance}} <em>km</em></strong></span></div><div><Clock3 :size="19"/><span><small>Czas bez postoju</small><strong>{{duration}}</strong></span></div></div>
+    <p v-if="offline&&geometry" class="navigation-offline-note">Zapisana trasa offline · bez przeliczania</p>
+   </div>
   </header>
   <div class="navigation-bottom">
-   <div v-if="geometry" class="navigation-metrics" aria-label="Dystans i czas całej trasy"><div><Route :size="19"/><span><small>Cała trasa</small><strong>{{distance}} <em>km</em></strong></span></div><div><Clock3 :size="19"/><span><small>Czas bez postojów</small><strong>{{duration}}</strong></span></div></div>
    <div class="navigation-toolbar" role="group" aria-label="Sterowanie nawigacją">
     <button ref="backButton" class="navigation-back" @click="emit('back')"><ArrowLeft :size="21"/><span>Cofnij</span></button>
     <button class="navigation-download" :disabled="travelMap?.offlineBusy||travelMap?.noNetwork" :aria-busy="!!travelMap?.offlineBusy" aria-label="Pobierz fragment mapy" @click="downloadMap"><Download :size="21"/><span>{{travelMap?.offlineBusy?'Pobieram…':'Mapa offline'}}</span></button>
@@ -97,13 +105,15 @@ function trap(event){
   <div v-if="options" id="navigation-options" class="navigation-options">
    <div class="position-share-heading"><h2>Ustawienia nawigacji</h2><button aria-label="Zamknij opcje" @click="options=false"><X :size="20"/></button></div>
    <label><input v-model="trackOnly" type="checkbox">Tylko ślad, bez mapy</label>
+   <label><input v-model="roadsOnly" type="checkbox">Uproszczona mapa dróg</label>
    <div v-if="!trackOnly" class="navigation-map-tone"><span>Kolory OpenStreetMap</span><div role="group" aria-label="Wygląd mapy OpenStreetMap"><button :aria-pressed="osmTone==='light'" @click="setOsmTone('light')">Jasna</button><button :aria-pressed="osmTone==='standard'" @click="setOsmTone('standard')">Standardowa</button></div></div>
    <div v-if="travelMap?.offlinePack" class="navigation-offline-options"><span>Zapisany fragment mapy</span><div><button @click="travelMap.toggleOfflineMap()">{{travelMap.offlineView?'Mapa online':'Pokaż mapę offline'}}</button><button @click="travelMap.deleteSavedMap()">Usuń fragment</button></div></div>
    <div class="navigation-people-options">
-    <label><input v-model="nearby.enabled.value" class="nearby-sharing-toggle" type="checkbox" :disabled="!user||!token||nearby.stopping.value">Pokaż mnie osobom w pobliżu</label>
-    <p>Zalogowani uczestnicy w promieniu 5 km zobaczą Twoje imię i dokładną pozycję. Zobaczysz też osoby, które włączyły tę opcję.</p>
+    <label class="nearby-nickname-label" for="navigation-nickname">Twój nick</label><input id="navigation-nickname" class="nearby-nickname" v-model="nickname" maxlength="32" placeholder="Np. Wędrowiec" autocomplete="nickname" :disabled="nearby.enabled.value">
+    <label><input v-model="nearby.enabled.value" class="nearby-sharing-toggle" type="checkbox" :disabled="nickname.trim().length<2||nearby.stopping.value">Pokaż mnie osobom w pobliżu</label>
+    <p>Bez logowania. Uczestnicy w promieniu 5 km zobaczą Twój nick i dokładną pozycję. Zobaczysz też osoby, które włączyły tę opcję.</p>
     <p>Udostępnianie działa podczas otwartej nawigacji i wymaga internetu. Pozycja znika po 2 minutach bez aktualizacji. Nie zapisujemy historii.</p>
-    <p v-if="!user||!token" class="nearby-login-note">Zaloguj się na stronie, aby włączyć udostępnianie.</p>
+    <p v-if="nickname.trim().length<2" class="nearby-login-note">Wpisz nick i włącz nadawanie pozycji.</p>
     <p v-if="nearby.error.value" class="nearby-sharing-error" role="status">{{nearby.error.value}}</p>
     <p v-else-if="nearby.enabled.value" role="status">{{nearby.connected.value?'Udostępnianie włączone. Osób w pobliżu: '+nearby.people.value.length:'Łączę i czekam na aktualną pozycję GPS…'}}</p>
    </div>
@@ -148,4 +158,16 @@ function trap(event){
 .nearby-people-status,.nearby-people-stop-error{bottom:calc(var(--cockpit-dock-height) + max(12px,env(safe-area-inset-bottom)) + 13px);max-width:420px;border-radius:17px}.nearby-people-status button{border-radius:12px}.trip-navigation :deep(.leaflet-top.leaflet-left){top:190px;left:auto;right:14px}.trip-navigation :deep(.leaflet-control-zoom){border:0;border-radius:14px;overflow:hidden;box-shadow:0 3px 14px #153c2926}.trip-navigation :deep(.leaflet-control-zoom a){width:36px;height:36px;line-height:36px;color:#24563b;background:#fffffff0}
 @media(max-width:360px){.navigation-cockpit-header{left:10px;right:10px;padding:16px;border-radius:23px}.navigation-route-name{font-size:19px}.cockpit-gps-badge{font-size:8px;padding:5px 7px}.cockpit-coordinates{font-size:11px}.cockpit-accuracy{font-size:9px}.navigation-bottom{left:8px;right:8px;padding:8px;border-radius:24px}.navigation-bottom .navigation-toolbar{gap:2px}.navigation-bottom .navigation-toolbar button{font-size:8px;min-height:60px}.navigation-bottom .navigation-metrics{padding:9px 12px;gap:10px}.navigation-metrics strong{font-size:18px}.navigation-metrics>div+div{padding-left:12px}.navigation-share-panel,.navigation-options{padding:17px}.position-coordinates{font-size:16px}}
 @media(max-height:560px) and (orientation:landscape){.navigation-cockpit-header{left:12px;right:auto;width:285px;padding:13px 16px}.navigation-route-name{font-size:17px;margin:7px 0}.cockpit-position{padding-top:8px}.navigation-bottom{left:auto;right:12px;width:340px}.navigation-share-panel,.navigation-options{left:auto;right:12px;width:340px;max-height:calc(100dvh - 30px);bottom:12px}.navigation-status{left:12px;right:auto;width:285px;top:166px}.trip-navigation :deep(.leaflet-top.leaflet-left){top:14px;right:14px}}
+</style>
+
+<style scoped>
+.trip-navigation,.trip-navigation.has-route{--cockpit-dock-height:82px;--cockpit-map-top:252px}.trip-navigation.cockpit-collapsed{--cockpit-map-top:112px}.trip-navigation{background:#e9eee4}
+.navigation-map-frame{position:absolute;top:calc(max(12px,env(safe-area-inset-top)) + var(--cockpit-map-top));bottom:calc(max(12px,env(safe-area-inset-bottom)) + var(--cockpit-dock-height) + 12px);left:12px;right:12px;max-width:780px;margin:0 auto;border:2px solid #fff;border-radius:28px;overflow:hidden;box-shadow:0 5px 24px #153c291c;background:#f1f3ed;transition:top .2s ease}.navigation-map-frame>.travel-map{height:100%;min-height:100%}
+.navigation-cockpit-header{cursor:pointer;user-select:none}.navigation-cockpit-header:focus-visible{outline:3px solid #accf81;outline-offset:3px}.cockpit-title-row{display:flex;align-items:center;gap:12px}.cockpit-title-row .navigation-route-name{flex:1}.cockpit-expand-chevron{flex-shrink:0;color:#c8dfa9;transition:transform .2s ease}.cockpit-expand-chevron.expanded{transform:rotate(180deg)}
+.cockpit-position{gap:8px}.cockpit-accuracy{display:block;text-align:right}.cockpit-accuracy small{display:block;color:#bfd0c2;font-size:8px}.cockpit-accuracy strong{display:block;font-size:11px;font-weight:600;color:#e5efda}.navigation-cockpit-header .navigation-metrics{position:static;inset:auto;max-width:none;margin:12px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 12px;border:1px solid #ffffff1f;border-radius:17px;background:#ffffff0e;color:#fff;box-shadow:none;pointer-events:auto}.navigation-cockpit-header .navigation-metrics svg{color:#c7dfa4}.navigation-cockpit-header .navigation-metrics small{font-size:9px;color:#c5d7c7}.navigation-cockpit-header .navigation-metrics strong{font-size:20px;color:white;line-height:1.4}.navigation-cockpit-header .navigation-metrics strong em{font-size:11px;font-style:normal}.navigation-cockpit-header .navigation-metrics>div+div{border-color:#ffffff22;padding-left:14px}
+.navigation-people-options .nearby-nickname{width:100%;height:44px;box-sizing:border-box;border:1px solid #cadaba;border-radius:11px;padding:10px 12px;margin:6px 0 10px;background:#f8faf4;color:#24563b;font:13px system-ui}.navigation-people-options .nearby-nickname-label{font-size:11px;color:#718369}.navigation-people-options .nearby-nickname:disabled{opacity:.7}.navigation-people-options .nearby-nickname:focus{outline:2px solid #9bbf7c;outline-offset:1px}
+.trip-navigation .navigation-status{top:calc(max(12px,env(safe-area-inset-top)) + var(--cockpit-map-top) + 12px);z-index:610;left:25px;right:25px}.trip-navigation :deep(.leaflet-top.leaflet-left){top:auto;bottom:14px;right:14px}.navigation-map-frame :deep(.leaflet-container){border-radius:26px}.navigation-map-frame :deep(.map-provider-error){bottom:10px}
+@media(max-width:360px){.trip-navigation,.trip-navigation.has-route{--cockpit-map-top:247px}.trip-navigation.cockpit-collapsed{--cockpit-map-top:108px}.navigation-map-frame{left:8px;right:8px;border-radius:25px}.navigation-cockpit-header .navigation-metrics{padding:9px 10px}.navigation-cockpit-header .navigation-metrics strong{font-size:18px}}
+@media(max-height:560px) and (orientation:landscape){.navigation-map-frame{top:12px;bottom:12px;left:315px;right:12px}.navigation-cockpit-header{width:285px}.navigation-bottom{width:340px}.trip-navigation .navigation-status{top:265px;left:12px;width:285px}.trip-navigation.cockpit-collapsed .navigation-status{top:125px}}
+@media(prefers-reduced-motion:reduce){.navigation-map-frame,.cockpit-expand-chevron{transition:none}}
 </style>

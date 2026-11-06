@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-from app.main import app, User, LiveLocation, get_db, SECRET_KEY
+from app.main import app, User, LiveLocation, GuestLiveLocation, get_db, SECRET_KEY
 from app import live_locations
 
 
@@ -19,6 +19,7 @@ def environment():
     engine = create_engine('sqlite://', connect_args={'check_same_thread': False}, poolclass=StaticPool)
     User.__table__.create(engine)
     LiveLocation.__table__.create(engine)
+    GuestLiveLocation.__table__.create(engine)
     Session = sessionmaker(engine, expire_on_commit=False)
     with Session() as db:
         db.add_all([User(id=i, email=f'person-{i}@example.com', name=f'Osoba {i}', password='test-placeholder') for i in range(1, 6)])
@@ -132,3 +133,42 @@ def test_out_of_order_gps_cannot_overwrite_newer_fix(environment):
     assert response.status_code == 409
     with Session() as db:
         assert db.get(LiveLocation, 1).lat == 52.33
+
+
+def test_guests_can_share_nick_and_see_participants_without_accounts(environment):
+    client, headers, Session = environment
+    first = client.post('/api/live-location/guest', json={**point(), 'nick': 'Wędrowiec'}).json()
+    second = client.post('/api/live-location/guest', json={**point(lat=52.331), 'nick': '<b>Rowerzysta</b>'}).json()
+    auth = {'X-Location-Token': first['guest_token']}
+    assert client.get('/api/live-location/guest/nearby').status_code == 401
+    result = client.get('/api/live-location/guest/nearby', headers=auth)
+    assert result.status_code == 200, result.text
+    assert [p['name'] for p in result.json()['people']] == ['<b>Rowerzysta</b>']
+    assert 'guest_token' not in result.text and 'token_hash' not in result.text
+    start(client, headers, 1, lat=52.332)
+    assert len(client.get('/api/live-location/guest/nearby', headers=auth).json()['people']) == 2
+    assert len(client.get('/api/live-location/nearby', headers=headers(1)).json()['people']) == 2
+    update = {**point(lat=52.333), 'session_id': first['session_id']}
+    assert client.put('/api/live-location/guest', headers=auth, json=update).status_code == 200
+    assert client.put('/api/live-location/guest', headers={'X-Location-Token': second['guest_token']}, json=update).status_code == 409
+    assert client.request('DELETE', '/api/live-location/guest', headers=auth, json={'session_id': first['session_id']}).status_code == 204
+    assert client.get('/api/live-location/guest/nearby', headers=auth).status_code == 401
+    assert client.put('/api/live-location/guest', headers=auth, json=update).status_code == 401
+    with Session() as db:
+        assert db.get(GuestLiveLocation, first['session_id']) is None
+        stored = db.get(GuestLiveLocation, second['session_id'])
+        assert stored.token_hash != second['guest_token']
+
+
+def test_guest_expiry_and_nickname_validation(environment):
+    client, headers, Session = environment
+    for nick in ['', ' ', 'A', 'x'*33, 'Hi\nthere']:
+        assert client.post('/api/live-location/guest', json={**point(), 'nick': nick}).status_code == 422
+    guest = client.post('/api/live-location/guest', json={**point(), 'nick': 'Gość'}).json()
+    with Session() as db:
+        db.get(GuestLiveLocation, guest['session_id']).expires_at = datetime.now(timezone.utc)-timedelta(seconds=1)
+        db.commit()
+    assert client.get('/api/live-location/guest/nearby', headers={'X-Location-Token': guest['guest_token']}).status_code == 401
+    with Session() as db:
+        live_locations.purge_expired(db, LiveLocation, GuestLiveLocation);db.commit()
+        assert db.get(GuestLiveLocation, guest['session_id']) is None

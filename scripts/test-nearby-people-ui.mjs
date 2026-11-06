@@ -11,10 +11,10 @@ const requests=[]
 let pendingStart,delayStart=false,denyStop=false,gpsRequests=0
 const peer={id:2,name:'Inna osoba',lat:52.331,lng:15.29,accuracy:8,distance_m:111,updated_at:new Date().toISOString(),expires_at:new Date(Date.now()+120000).toISOString()}
 globalThis.fetch=async(url,options={})=>{
- requests.push({url,method:options.method,auth:options.headers.Authorization,body:options.body?JSON.parse(options.body):null})
+ requests.push({url,method:options.method,auth:options.headers.Authorization,guestToken:options.headers['X-Location-Token'],body:options.body?JSON.parse(options.body):null})
  if(options.method==='POST'&&delayStart)await new Promise(resolve=>pendingStart=resolve)
  if(options.method==='DELETE')return {ok:!denyStop,status:denyStop?503:204}
- return {ok:true,status:200,json:async()=>options.method==='POST'?{session_id:'test-sharing-session'}:url.includes('/nearby')?{people:[peer,{...peer,id:3,expires_at:'2020-01-01T00:00:00Z'}]}:{ttl_seconds:120}}
+ return {ok:true,status:200,json:async()=>options.method==='POST'?{session_id:'test-sharing-session',guest_token:'test-guest-sharing-token'}:url.includes('/nearby')?{people:[peer,{...peer,id:3,expires_at:'2020-01-01T00:00:00Z'}]}:{ttl_seconds:120}}
 }
 const position=ref({lat:52.33,lng:15.29,accuracy:8,measuredAt:Date.now()}),token=ref('own-token')
 const settle=async()=>{await nextTick();await new Promise(r=>setTimeout(r,0));await nextTick()}
@@ -82,8 +82,16 @@ assert.equal(document.querySelector('.nearby-sharing-toggle').checked,false)
 assert.equal(requests.at(-1).method,'DELETE')
 const before=requests.length
 props.value={...props.value,token:'',user:null};await settle()
-assert.equal(document.querySelector('.nearby-sharing-toggle').disabled,true)
+assert.equal(document.querySelector('.nearby-sharing-toggle').disabled,false,'A nickname allows sharing without login')
 assert.equal(requests.length,before)
+document.querySelector('.nearby-sharing-toggle').click();await settle();await settle()
+assert.equal(requests.at(-2).url,'/api/live-location/guest')
+assert.equal(requests.at(-2).body.nick,'Ja')
+assert.equal(requests.at(-2).auth,undefined,'Guest publishing does not need an account token')
+assert.equal(requests.at(-1).guestToken,'test-guest-sharing-token')
+document.querySelector('.nearby-sharing-stop').click();await settle();await settle()
+assert.equal(requests.at(-1).url,'/api/live-location/guest')
+assert.equal(requests.at(-1).guestToken,'test-guest-sharing-token')
 app.unmount()
 
 assert.equal(freshSharedPosition({...position.value,measuredAt:Date.now()-60000}),false)

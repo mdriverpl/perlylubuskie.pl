@@ -63,6 +63,19 @@ class LiveLocation(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
 
+class GuestLiveLocation(Base):
+    __tablename__ = 'guest_live_locations'
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    nick: Mapped[str] = mapped_column(String(32))
+    lat: Mapped[float] = mapped_column(Float)
+    lng: Mapped[float] = mapped_column(Float)
+    accuracy: Mapped[float] = mapped_column(Float)
+    measured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+
+
 class Region(Base):
     __tablename__ = 'regions'
     slug: Mapped[str] = mapped_column(String(40), primary_key=True)
@@ -309,7 +322,7 @@ async def lifespan(app: FastAPI):
     worker=region_research.start_worker()
     contact_worker=contact_research.start_worker()
     photo_worker=photo_research.start_worker()
-    location_cleanup=live_locations.start_cleanup(SessionLocal, LiveLocation)
+    location_cleanup=live_locations.start_cleanup(SessionLocal, LiveLocation, GuestLiveLocation)
     try:
         yield
     finally:
@@ -323,10 +336,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title='Perły Ziemi Lubuskiej API', version='1.0.0', lifespan=lifespan)
 app.include_router(maps_router)
 app.include_router(offline_maps_router)
-app.include_router(live_locations.router_for(LiveLocation, User, get_db, current_user))
+app.include_router(live_locations.router_for(LiveLocation, User, get_db, current_user, GuestLiveLocation))
 region_research.media_root().mkdir(parents=True,exist_ok=True)
 app.mount('/api/media',StaticFiles(directory=str(region_research.media_root())),name='catalog-media')
-app.add_middleware(CORSMiddleware, allow_origins=os.environ.get('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(','), allow_methods=['GET', 'POST', 'PUT', 'DELETE'], allow_headers=['Authorization', 'Content-Type'])
+app.add_middleware(CORSMiddleware, allow_origins=os.environ.get('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(','), allow_methods=['GET', 'POST', 'PUT', 'DELETE'], allow_headers=['Authorization', 'Content-Type', 'X-Location-Token'])
 
 
 @app.get('/api/ai/config')

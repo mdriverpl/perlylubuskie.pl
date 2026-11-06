@@ -84,11 +84,11 @@ def map_config():
 
 
 @router.get('/tiles/{style}/{z}/{x}/{y}')
-def map_tile(style: str, z: int = Path(ge=0, le=20), x: int = Path(ge=0), y: int = Path(ge=0)):
+def map_tile(style: str, z: int = Path(ge=0, le=20), x: int = Path(ge=0), y: int = Path(ge=0), roads_only: bool = Query(False)):
     global _tile_cache_bytes
     if style not in STYLES or x >= 2**z or y >= 2**z:
         raise HTTPException(422, 'Nieprawidłowy kafelek mapy.')
-    cache_key = (hash(os.environ.get('HERE_API_KEY', '').strip()),style,z,x,y)
+    cache_key = (hash(os.environ.get('HERE_API_KEY', '').strip()),style,z,x,y,roads_only)
     now = time.monotonic()
     with _tile_cache_lock:
         cached = _tile_cache.get(cache_key)
@@ -99,7 +99,10 @@ def map_tile(style: str, z: int = Path(ge=0, le=20), x: int = Path(ge=0), y: int
         if cached:
             _tile_cache_bytes-=len(cached[2]);del _tile_cache[cache_key]
     image_format = 'jpeg' if style == 'satellite' else 'png'
-    body, content_type, cache_control = here_request(f'base/mc/{z}/{x}/{y}/{image_format}', {'style': STYLES[style], 'size': 256})
+    params = {'style': STYLES[style], 'size': 256}
+    if roads_only:
+        params.update(style=STYLES['map'],features='pois:disabled')
+    body, content_type, cache_control = here_request(f'{"background" if roads_only else "base"}/mc/{z}/{x}/{y}/{image_format}', params)
     if not body or content_type not in ('image/png', 'image/jpeg'):
         raise HTTPException(502, 'Nieprawidłowy format kafelka mapy.')
     max_age = re.search(r'(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*(\d+)',cache_control,re.I)
