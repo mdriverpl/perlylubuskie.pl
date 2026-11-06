@@ -21,7 +21,7 @@ export function useGeolocation(){
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180){position.value=null;error.value='Nie udało się ustalić poprawnej lokalizacji.'}
    else {
     error.value=''
-    const point={lat,lng,accuracy:Number.isFinite(accuracy)&&accuracy>=0?accuracy:null}
+    const point={lat,lng,accuracy:Number.isFinite(accuracy)&&accuracy>=0?accuracy:null,measuredAt:Number.isFinite(result.timestamp)?result.timestamp:Date.now()}
     const direction=movementDirection(headingAnchor,point,result.coords.heading,result.coords.speed)
     headingAnchor=direction.anchor;position.value={...point,heading:direction.heading}
    }

@@ -12,7 +12,7 @@ globalThis.fetch=async()=>{requests++;return {ok:true,json:async()=>({provider:'
 const {createApp,nextTick,ref,h}=await import('vue')
 const descriptor=parse(await readFile('src/components/TravelMap.vue','utf8')).descriptor
 let source=compileScript(descriptor,{id:'map-dom-test',inlineTemplate:true}).content
-for(const name of ['apiResponse','mapPreferences','mapClusters','navigationDirections'])source=source.replace(`from '../${name}.js'`,`from '../src/${name}.js'`)
+for(const name of ['apiResponse','mapPreferences','mapClusters','navigationDirections','offlineMaps'])source=source.replace(`from '../${name}.js'`,`from '../src/${name}.js'`)
 await mkdir('artifacts',{recursive:true});await writeFile('artifacts/map-dom-test.mjs',source)
 const Component=(await import('../artifacts/map-dom-test.mjs')).default
 const selected=[]
@@ -89,7 +89,8 @@ assert.ok(document.querySelector('.map-pin.chosen'),'Provider changes preserve r
 app.unmount()
 const navigationPosition=ref({lat:52.3347,lng:15.2922,accuracy:6,heading:0})
 const navigationPlaces=[]
-const navigationApp=createApp({render:()=>h(Component,{places:navigationPlaces,geometry:savedGeometry,userLocation:navigationPosition.value,directionalPosition:true,routeDirections:true})})
+const nearbyPeople=ref([])
+const navigationApp=createApp({render:()=>h(Component,{places:navigationPlaces,nearbyPeople:nearbyPeople.value,geometry:savedGeometry,userLocation:navigationPosition.value,directionalPosition:true,routeDirections:true})})
 navigationApp.mount('#app');await settle()
 const line=document.querySelector('path[stroke="#1685d2"]')
 const linePath=line.getAttribute('d')
@@ -105,5 +106,14 @@ assert.notEqual(pointer.parentElement.style.cssText,pointerLocation,'GPS moves t
 assert.equal(document.querySelector('.leaflet-map-pane').style.transform,paneTransform,'GPS does not pan the map')
 assert.equal(document.querySelector('path[stroke="#1685d2"]'),line)
 assert.equal(line.getAttribute('d'),linePath,'GPS does not recenter, zoom or rebuild the route')
+nearbyPeople.value=[{id:11,name:'<b>Osoba w pobliżu</b>',lat:52.335,lng:15.293,updated_at:new Date().toISOString(),expires_at:new Date(Date.now()+120000).toISOString(),distance_m:150},{id:12,name:'Nieaktywna',lat:52.336,lng:15.294,updated_at:'2020-01-01T00:00:00Z',expires_at:'2020-01-01T00:00:00Z'}];await settle()
+assert.equal(document.querySelectorAll('.nearby-person-pin').length,1,'Only current opted-in people are shown')
+document.querySelector('.nearby-person-pin').parentElement.dispatchEvent(new MouseEvent('click',{bubbles:true}));await settle()
+assert.match(document.querySelector('.leaflet-popup-content').textContent,/<b>Osoba w pobliżu<\/b>/)
+assert.equal(document.querySelector('.leaflet-popup-content b'),null,'Participant names cannot inject markup')
+assert.match(document.querySelector('.leaflet-popup-content').textContent,/150 m/)
+nearbyPeople.value=[];await settle()
+assert.equal(document.querySelectorAll('.nearby-person-pin').length,0,'Stopping removes participants without changing the route')
+assert.equal(document.querySelector('path[stroke="#1685d2"]'),line)
 navigationApp.unmount();dom.window.close()
 console.log('PASS: real Leaflet DOM renders OSM tiles, clusters, safe popup selection and numbered stops, switches HERE and tolerates a single tile error')

@@ -58,6 +58,7 @@ import {useTripMetrics,tripDistance,tripDuration} from './useTripMetrics.js'
 import {readAddress,forgetAddress} from './rememberedAddress.js'
 import { distanceKm, placeFacets } from './explore.js'
 import {readApiJson} from './apiResponse.js'
+import {readOfflineMap} from './offlineMaps.js'
 import { useGeolocation, geolocationKey } from './useGeolocation.js'
 const geolocation=useGeolocation()
 provide(geolocationKey,geolocation)
@@ -117,12 +118,12 @@ const googleNavigationUrl=computed(()=>detail.value?'https://www.google.com/maps
 async function startPlaceNavigation(){
  navigationReturnView.value=view.value;navigationDestination.value={...detail.value}
  navigationOrigin.value=userLocation.value?{...userLocation.value}:null
- modal.value=null;await nextTick();navigating.value=true;if(!userLocation.value)locate()
+ modal.value=null;await nextTick();navigating.value=true;if(!userLocation.value)locate();if(!apiOnline.value)loadCatalog()
 }
 const tripLibraryView=ref(read('perly:trip-view','list')==='tiles'?'tiles':'list')
 watch(tripLibraryView,value=>{try{localStorage.setItem('perly:trip-view',JSON.stringify(value))}catch{}})
 watch(view,()=>navigating.value=false)
-async function startNavigation(route){navigationDestination.value=null;navigationOrigin.value=null;navigationReturnView.value=view.value;if(route)openSavedRoute(route);await nextTick();navigating.value=true;if(!userLocation.value)locate()}
+async function startNavigation(route){navigationDestination.value=null;navigationOrigin.value=null;navigationReturnView.value=view.value;if(route)openSavedRoute(route);await nextTick();navigating.value=true;if(!userLocation.value)locate();if(!apiOnline.value)loadCatalog()}
 function closeNavigation(){navigating.value=false;navigationDestination.value=null;navigationOrigin.value=null;const previous=navigationReturnView.value;navigationReturnView.value=null;if(previous&&previous!==view.value)navigate(previous)}
 const plannerStartPoint=ref(null)
 const plannerAddNotice=ref(false),plannerNoticeVersion=ref(0)
@@ -241,7 +242,7 @@ const plannerPlaces=computed(()=>routePreview.value?selectedPlaces.value:filtere
 function selectPlannerMarker(id){if(routePreview.value){const place=selectedPlaces.value.find(p=>p.id===id);if(place)openDetail(place)}else togglePlace(id)}
 const featured=computed(()=>category.value==='all'&&!query.value&&!onlyFavorites.value? [...filtered.value].filter(p=>p.details?.kind!=='custom').sort((a,b)=>(b.popularity??0)-(a.popularity??0)).slice(0,20):filtered.value)
 const straightDistance=computed(()=>selectedPlaces.value.reduce((sum,p,i,points)=>i?sum+distanceKm(points[i-1],p):0,0))
-const {route:computedRoute,loading:routeLoading,error:routeError,refresh:refreshRoute}=useRouting({ids:selected,transport,enabled:computed(()=>view.value==='planner'||view.value==='explore'),online:apiOnline,customPoints:routePoints,pointPositions})
+const {route:computedRoute,loading:routeLoading,error:routeError,offline:routeOffline,refresh:refreshRoute}=useRouting({ids:selected,transport,enabled:computed(()=>view.value==='planner'||view.value==='explore'),online:apiOnline,customPoints:routePoints,pointPositions})
 const tripMetrics=useTripMetrics({routes:libraryRoutes,enabled:computed(()=>['trips','walking','cycling'].includes(view.value)),online:apiOnline})
 watch(computedRoute,value=>{if(value)tripMetrics.remember({transport:transport.value,place_ids:selected.value,custom_points:snapshotRoutePoints(selected.value),point_positions:pointPositions.value},value)})
 const plannerGeometry=computed(()=>computedRoute.value?.geometry||null)
@@ -252,9 +253,15 @@ const navigationGeometry=computed(()=>navigationDestination.value?directRoute.ro
 const navigationRoute=computed(()=>navigationDestination.value?directRoute.route.value:computedRoute.value)
 const navigationDistance=computed(()=>navigationRoute.value?tripDistance(navigationRoute.value):'—')
 const navigationDuration=computed(()=>navigationRoute.value?tripDuration(navigationRoute.value):'—')
-const navigationLoading=computed(()=>navigationDestination.value?directRoute.loading.value:routeLoading.value)
-const navigationError=computed(()=>!apiOnline.value?'Wyznaczanie trasy wymaga połączenia z serwerem.':navigationDestination.value?directRoute.error.value:routeError.value)
-function retryNavigation(){navigationDestination.value?directRoute.refresh():refreshRoute()}
+const connectionLoading=ref(false)
+const navigationLoading=computed(()=>(connectionLoading.value&&!navigationGeometry.value)||(navigationDestination.value?directRoute.loading.value:routeLoading.value))
+const navigationOffline=computed(()=>navigationDestination.value?directRoute.offline.value:routeOffline.value)
+const navigationPlaces=computed(()=>navigationDestination.value?[navigationDestination.value]:selectedPlaces.value)
+const navigationError=computed(()=>!apiOnline.value&&!navigationGeometry.value?'Wyznaczanie nowej trasy wymaga połączenia z serwerem. Zapisana wcześniej trasa jest dostępna offline.':navigationDestination.value?directRoute.error.value:routeError.value)
+async function retryNavigation(){
+ if(!apiOnline.value){await loadCatalog();return}
+ navigationDestination.value?directRoute.refresh():refreshRoute()
+}
 
 const distance=computed(()=>computedRoute.value?new Intl.NumberFormat('pl',{maximumFractionDigits:2}).format(computedRoute.value.distance_m/1000):transport.value==='car'?new Intl.NumberFormat('pl',{maximumFractionDigits:2}).format(straightDistance.value):'—')
 const travelTime=computed(()=>{if(computedRoute.value){const minutes=Math.max(1,Math.round(computedRoute.value.duration_s/60));return minutes<60?minutes+' min':Math.floor(minutes/60)+' h '+minutes%60+' min'}return '—'})
@@ -317,7 +324,20 @@ function exportGpx(){if(!selected.value.length||routeLoading.value)return;const 
 
 async function authenticate(){busy.value=true;authError.value='';try{const result=await api(`/auth/${authMode.value}`,{method:'POST',body:JSON.stringify({email:authEmail.value,password:authPassword.value,name:authName.value})});token.value=result.access_token;user.value=result.user;localStorage.setItem('perly-token',token.value);localStorage.setItem('perly-user',JSON.stringify(user.value));const [remote,routes,catalog]=await Promise.all([api('/favorites'),api('/routes'),api('/places')]);favorites.value=remote;serverSaved.value=routes;places.value=catalog;if(returnToPlace.value){detail.value=returnToPlace.value;returnToPlace.value=null;modal.value='detail'}else if(returnToAddPlace.value){returnToAddPlace.value=false;modal.value='add-place'}else{modal.value=null}authPassword.value='';notify('Witaj! Czas na kolejną przygodę.')}catch(e){authError.value=e.message}finally{busy.value=false}}
 function logout(){user.value=null;token.value='';places.value.forEach(place=>place.liked=false);localStorage.removeItem('perly-user');localStorage.removeItem('perly-token');notify('Wylogowano.')}
-onMounted(async()=>{loadPublicRoutes();try{const result=await api('/places', {signal:AbortSignal.timeout(3500)});if(!Array.isArray(result))throw new Error('Invalid catalog');places.value=result;apiOnline.value=true}catch{apiOnline.value=false}if(apiOnline.value&&user.value){try{const [remote,routes]=await Promise.all([api('/favorites'),api('/routes')]);favorites.value=remote;serverSaved.value=routes}catch{logout();notify('Sesja wygasła. Zaloguj się ponownie.')}}})
+let catalogRequest,connectionDisposed=false
+function loadCatalog(){
+ if(catalogRequest)return catalogRequest
+ connectionLoading.value=true
+ catalogRequest=(async()=>{
+  try{const result=await api('/places',{signal:AbortSignal.timeout(15000)});if(!Array.isArray(result))throw new Error('Invalid catalog');if(connectionDisposed)return false;places.value=result;apiOnline.value=true;return true}
+  catch{if(!connectionDisposed){apiOnline.value=false;const savedMap=await readOfflineMap();if(!connectionDisposed&&savedMap?.places?.length)places.value=savedMap.places}return false}
+  finally{connectionLoading.value=false;catalogRequest=null}
+ })()
+ return catalogRequest
+}
+function reconnect(){if(!apiOnline.value&&document.visibilityState==='visible')loadCatalog()}
+onMounted(async()=>{window.addEventListener('online',reconnect);document.addEventListener('visibilitychange',reconnect);loadPublicRoutes();await loadCatalog();if(!connectionDisposed&&apiOnline.value&&user.value){try{const [remote,routes]=await Promise.all([api('/favorites'),api('/routes')]);favorites.value=remote;serverSaved.value=routes}catch{logout();notify('Sesja wygasła. Zaloguj się ponownie.')}}})
+onBeforeUnmount(()=>{connectionDisposed=true;window.removeEventListener('online',reconnect);document.removeEventListener('visibilitychange',reconnect)})
 let previousFocus
 watch(modal,async value=>{if(value){previousFocus=document.activeElement;await nextTick();document.querySelector('.modal')?.focus()}else previousFocus?.focus?.()})
 function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.querySelectorAll('.modal button:not([disabled]),.modal input:not([disabled]),.modal textarea:not([disabled]),.modal select:not([disabled]),.modal a[href]')];const first=items[0],last=items.at(-1);if(!first)return;if(event.shiftKey&&(document.activeElement===first||document.activeElement.classList.contains('modal'))){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}
@@ -414,7 +434,7 @@ function trapFocus(event){if(event.key!=='Tab')return;const items=[...document.q
 
  <footer class="content-width"><a class="footer-brand" href="#" @click.prevent="navigate('explore')"><BrandMark class="footer-brand-mark"/>Perły Ziemi Lubuskiej</a><span>Blisko natury. Bliżej siebie.</span><div><span :class="['connection-status',{online:apiOnline}]"></span>{{apiOnline?'Połączono z serwerem':'Tryb demonstracyjny · dane lokalne'}}</div><a href="/heritage-credits.html" target="_blank" rel="noopener noreferrer">Źródła i licencje</a><small>© {{new Date().getFullYear()}} Perły Ziemi Lubuskiej</small></footer>
 
- <TripNavigation v-if="navigating" :geometry="navigationGeometry" :distance="navigationDistance" :duration="navigationDuration" :position="userLocation" :locating="locating" :loading="navigationLoading" :error="navigationError" :location-error="locationError" @back="closeNavigation" @refresh="locate()" @retry="retryNavigation"/>
+ <TripNavigation v-if="navigating" :user="user" :token="token" :geometry="navigationGeometry" :places="navigationPlaces" :offline="navigationOffline" :distance="navigationDistance" :duration="navigationDuration" :position="userLocation" :locating="locating" :loading="navigationLoading" :error="navigationError" :location-error="locationError" @back="closeNavigation" @refresh="locate()" @retry="retryNavigation"/>
  <Transition name="toast"><div v-if="toast" class="toast-message" role="status"><Check :size="18"/>{{toast}}<button @click="toast=''" aria-label="Zamknij komunikat"><X :size="16"/></button></div></Transition>
  <div v-if="modal" class="modal-overlay" :class="{'planner-preview-overlay':modal==='planner-place'||modal==='navigate-place'}" @click.self="modal=null" @keydown.esc="modal=null" @keydown="trapFocus"><section class="modal" :class="{'planner-place-modal':modal==='planner-place'||modal==='navigate-place'}" role="dialog" aria-modal="true" :aria-label="modal==='detail'||modal==='planner-place'?detail.name:modal==='navigate-place'?'Nawiguj do: '+detail.name:modal==='route-point'?'Punkt trasy':modal==='add-place'?'Dodaj miejsce':modal==='ai'?'Asystent tras AI':modal==='auth'?'Konto użytkownika':modal==='add-route'?'Zapisz wycieczkę':modal==='save'?'Zapisz trasę':'Zapisane trasy'" tabindex="-1"><button class="modal-close icon-btn" @click="modal=null" aria-label="Zamknij okno"><X :size="22"/></button>
   <div v-if="modal==='planner-place'" class="planner-place-preview"><div class="planner-preview-heading"><img :src="detail.image" @error="imageFallback" :alt="detail.name"><div><span>{{detail.location}}</span><h2>{{detail.name}}</h2></div></div><p class="planner-preview-description">{{previewDescription(detail)}}</p><div class="detail-actions"><button class="button full-width" :disabled="selected.includes(detail.id)" @click="addToList(detail)"><Plus :size="17"/>{{selected.includes(detail.id)?'Na liście':'Dodaj do listy'}}</button></div><button class="planner-preview-more" @click="openDetail(detail)">Pełny opis i źródła <ArrowRight :size="14"/></button></div>

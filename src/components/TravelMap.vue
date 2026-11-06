@@ -5,9 +5,16 @@ import {readApiJson} from '../apiResponse.js'
 import {preferredMap,rememberMap,osmTileUrl,preferredOsmTone,rememberOsmTone} from '../mapPreferences.js'
 import {pointClusters,validMapPoint} from '../mapClusters.js'
 import {routeDirectionArrows} from '../navigationDirections.js'
-const props = defineProps({ places: Array, endpointPlaces:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
+import {readOfflineMap,downloadOfflineMap,removeOfflineMap,offlineMapChanged,offlineFeatureStyle,validateMapArea} from '../offlineMaps.js'
+import Download from 'lucide-vue-next/dist/esm/icons/download.js'
+import WifiOff from 'lucide-vue-next/dist/esm/icons/wifi-off.js'
+import Trash2 from 'lucide-vue-next/dist/esm/icons/trash-2.js'
+const props = defineProps({ places: Array, nearbyPeople:{type:Array,default:()=>[]}, endpointPlaces:{type:Array,default:()=>[]}, travelledTrack:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
 let map, layer, markerLayer, userLayer, arrowLayer, userMarker, accuracyCircle, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
+let offlineLayer,travelledLayer,peopleLayer,downloadController,travelledDrawn=[]
+const offlinePack=ref(null),offlineView=ref(false),offlineBusy=ref(false),offlineNotice=ref('')
+const noNetwork=ref(navigator.onLine===false)
 const provider=ref('osm'), mapStyle=ref('terrain'), mapError=ref(''),switchingMap=ref(false)
 const osmTone=ref(preferredOsmTone())
 function updateOsmTone(){osmTone.value=preferredOsmTone()}
@@ -28,7 +35,27 @@ function setTiles(){
  if(!map||disposed)return
  if(attribution){map.attributionControl.removeAttribution(attribution);attribution=''}
  if(tiles){map.removeLayer(tiles);tiles.off();tiles=null}
+ if(offlineLayer){map.removeLayer(offlineLayer);offlineLayer=null}
+ map.setMaxBounds?.(null);map.setMinZoom?.(0)
  if(props.trackOnly)return
+ if(offlineView.value&&offlinePack.value){
+  const bounds=offlinePack.value.bounds
+  const leafletBounds=L.latLngBounds([[bounds[1],bounds[0]],[bounds[3],bounds[2]]])
+  map.setMaxZoom(19);map.setMaxBounds?.(leafletBounds.pad(.05))
+  map.setMinZoom?.(Math.max(1,map.getBoundsZoom(leafletBounds)-1))
+  offlineLayer=L.layerGroup().addTo(map)
+  L.rectangle(leafletBounds,{color:'#a7b79d',weight:1,fillColor:'#f1eddd',fillOpacity:1,interactive:false}).addTo(offlineLayer)
+  L.geoJSON(offlinePack.value.map,{
+   style:offlineFeatureStyle,
+   pointToLayer(feature,latlng){
+    const label=document.createElement('span');label.className='offline-place-label';label.textContent=feature.properties?.name||({drinking_water:'Woda pitna',shelter:'Wiata',toilets:'Toaleta',parking:'Parking'}[feature.properties?.amenity]||'')
+    return L.marker(latlng,{interactive:false,keyboard:false,icon:L.divIcon({className:'offline-place-icon',html:label,iconSize:[100,20],iconAnchor:[50,10]})})
+   },
+   onEachFeature(feature,featureLayer){if(feature.properties?.name&&feature.geometry.type!=='Point'){const label=document.createElement('span');label.textContent=feature.properties.name;featureLayer.bindTooltip(label)}}
+  }).addTo(offlineLayer)
+  attribution=osmAttribution;map.attributionControl.addAttribution(attribution)
+  return
+ }
  const here=provider.value==='here'
  hereErrors=0
  map.setMaxZoom(here?20:19)
@@ -37,6 +64,37 @@ function setTiles(){
  else tiles.on('tileerror',()=>{if(!disposed&&++hereErrors>=3)mapError.value='Mapa OpenStreetMap jest chwilowo niedostępna. Spróbuj ponownie lub wybierz HERE.'})
  tiles.addTo(map);updateAttribution()
 }
+async function restoreOfflineMap(){
+ const saved=await readOfflineMap()
+ if(disposed)return
+ offlinePack.value=saved
+ if(saved&&noNetwork.value){offlineView.value=true;setTiles();map.fitBounds([[saved.bounds[1],saved.bounds[0]],[saved.bounds[3],saved.bounds[2]]],{padding:[18,18],animate:false})}
+ else if(!saved&&offlineView.value){offlineView.value=false;setTiles()}
+}
+function networkChanged(){
+ noNetwork.value=navigator.onLine===false
+ if(noNetwork.value&&offlinePack.value){offlineView.value=true;setTiles()}
+}
+function toggleOfflineMap(){
+ offlineView.value=!offlineView.value;setTiles()
+ if(offlineView.value){const b=offlinePack.value.bounds;map.fitBounds([[b[1],b[0]],[b[3],b[2]]],{padding:[18,18],animate:false})}
+}
+async function saveVisibleMap(){
+ if(offlineBusy.value)return
+ offlineNotice.value=''
+ const b=map.getBounds(),bounds=[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()]
+ try{
+  validateMapArea(bounds)
+  offlineBusy.value=true;downloadController=new AbortController()
+  const timeout=setTimeout(()=>downloadController.abort(),50000)
+  let saved
+  try{saved=await downloadOfflineMap(bounds,{places:[...props.places,...props.endpointPlaces],signal:downloadController.signal})}finally{clearTimeout(timeout)}
+  if(disposed)return
+  offlinePack.value=saved;offlineNotice.value='Fragment zapisany w tym urządzeniu. Mapa offline ma uproszczony wygląd.'
+ }catch(error){if(!disposed)offlineNotice.value=error.name==='AbortError'?'Pobieranie trwało zbyt długo. Spróbuj ponownie.':error.message}
+ finally{offlineBusy.value=false}
+}
+async function deleteSavedMap(){try{await removeOfflineMap();if(!disposed){offlinePack.value=null;offlineView.value=false;setTiles();offlineNotice.value='Usunięto zapisany fragment.'}}catch{offlineNotice.value='Nie udało się usunąć fragmentu. Spróbuj ponownie.'}}
 async function selectProvider(value){
  if(switchingMap.value)return
  mapError.value=''
@@ -103,6 +161,27 @@ function drawRouteDirections(){
  const arrows=routeDirectionArrows(props.geometry?.coordinates,coordinate=>map.latLngToContainerPoint([coordinate[1],coordinate[0]]),{width:size.x,height:size.y})
  for(const point of arrows){
   L.marker(map.containerPointToLatLng([point.x,point.y]),{interactive:false,keyboard:false,zIndexOffset:500,icon:L.divIcon({className:'route-direction-icon',html:`<svg class="route-direction-arrow" style="transform:rotate(${point.heading}deg)" width="13" height="15" viewBox="0 0 13 15" aria-hidden="true"><path d="M6.5 1 L12 13 L6.5 10 L1 13 Z" fill="white" stroke="#1685d2" stroke-width="1.5" stroke-linejoin="round"/></svg>`,iconSize:[13,15],iconAnchor:[6.5,7.5]})}).addTo(arrowLayer)
+ }
+}
+function drawTravelledTrack(){
+ if(!map||!travelledLayer)return
+ const points=props.travelledTrack
+ let start=travelledDrawn.length
+ if(points.length<start||start&&(points[0]!==travelledDrawn[0]||points[start-1]!==travelledDrawn[start-1])){travelledLayer.clearLayers();start=0}
+ for(const point of points.slice(start))L.circleMarker([point.lat,point.lng],{radius:2.5,color:'#fff',weight:1,fillColor:'#176944',fillOpacity:1,interactive:false,pane:'markerPane'}).addTo(travelledLayer)
+ travelledDrawn=points
+}
+function drawNearbyPeople(){
+ if(!map||!peopleLayer)return
+ peopleLayer.clearLayers()
+ for(const person of props.nearbyPeople){
+  if(!validMapPoint(person)||Date.parse(person.expires_at)<=Date.now()||!Number.isFinite(Date.parse(person.expires_at)))continue
+  const label=document.createElement('span');label.textContent=String(person.name||'Uczestnik').slice(0,80)
+  const popup=document.createElement('div'),name=document.createElement('strong'),info=document.createElement('p')
+  name.textContent=label.textContent
+  info.textContent=(Number.isFinite(person.distance_m)?'Od Ciebie: '+(person.distance_m<1000?Math.round(person.distance_m)+' m':(person.distance_m/1000).toFixed(1)+' km')+'. ':'')+'Aktualizacja: '+new Date(person.updated_at).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})
+  popup.append(name,info)
+  L.marker([person.lat,person.lng],{zIndexOffset:2000,icon:L.divIcon({className:'nearby-person-icon',html:'<span class="nearby-person-pin"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3" fill="currentColor"/><path d="M5 21v-3a7 7 0 0 1 14 0v3" fill="currentColor"/></svg></span>',iconSize:[32,32],iconAnchor:[16,16]})}).addTo(peopleLayer).bindTooltip(label).bindPopup(popup)
  }
 }
 function drawPosition(){
@@ -174,6 +253,8 @@ function draw() {
 }
 onMounted(async () => {
  window.addEventListener('perly:osm-tone-changed',updateOsmTone)
+ window.addEventListener(offlineMapChanged,restoreOfflineMap)
+ window.addEventListener('online',networkChanged);window.addEventListener('offline',networkChanged)
  map=L.map(mapElement.value,{scrollWheelZoom:false,doubleClickZoom:!props.allowCustomPoints}).setView([52.15,15.16],8)
  map.on('dblclick',event=>{
   if(!props.allowCustomPoints||event.originalEvent?.target?.closest?.('.leaflet-marker-icon,.leaflet-control,.leaflet-popup'))return
@@ -181,24 +262,52 @@ onMounted(async () => {
   if(Number.isFinite(lat)&&Number.isFinite(lng)&&lat>=-90&&lat<=90&&lng>=-180&&lng<=180)emit('create-point',{lat:+lat.toFixed(6),lng:+lng.toFixed(6)})
  })
  setTiles();map.on('moveend zoomend',()=>{updateAttribution();drawMarkers();drawRouteDirections()})
- layer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map);userLayer=L.layerGroup().addTo(map);arrowLayer=L.layerGroup().addTo(map);draw();drawPosition();drawRouteDirections()
+ layer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map);userLayer=L.layerGroup().addTo(map);arrowLayer=L.layerGroup().addTo(map);travelledLayer=L.layerGroup().addTo(map);peopleLayer=L.layerGroup().addTo(map);draw();drawPosition();drawRouteDirections();drawTravelledTrack();drawNearbyPeople()
  if(typeof ResizeObserver!=='undefined'){
   resizeObserver=new ResizeObserver(()=>{if(!disposed){map.invalidateSize({pan:false});lastViewportKey=undefined;draw()}})
   resizeObserver.observe(mapElement.value)
  }
- if(!props.trackOnly&&preferredMap()==='here')await selectProvider('here')
+ await restoreOfflineMap()
+ if(!disposed&&!offlineView.value&&!props.trackOnly&&preferredMap()==='here')await selectProvider('here')
 })
 watch(mapStyle,setTiles)
 watch(()=>props.trackOnly,setTiles)
 watch(()=>[props.selected,props.places,props.geometry,props.searchLocation,props.draggablePoints,props.distanceArea,props.endpointPlaces],draw,{deep:true})
 watch(()=>[props.userLocation,props.focusLocation],drawPosition,{deep:true})
 watch(()=>[props.geometry,props.routeDirections],drawRouteDirections,{deep:true})
-onBeforeUnmount(()=>{disposed=true;window.removeEventListener('perly:osm-tone-changed',updateOsmTone);resizeObserver?.disconnect();map?.remove();tiles?.off()})
+watch(()=>props.travelledTrack,drawTravelledTrack,{deep:true})
+watch(()=>props.nearbyPeople,drawNearbyPeople,{deep:true})
+onBeforeUnmount(()=>{disposed=true;downloadController?.abort();window.removeEventListener('perly:osm-tone-changed',updateOsmTone);window.removeEventListener(offlineMapChanged,restoreOfflineMap);window.removeEventListener('online',networkChanged);window.removeEventListener('offline',networkChanged);resizeObserver?.disconnect();map?.remove();tiles?.off()})
 </script>
-<template><div class="travel-map" :class="{'track-only':trackOnly,'osm-light':provider==='osm'&&osmTone==='light'}"><div ref="mapElement" class="travel-map-canvas" aria-label="Mapa miejsc i tras w Polsce"></div><div v-if="!minimal&&!trackOnly" class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div><div v-if="provider==='osm'&&!minimal&&!trackOnly" class="osm-style-switch" role="group" aria-label="Wygląd mapy OpenStreetMap"><button :aria-pressed="osmTone==='light'" @click="rememberOsmTone('light')">Jasna</button><button :aria-pressed="osmTone==='standard'" @click="rememberOsmTone('standard')">Standardowa</button></div><div v-if="provider==='here'&&!minimal&&!trackOnly" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div><p v-if="mapError" class="map-provider-error" role="status">{{mapError}}</p></div></template>
+<template>
+ <div class="travel-map" :class="{'track-only':trackOnly,'osm-light':!offlineView&&provider==='osm'&&osmTone==='light','offline-view':offlineView,'minimal-map':minimal}">
+  <div ref="mapElement" class="travel-map-canvas" aria-label="Mapa miejsc i tras w Polsce"></div>
+  <div v-if="!minimal&&!trackOnly&&!offlineView" class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div>
+  <div v-if="provider==='osm'&&!minimal&&!trackOnly&&!offlineView" class="osm-style-switch" role="group" aria-label="Wygląd mapy OpenStreetMap"><button :aria-pressed="osmTone==='light'" @click="rememberOsmTone('light')">Jasna</button><button :aria-pressed="osmTone==='standard'" @click="rememberOsmTone('standard')">Standardowa</button></div>
+  <div v-if="provider==='here'&&!minimal&&!trackOnly&&!offlineView" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div>
+  <div v-if="!trackOnly" class="offline-map-controls" @dblclick.stop @click.stop>
+   <button class="offline-map-download" :disabled="offlineBusy||noNetwork" :aria-busy="offlineBusy" @click="saveVisibleMap"><Download :size="16"/>{{offlineBusy?'Pobieram…':'Pobierz fragment mapy'}}</button>
+   <small v-if="!offlinePack">Widoczny obszar · do 25 km²</small>
+   <div v-if="offlinePack" class="offline-map-saved"><button :aria-pressed="offlineView" @click="toggleOfflineMap"><WifiOff :size="15"/>{{offlineView?'Wróć do mapy online':'Pokaż mapę offline'}}</button><button :disabled="offlineBusy" aria-label="Usuń zapisany fragment mapy" @click="deleteSavedMap"><Trash2 :size="15"/></button></div>
+   <small v-if="offlinePack&&!offlineView">Nowe pobranie zastąpi zapisany fragment.</small>
+   <small v-if="offlineView">Zapisany fragment · {{new Date(offlinePack.savedAt).toLocaleDateString('pl')}}<br>Poza fragmentem mapa jest niedostępna.</small>
+   <small v-if="offlineNotice" class="offline-map-notice" role="status">{{offlineNotice}}</small>
+  </div>
+  <p v-if="mapError&&!offlineView" class="map-provider-error" role="status">{{mapError}}</p>
+ </div>
+</template>
 <style scoped>
 .map-provider-switch{position:absolute;top:14px;right:14px;z-index:500;display:flex;gap:3px;padding:4px;background:#fff;border-radius:22px;box-shadow:0 2px 9px #173d2920}.map-provider-switch button{font:600 11px/1.4 system-ui;padding:8px 12px;border:0;border-radius:18px;background:transparent;color:#294b36;cursor:pointer}.map-provider-switch button[aria-pressed=true]{background:#18774f;color:white}.map-provider-switch button:disabled{opacity:.6;cursor:wait}.map-provider-switch button:focus-visible{outline:2px solid #19744f;outline-offset:2px}
 .travel-map{position:relative;width:100%;height:100%;min-height:inherit}.map-style-switch{position:absolute;top:61px;right:14px;z-index:500;display:flex;gap:3px;padding:4px;background:#fff;border-radius:22px;box-shadow:0 2px 9px #173d2920}.map-style-switch button{font:600 11px/1.4 system-ui;padding:8px 12px;border:0;border-radius:18px;background:transparent;color:#294b36;cursor:pointer}.map-style-switch button[aria-pressed=true]{background:#18774f;color:white}.map-provider-error{position:absolute;bottom:36px;left:12px;right:12px;z-index:500;background:#fff8e9ed;padding:9px 12px;border-radius:7px;font:11px/1.5 system-ui;color:#775024;pointer-events:none}
+</style>
+<style>
+.nearby-person-icon{background:transparent;border:0}.nearby-person-pin{display:grid;place-items:center;width:32px;height:32px;border:3px solid white;border-radius:50%;background:#805ab3;color:#fff;box-shadow:0 2px 9px #30244966}.nearby-person-pin svg{display:block}
+</style>
+<style scoped>
+.offline-map-controls{position:absolute;z-index:550;left:12px;bottom:29px;max-width:min(250px,calc(100% - 24px));padding:6px;border-radius:12px;background:#ffffffed;box-shadow:0 2px 12px #173d2929;color:#24563b}.offline-map-controls button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:40px;border:1px solid #d3dfc8;border-radius:8px;background:#fff;padding:8px 10px;font:600 11px/1.4 system-ui;color:#24563b}.offline-map-controls button:disabled{opacity:.55}.offline-map-controls button:focus-visible{outline:2px solid #19744f;outline-offset:2px}.offline-map-controls small{display:block;padding:4px 3px;font:10px/1.5 system-ui;color:#607753}.offline-map-saved{display:flex;gap:4px;margin-top:4px}.offline-map-saved button:first-child{flex:1}.offline-map-saved button[aria-pressed=true]{background:#e7f1df;border-color:#9bb48c}.offline-map-notice{max-width:230px}.minimal-map .offline-map-controls{top:76px;right:14px;left:auto;bottom:auto;max-width:220px}.offline-view .travel-map-canvas{background:#e5e8df}
+</style>
+<style>
+.offline-place-icon{background:transparent;border:0}.offline-place-label{display:block;text-align:center;font:600 10px/1.4 system-ui;color:#425b3b;text-shadow:0 1px 2px #fff,1px 0 2px #fff,-1px 0 2px #fff;white-space:nowrap}.gps-direction-icon:before,.gps-direction-icon:after{content:'';position:absolute;pointer-events:none;z-index:-1}.gps-direction-icon:before{inset:-5px;border:1.5px solid #1876d2;border-radius:50%;background:#ffffff85}.gps-direction-icon:after{inset:-10px;background:linear-gradient(#1876d2,#1876d2) center/1.5px 100% no-repeat,linear-gradient(#1876d2,#1876d2) center/100% 1.5px no-repeat}
 </style>
 <style>
 .travel-map.osm-light .leaflet-tile-pane{filter:saturate(.4) contrast(.88) brightness(1.08)}

@@ -94,3 +94,11 @@ Dane trasowania: © [OpenStreetMap contributors](https://www.openstreetmap.org/c
 # Zadania administratora
 
 [Konfiguracja modeli, limity i Start/Zatrzymaj](ADMIN_TASKS.md).
+
+## Pozycje osób w pobliżu
+
+Aktualizacja dodaje tabelę `user_live_locations` przez istniejący mechanizm `create_all`, bez zmiany kont i tras. Każde konto ma najwyżej jedną bieżącą pozycję. Włączenie opcji w nawigacji wymaga zalogowania; domyślnie udostępnianie jest wyłączone. Inni aktywni uczestnicy w promieniu 5 km widzą nazwę konta, pozycję, dokładność i czas aktualizacji. API nie udostępnia adresów e-mail ani identyfikatorów sesji innych osób.
+
+Frontend aktualizuje pozycję co około 12 sekund, tylko przy otwartej nawigacji i aktualnym odczycie GPS. Pozycje wygasają po 120 sekundach; proces porządkowy usuwa wygasłe rekordy co 30 sekund. Wyłączenie opcji lub zamknięcie nawigacji usuwa własną pozycję. Przy braku sieci obowiązuje czas wygaśnięcia. Nie jest przechowywana historia pozycji; współrzędne innych osób nie są zapisywane w pakiecie mapy offline. Blokada ekranu i ograniczenia przeglądarki mogą wstrzymać aktualizacje.
+
+Endpointy `/api/live-location` (POST/PUT/DELETE) i `/api/live-location/nearby` (GET) wymagają Bearer JWT. Odczyt sąsiadów jest dostępny tylko dla konta, które samo aktywnie udostępnia pozycję, względem jego pozycji zapisanej na serwerze. Odpowiedzi mają `Cache-Control: no-store, private` i omijają pamięć Service Workera. Należy wdrożyć razem obrazy API i frontendu.

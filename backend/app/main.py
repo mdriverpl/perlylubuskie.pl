@@ -22,6 +22,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, Session
 from .routing import calculate_route, route_gpx
 from .maps import router as maps_router
+from .offline_maps import router as offline_maps_router
+from . import live_locations
 from . import ai_routes, region_research, contact_research, photo_research, task_models, prompt_tasks
 
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql+psycopg://perly:perly@localhost:5432/perly')
@@ -47,6 +49,18 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(80))
     password: Mapped[str] = mapped_column(String(255))
     is_superadmin: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class LiveLocation(Base):
+    __tablename__ = 'user_live_locations'
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(36))
+    lat: Mapped[float] = mapped_column(Float)
+    lng: Mapped[float] = mapped_column(Float)
+    accuracy: Mapped[float] = mapped_column(Float)
+    measured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
 
 class Region(Base):
@@ -295,6 +309,7 @@ async def lifespan(app: FastAPI):
     worker=region_research.start_worker()
     contact_worker=contact_research.start_worker()
     photo_worker=photo_research.start_worker()
+    location_cleanup=live_locations.start_cleanup(SessionLocal, LiveLocation)
     try:
         yield
     finally:
@@ -302,10 +317,13 @@ async def lifespan(app: FastAPI):
         contact_worker.set()
         photo_worker.set()
         prompt_worker.set()
+        location_cleanup.set()
 
 
 app = FastAPI(title='Perły Ziemi Lubuskiej API', version='1.0.0', lifespan=lifespan)
 app.include_router(maps_router)
+app.include_router(offline_maps_router)
+app.include_router(live_locations.router_for(LiveLocation, User, get_db, current_user))
 region_research.media_root().mkdir(parents=True,exist_ok=True)
 app.mount('/api/media',StaticFiles(directory=str(region_research.media_root())),name='catalog-media')
 app.add_middleware(CORSMiddleware, allow_origins=os.environ.get('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(','), allow_methods=['GET', 'POST', 'PUT', 'DELETE'], allow_headers=['Authorization', 'Content-Type'])

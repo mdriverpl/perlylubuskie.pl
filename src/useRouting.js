@@ -1,33 +1,40 @@
 import { ref, watch, onBeforeUnmount } from 'vue'
 import {readApiJson} from './apiResponse.js'
+import {readOfflineRoute,rememberOfflineRoute} from './offlineRoutes.js'
 
 export function useRouting({ ids, transport, enabled, online, customPoints, pointPositions }) {
- const route=ref(null), loading=ref(false), error=ref('')
+ const route=ref(null), loading=ref(false), error=ref(''),offline=ref(false)
  let timer, controller, generation=0
  function refresh() {
   clearTimeout(timer); controller?.abort(); const current=++generation
-  route.value=null; error.value=''; loading.value=false
-  if(!enabled.value || !online.value || transport.value==='car' || ids.value.length<2) return
-  loading.value=true
+  route.value=null; error.value=''; loading.value=false;offline.value=false
+  if(!enabled.value || transport.value==='car' || ids.value.length<2) return
   const payload={place_ids:[...ids.value],transport:transport.value}
   if(pointPositions?.value.length)payload.point_positions=pointPositions.value.filter(p=>ids.value.includes(p.id)).map(p=>({...p}))
   if(customPoints){const selected=customPoints.value.filter(p=>ids.value.includes(p.id));if(selected.length)payload.custom_points=selected.map(({id,name,lat,lng})=>({id,name,lat,lng}))}
+  const saved=readOfflineRoute(payload)
+  if(!online.value){if(saved){route.value=saved;offline.value=true}return}
+  loading.value=true
   timer=setTimeout(async()=>{
    const activeController=new AbortController();controller=activeController
    const timeout=setTimeout(()=>activeController.abort(),45000)
    try {
     const response=await fetch('/api/routing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:activeController.signal})
+    if(!response.ok&&response.status>=500&&saved){if(current===generation){route.value=saved;offline.value=true}return}
     const data=await readApiJson(response,'Nie udało się wyznaczyć trasy. Serwer jest chwilowo niedostępny. Spróbuj ponownie.')
     if(data.geometry?.type!=='LineString' || data.geometry.coordinates.length<2 || !Number.isFinite(data.distance_m) || !Number.isFinite(data.duration_s))throw new Error('Otrzymano nieprawidłową trasę.')
-    if(current===generation)route.value=data
+    if(current===generation){route.value=data;rememberOfflineRoute(payload,data)}
    } catch(e) {
-    if(current===generation)error.value=e.name==='AbortError'?'Wyznaczanie trasy trwało zbyt długo. Spróbuj ponownie.':e.message
+    if(current===generation){
+     if(saved&&['AbortError','TimeoutError','TypeError'].includes(e.name)){route.value=saved;offline.value=true}
+     else error.value=e.name==='AbortError'?'Wyznaczanie trasy trwało zbyt długo. Spróbuj ponownie.':e.message
+    }
    } finally { clearTimeout(timeout); if(current===generation)loading.value=false }
   },350)
  }
  watch(()=>[enabled.value,online.value,transport.value,JSON.stringify(ids.value),JSON.stringify(pointPositions?.value),JSON.stringify(customPoints?.value)],refresh,{immediate:true})
  onBeforeUnmount(()=>{generation++;clearTimeout(timer);controller?.abort()})
- return {route,loading,error,refresh}
+ return {route,loading,error,offline,refresh}
 }
 
 export function buildGpx(name,places,route) {
