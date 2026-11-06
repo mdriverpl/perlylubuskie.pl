@@ -184,7 +184,7 @@ function drawNearbyPeople(){
   name.textContent=label.textContent
   info.textContent=(personTransport(person.transport)==='bike'?'Rowerem. ':'Pieszo. ')+(Number.isFinite(person.distance_m)?'Od Ciebie: '+(person.distance_m<1000?Math.round(person.distance_m)+' m':(person.distance_m/1000).toFixed(1)+' km')+'. ':'')+'Aktualizacja: '+new Date(person.updated_at).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})
   popup.append(name,info)
-  L.marker([person.lat,person.lng],{zIndexOffset:2000,icon:L.divIcon({className:'nearby-person-icon',html:'<span class="nearby-person-pin">'+personMarkerHtml(person.transport)+'</span>',iconSize:[32,42],iconAnchor:[16,38]})}).addTo(peopleLayer).bindTooltip(label).bindPopup(popup)
+  L.marker([person.lat,person.lng],{zIndexOffset:2000,icon:L.divIcon({className:'nearby-person-icon',html:'<span class="nearby-person-pin">'+personMarkerHtml(person.transport)+'</span>',iconSize:[48,48],iconAnchor:[24,24]})}).addTo(peopleLayer).bindTooltip(label).bindPopup(popup)
  }
 }
 function drawPosition(){
@@ -193,11 +193,11 @@ function drawPosition(){
  if(validMapPoint(point)){
   const latlng=[point.lat,point.lng]
   if(userMarker)userMarker.setLatLng(latlng)
-  else if(props.directionalPosition){userMarkerTransport=personTransport(props.positionTransport);userMarker=L.marker(latlng,{interactive:false,keyboard:false,zIndexOffset:2200,icon:L.divIcon({className:'gps-direction-icon gps-transport-location',html:personMarkerHtml(userMarkerTransport,{directional:true}),iconSize:[32,42],iconAnchor:[16,38]})}).addTo(userLayer)}
+  else if(props.directionalPosition){userMarkerTransport=personTransport(props.positionTransport);userMarker=L.marker(latlng,{interactive:false,keyboard:false,zIndexOffset:2200,icon:L.divIcon({className:'gps-direction-icon gps-transport-location',html:personMarkerHtml(userMarkerTransport,{directional:true}),iconSize:[48,48],iconAnchor:[24,24]})}).addTo(userLayer)}
   else userMarker=L.circleMarker(latlng,{radius:8,color:'#fff',weight:3,fillColor:'#1876d2',fillOpacity:1}).addTo(userLayer).bindTooltip('Tu jesteś')
   if(props.directionalPosition){
    const mode=personTransport(props.positionTransport)
-   if(userMarkerTransport!==mode){userMarkerTransport=mode;userMarker.setIcon(L.divIcon({className:'gps-direction-icon gps-transport-location',html:personMarkerHtml(mode,{directional:true}),iconSize:[32,42],iconAnchor:[16,38]}))}
+   if(userMarkerTransport!==mode){userMarkerTransport=mode;userMarker.setIcon(L.divIcon({className:'gps-direction-icon gps-transport-location',html:personMarkerHtml(mode,{directional:true}),iconSize:[48,48],iconAnchor:[24,24]}))}
    const pointer=userMarker.getElement()?.querySelector('.gps-direction-pointer')
    if(pointer){
     const known=Number.isFinite(point.heading)
@@ -342,4 +342,8 @@ defineExpose({saveVisibleMap,toggleOfflineMap,deleteSavedMap,offlinePack,offline
 
 <style>
 .map-person-symbol[data-transport="bike"]>.map-travel-symbol{width:44px;height:44px;left:-6px;top:-12px;padding:3px;box-sizing:border-box;border:2px solid currentColor;border-radius:11px;background:#fff;stroke-width:2.5;filter:none;box-shadow:0 2px 9px #173b2952}.map-person-symbol[data-transport="bike"]>.gps-direction-pointer{right:-12px;top:15px}.gps-transport-location .map-person-symbol[data-transport="bike"]{color:#0d5eb8}.nearby-person-pin .map-person-symbol[data-transport="bike"]{color:#69409f}
+</style>
+
+<style>
+.map-person-symbol{width:48px;height:48px}.gps-position-ring{position:absolute;box-sizing:border-box;left:9px;top:9px;width:30px;height:30px;border:1.7px solid currentColor;border-radius:50%;background:#ffffff70;box-shadow:0 0 0 1px #ffffffb0}.map-person-symbol>.gps-exact-cross{left:12px;top:12px;width:24px;height:24px;background:linear-gradient(currentColor,currentColor) center/1.6px 100% no-repeat,linear-gradient(currentColor,currentColor) center/100% 1.6px no-repeat;filter:drop-shadow(0 0 1px #fff)}.map-person-symbol[data-transport]>.map-travel-symbol{position:absolute;box-sizing:border-box;left:34px;top:-1px;width:22px;height:22px;padding:2px;border:1px solid currentColor;border-radius:6px;background:white;stroke-width:2.1;filter:none;box-shadow:0 1px 5px #173b2940}.map-person-symbol[data-transport]>.gps-direction-pointer{right:3px;top:34px;transform-origin:5px 6px}.nearby-person-pin{width:48px!important;height:48px!important}
 </style>
