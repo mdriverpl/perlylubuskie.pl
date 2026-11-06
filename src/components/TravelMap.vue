@@ -9,7 +9,7 @@ import {readOfflineMap,downloadOfflineMap,removeOfflineMap,offlineMapChanged,off
 import Download from 'lucide-vue-next/dist/esm/icons/download.js'
 import WifiOff from 'lucide-vue-next/dist/esm/icons/wifi-off.js'
 import Trash2 from 'lucide-vue-next/dist/esm/icons/trash-2.js'
-const props = defineProps({ places: Array, nearbyPeople:{type:Array,default:()=>[]}, endpointPlaces:{type:Array,default:()=>[]}, travelledTrack:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
+const props = defineProps({ places: Array, hideOfflineControls:Boolean, nearbyPeople:{type:Array,default:()=>[]}, endpointPlaces:{type:Array,default:()=>[]}, travelledTrack:{type:Array,default:()=>[]}, trackOnly:Boolean, minimal:Boolean, directionalPosition:Boolean, routeDirections:Boolean, focusLocation: Object, distanceArea: Object, selected: {type:Array,default:()=>[]}, geometry: Object, geometryApproximate: Boolean, draggablePoints: Boolean, userLocation: Object, searchLocation: Object, fitPlaces: Boolean, allowCustomPoints: Boolean })
 const emit = defineEmits(['select','create-point','move-point'])
 let map, layer, markerLayer, userLayer, arrowLayer, userMarker, accuracyCircle, tiles, resizeObserver, disposed=false, copyrights={},lastViewportKey,lastGeometry,lastFocus,clusterIndex,clusterKey,hereErrors=0
 let offlineLayer,travelledLayer,peopleLayer,downloadController,travelledDrawn=[]
@@ -278,6 +278,7 @@ watch(()=>[props.geometry,props.routeDirections],drawRouteDirections,{deep:true}
 watch(()=>props.travelledTrack,drawTravelledTrack,{deep:true})
 watch(()=>props.nearbyPeople,drawNearbyPeople,{deep:true})
 onBeforeUnmount(()=>{disposed=true;downloadController?.abort();window.removeEventListener('perly:osm-tone-changed',updateOsmTone);window.removeEventListener(offlineMapChanged,restoreOfflineMap);window.removeEventListener('online',networkChanged);window.removeEventListener('offline',networkChanged);resizeObserver?.disconnect();map?.remove();tiles?.off()})
+defineExpose({saveVisibleMap,toggleOfflineMap,deleteSavedMap,offlinePack,offlineView,offlineBusy,offlineNotice,noNetwork})
 </script>
 <template>
  <div class="travel-map" :class="{'track-only':trackOnly,'osm-light':!offlineView&&provider==='osm'&&osmTone==='light','offline-view':offlineView,'minimal-map':minimal}">
@@ -285,7 +286,7 @@ onBeforeUnmount(()=>{disposed=true;downloadController?.abort();window.removeEven
   <div v-if="!minimal&&!trackOnly&&!offlineView" class="map-provider-switch" role="group" aria-label="Dostawca mapy"><button :aria-pressed="provider==='osm'" :disabled="switchingMap" @click="selectProvider('osm')">OpenStreetMap</button><button :aria-pressed="provider==='here'" :disabled="switchingMap" @click="selectProvider('here')">{{switchingMap?'HERE…':'HERE'}}</button></div>
   <div v-if="provider==='osm'&&!minimal&&!trackOnly&&!offlineView" class="osm-style-switch" role="group" aria-label="Wygląd mapy OpenStreetMap"><button :aria-pressed="osmTone==='light'" @click="rememberOsmTone('light')">Jasna</button><button :aria-pressed="osmTone==='standard'" @click="rememberOsmTone('standard')">Standardowa</button></div>
   <div v-if="provider==='here'&&!minimal&&!trackOnly&&!offlineView" class="map-style-switch" role="group" aria-label="Rodzaj mapy HERE"><button v-for="style in [{id:'map',label:'Mapa'},{id:'satellite',label:'Satelita'},{id:'terrain',label:'Teren'}]" :key="style.id" :aria-pressed="mapStyle===style.id" @click="mapStyle=style.id">{{style.label}}</button></div>
-  <div v-if="!trackOnly" class="offline-map-controls" @dblclick.stop @click.stop>
+  <div v-if="!trackOnly&&!hideOfflineControls" class="offline-map-controls" @dblclick.stop @click.stop>
    <button class="offline-map-download" :disabled="offlineBusy||noNetwork" :aria-busy="offlineBusy" @click="saveVisibleMap"><Download :size="16"/>{{offlineBusy?'Pobieram…':'Pobierz fragment mapy'}}</button>
    <small v-if="!offlinePack">Widoczny obszar · do 25 km²</small>
    <div v-if="offlinePack" class="offline-map-saved"><button :aria-pressed="offlineView" @click="toggleOfflineMap"><WifiOff :size="15"/>{{offlineView?'Wróć do mapy online':'Pokaż mapę offline'}}</button><button :disabled="offlineBusy" aria-label="Usuń zapisany fragment mapy" @click="deleteSavedMap"><Trash2 :size="15"/></button></div>
