@@ -180,3 +180,12 @@ function trap(event){
 @media(max-width:360px){.trip-navigation .navigation-cockpit-header{left:20px;right:20px;padding:11px 12px;max-width:304px}.cockpit-title-row .navigation-route-name{font-size:14px}.cockpit-mini-summary>span:first-child{font-size:10px}.cockpit-mini-summary .cockpit-mini-accuracy{font-size:8px}.navigation-cockpit-header .navigation-metrics strong{font-size:15px}}
 @media(max-height:560px) and (orientation:landscape){.trip-navigation .navigation-cockpit-header{left:24px;right:auto;width:285px}.trip-navigation .navigation-map-frame{top:12px;left:12px;right:12px;bottom:106px}.trip-navigation .navigation-bottom{left:12px;right:12px;width:auto;max-width:444px}.trip-navigation .navigation-status{left:24px;right:auto;width:285px}}
 </style>
+
+<style scoped>
+.trip-navigation .navigation-map-frame{top:max(8px,env(safe-area-inset-top));bottom:max(8px,env(safe-area-inset-bottom));left:8px;right:8px;max-width:none;border-width:1px;border-radius:27px}
+.trip-navigation .navigation-bottom{position:absolute;bottom:calc(max(8px,env(safe-area-inset-bottom)) + 9px);left:17px;right:17px;width:auto;max-width:444px;background:rgba(250,253,246,.74);border:1px solid rgba(255,255,255,.65);box-shadow:0 5px 24px #173b2926;backdrop-filter:blur(17px) saturate(1.12);-webkit-backdrop-filter:blur(17px) saturate(1.12)}
+.navigation-bottom .navigation-toolbar button{background:transparent;color:#244b36}.navigation-bottom .navigation-toolbar button:hover{background:#ffffff65}.navigation-bottom .navigation-toolbar button[aria-expanded=true]{background:#eef6e5b3}.navigation-bottom .navigation-toolbar .navigation-refresh{background:#19744feb;color:#fff}.navigation-bottom .navigation-toolbar .navigation-refresh:hover{background:#145f40}
+.trip-navigation :deep(.leaflet-top.leaflet-left){bottom:112px;right:12px}
+@media(max-width:360px){.trip-navigation .navigation-map-frame{left:6px;right:6px;border-radius:24px}.trip-navigation .navigation-bottom{left:13px;right:13px;border-radius:23px}}
+@media(max-height:560px) and (orientation:landscape){.trip-navigation .navigation-map-frame{left:8px;right:8px;top:8px;bottom:8px}.trip-navigation .navigation-bottom{left:17px;right:17px;max-width:444px;width:auto;bottom:17px}.trip-navigation :deep(.leaflet-top.leaflet-left){bottom:112px;right:12px}}
+</style>
