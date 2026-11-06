@@ -202,7 +202,7 @@ function drawPosition(){
     pointer.setAttribute('aria-label',known?'Pozycja GPS i kierunek ruchu':'Pozycja GPS — kierunek zostanie ustalony podczas ruchu')
    }
   }
-  if(Number.isFinite(point.accuracy)&&point.accuracy>0){
+  if(!props.minimal&&Number.isFinite(point.accuracy)&&point.accuracy>0){
    if(accuracyCircle)accuracyCircle.setLatLng(latlng).setRadius(point.accuracy)
    else accuracyCircle=L.circle(latlng,{radius:point.accuracy,color:'#1876d2',weight:1,fillOpacity:.08}).addTo(userLayer)
    userMarker.bringToFront?.()

@@ -189,3 +189,7 @@ function trap(event){
 @media(max-width:360px){.trip-navigation .navigation-map-frame{left:6px;right:6px;border-radius:24px}.trip-navigation .navigation-bottom{left:13px;right:13px;border-radius:23px}}
 @media(max-height:560px) and (orientation:landscape){.trip-navigation .navigation-map-frame{left:8px;right:8px;top:8px;bottom:8px}.trip-navigation .navigation-bottom{left:17px;right:17px;max-width:444px;width:auto;bottom:17px}.trip-navigation :deep(.leaflet-top.leaflet-left){bottom:112px;right:12px}}
 </style>
+
+<style scoped>
+.navigation-map-frame :deep(.gps-direction-icon:before){display:none}
+</style>
